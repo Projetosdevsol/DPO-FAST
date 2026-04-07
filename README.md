@@ -31,10 +31,10 @@ O nome "DPO Fast" reflete o foco em agilizar o processo de designação e gestã
 
 ## 🛠️ Tecnologias Utilizadas
 - **Frontend**: React, HTML, CSS, JavaScript, TypeScript para interfaces responsivas e intuitivas.
-- **Backend e Banco de Dados**: Supabase (PostgreSQL para dados relacionais, Auth para autenticação, Storage para arquivos). Migrado de Replit Database para maior escalabilidade e funcionalidades relacionais.
+- **Backend e Banco de Dados**: Firebase Firestore (banco de dados NOSQL para escalabilidade de consultas e acessos, Authentication para autenticação, Storage para arquivos). Migrado de AI Studio para maior escalabilidade e funcionalidades relacionais.
 - **Integrações Externas**:
-  - Stripe para gerenciamento de assinaturas e pagamentos.
-- **Hospedagem**: CWP control para controle e gerenciamento do servidor e hospedagem da Solution com integração NodeJS Apps para hospedar a API do backend principal.
+  - (Será implantado )Stripe ou Mercado Pago para gerenciamento de assinaturas e pagamentos.
+- **Hospedagem**: Firebase Hosting.
 
 
 ## Licença
