@@ -1,0 +1,7 @@
+{
+  "name": "LGPD Fácil - Produção",
+  "description": "Plataforma de adequação à LGPD rodando em infraestrutura escalável Firebase.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

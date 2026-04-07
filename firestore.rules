@@ -1,0 +1,72 @@
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Função auxiliar para verificar se o usuário é administrador
+    // 1. Verifica o e-mail 'teste@tese.com' (acesso mestre imediato)
+    // 2. Verifica se o documento do usuário no Firestore possui isAdmin: true
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.email == 'teste@tese.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true)
+      );
+    }
+
+    // Regras para a Coleção de Usuários
+    match /users/{userId} {
+      // Permite ler se for o próprio usuário OU se for admin (necessário para listar todos no painel)
+      allow read: if (request.auth != null && request.auth.uid == userId) || isAdmin();
+      
+      // Usuários podem criar seu perfil ao registrar
+      allow create: if request.auth != null;
+      
+      // Usuários podem atualizar seus dados, mas apenas o Admin pode alterar isAdmin, plan ou status
+      allow update: if isAdmin() || (
+        request.auth != null && request.auth.uid == userId && 
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin', 'plan', 'status'])
+      );
+      
+      allow delete: if isAdmin();
+    }
+    
+    // Regras para Questionários e Tarefas (Vínculo direto com o usuário)
+    match /questionnaires/{userId} {
+      allow read, write: if (request.auth != null && request.auth.uid == userId) || isAdmin();
+    }
+    
+    match /tasks/{userId} {
+      allow read, write: if (request.auth != null && request.auth.uid == userId) || isAdmin();
+    }
+
+    // Regras para Logs de Acesso (Login/Logout)
+    match /access_logs/{logId} {
+      // Permite que o usuário crie seu próprio log de entrada/saída
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      // Apenas administradores podem ler os logs de acesso para auditoria
+      allow read: if isAdmin();
+    }
+
+    // Regras para Tickets de Suporte
+    match /support_tickets/{ticketId} {
+      // Qualquer usuário logado pode criar um ticket
+      allow create: if request.auth != null;
+      // Usuário vê seus tickets, Admin vê TODOS (necessário para a fila de suporte)
+      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow update: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // Regras para Logs de Auditoria
+    match /audit_logs/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Regras para Assinaturas
+    match /subscriptions/{subId} {
+      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow write: if isAdmin();
+    }
+  }
+}
