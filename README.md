@@ -1,4 +1,4 @@
-# DPO Fast - Micro-SaaS para Adequação à LGPD
+# DPO Fast -SaaS para Adequação à LGPD
 
 ## 📖 Descrição
 O **DPO Fast** é um Micro-SaaS (Software as a Service) projetado para ajudar empresas a avaliarem e melhorarem sua conformidade com a Lei Geral de Proteção de Dados (LGPD) no Brasil. Ele oferece uma plataforma intuitiva para assinantes realizarem avaliações através de questionários iterativos, gerarem relatórios personalizados por setor da empresa, gerenciarem to-do lists de ações corretivas e enviarem documentos para validação por uma equipe de Data Protection Officers (DPOs). O sistema promove a adequação à LGPD de forma eficiente, com foco em segurança, escalabilidade e usabilidade.
