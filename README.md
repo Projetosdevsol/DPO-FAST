@@ -36,47 +36,6 @@ O nome "DPO Fast" reflete o foco em agilizar o processo de designação e gestã
   - Stripe para gerenciamento de assinaturas e pagamentos.
 - **Hospedagem**: CWP control para controle e gerenciamento do servidor e hospedagem da Solution com integração NodeJS Apps para hospedar a API do backend principal.
 
-## 🚀 Instalação e Configuração
-### Requisitos
-- Acesso ao servidor da Solution (para banco de dados, storage e acesso a API).
-- Conta no Stripe (para assinaturas).
-
-### 📋 Passos de Configuração
-1. **Clone o Repositório**:
-   ```
-   git clone https://github.com/Projetosdevsol/DPO-FAST.git
-   cd dpo-fast
-      ```
-2. **Instalar Dependências**:
-   - Para o frontend (se usando npm): `npm install supabase-js stripe bootstrap chart.js`.
-   - Integre o cliente Supabase no JS para autenticação e queries.
-3. **Configurar Stripe**:
-   - No dashboard do Stripe, crie produtos para planos de assinatura.
-   - Obtenha API keys e configure webhooks para atualizações de status.
-4. **Migrar Dados (se aplicável)**:
-   - Exporte dados antigos com o schema em arquivoSQL.
-   - Importe o arquivo para o phpPGAdmin.
-
-5. **Deploy**:
-   - Use Firebase CLI para hospedar: `firebase deploy`.
-   - Ou deploy no Replit/Vercel/Netlify, configurando o Supabase como backend remoto.
-
-### Ambiente de Desenvolvimento
-- Use VS Code ou Firebase Studio.
-## Uso
-- **Para Assinantes**: Acesse via navegador, cadastre-se, configure setores, responda questionários e gerencie to-do lists.
-- **Para Admins**: Login com role "admin"; revise envios no painel.
-- Monitore assinaturas no Stripe e auditorias no Supabase.
-
-## Dicas de Manutenção
-- **Atualizações**: Monitore dependências (ex.: `npm update`) e atualize Supabase schemas via SQL migrations para evitar quebras.
-- **Segurança**: Revise RLS policies regularmente; use backups automáticos do Supabase; audite logs de ações sensíveis.
-- **Escalabilidade**: Otimize queries SQL com índices; use caching para relatórios frequentes; monitore custos no Supabase e Stripe.
-- **Debugging**: Use console logs no JS; teste fluxos end-to-end (ex.: questionário → relatório via Qwen AI → validação).
-- **Backups**: Configure backups diários no Supabase; exporte dados periodicamente.
-- **Integrações**: Verifique API keys de Qwen AI e Stripe; teste webhooks em ambiente de sandbox.
-- **Problemas Comuns**: Se migração de dados falhar, verifique mapeamentos de campos; para erros de IA, refine prompts para Qwen AI.
-- **Contribuição**: Fork o repo, crie branches para features, e submeta pull requests com testes.
 
 ## Licença
 MIT License - Sinta-se livre para usar e modificar, com atribuição.
