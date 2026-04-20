@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { AlertCircle, ChevronLeft } from 'lucide-react';
+import { AlertCircle, ChevronLeft, Loader2, ShieldCheck, User, Building, Mail, Lock, Hash, ArrowLeft } from 'lucide-react';
 import { Logo } from './Logo';
 
 export const Register: React.FC = () => {
@@ -18,6 +17,8 @@ export const Register: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { authState, register } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const selectedPlan = searchParams.get('plan') || 'basico';
 
   useEffect(() => {
     if (authState.isAuthenticated && !authState.loading) {
@@ -45,75 +46,103 @@ export const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
     if (!validateCnpj(formData.cnpj)) {
       setErrors({ cnpj: 'CNPJ inválido.' });
       return;
     }
     setLoading(true);
     try {
-      await register(formData);
-    } catch (err) {
+      await register({ ...formData, plan: selectedPlan });
+    } catch (err: any) {
       setLoading(false);
       setErrors({ general: 'Erro ao cadastrar. Tente outro e-mail.' });
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 items-center justify-center px-4 py-12">
-      <div className="w-full max-w-lg">
-        <div className="mb-8">
-          <Link to="/" className="inline-flex items-center gap-1 text-sm font-bold text-gray-400 hover:text-blue-600 transition-colors mb-6">
-            <ChevronLeft className="h-4 w-4" /> Voltar ao início
-          </Link>
-          <div className="text-center">
-            <div className="flex justify-center mb-4">
-              <Logo className="h-16 w-16" />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900">Começar Agora</h1>
-            <p className="text-gray-600 mt-2">Crie sua conta corporativa em segundos</p>
+    <div className="flex min-h-screen bg-[var(--background)] items-center justify-center px-6 py-20 relative overflow-hidden transition-colors duration-500">
+      {/* Back to Home Button */}
+      <Link 
+        to="/" 
+        className="absolute top-10 left-6 lg:left-12 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-[var(--text-primary)] transition-all group z-50"
+      >
+        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+        Voltar ao início
+      </Link>
+
+      <div className="w-full max-w-2xl z-10 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        <div className="text-center space-y-6">
+          <div className="flex justify-center">
+            <Link to="/">
+              <Logo className="h-10 w-auto" />
+            </Link>
+          </div>
+          <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter">Criar sua Conta</h1>
+          <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-blue-600/10 border border-blue-500/20 rounded-full">
+            <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Plano Selecionado:</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">{selectedPlan}</span>
           </div>
         </div>
 
-        <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {errors.general && (
-              <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm flex items-center gap-2">
-                <AlertCircle className="h-4 w-4" /> {errors.general}
-              </div>
-            )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Seu Nome</label>
-                <input type="text" required className="w-full px-4 py-3 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-blue-600 text-slate-950 font-bold placeholder:text-slate-400 bg-slate-50 focus:bg-white transition-all" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="Seu nome" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">E-mail Corporativo</label>
-                <input type="email" required className="w-full px-4 py-3 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-blue-600 text-slate-950 font-bold placeholder:text-slate-400 bg-slate-50 focus:bg-white transition-all" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="contato@empresa.com" />
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-10">
+          {errors.general && (
+            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-500 text-center">{errors.general}</div>
+          )}
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+            <div className="space-y-1">
+              <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Nome Completo</label>
+              <input type="text" required className="w-full px-0 py-3 bg-transparent border-b border-[var(--border)] focus:border-blue-500 outline-none transition-all text-sm font-medium text-[var(--text-primary)] placeholder:text-slate-200" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="Ex: João Silva" />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nome da Empresa</label>
-              <input type="text" required className="w-full px-4 py-3 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-blue-600 text-slate-950 font-bold placeholder:text-slate-400 bg-slate-50 focus:bg-white transition-all" value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} placeholder="Razão Social" />
+
+            <div className="space-y-1">
+              <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">E-mail Profissional</label>
+              <input type="email" required className="w-full px-0 py-3 bg-transparent border-b border-[var(--border)] focus:border-blue-500 outline-none transition-all text-sm font-medium text-[var(--text-primary)] placeholder:text-slate-200" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="joao@empresa.com" />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
-                <input type="text" required maxLength={18} className="w-full px-4 py-3 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-blue-600 text-slate-950 font-bold placeholder:text-slate-400 bg-slate-50 focus:bg-white transition-all" value={formData.cnpj} onChange={handleCnpjChange} placeholder="00.000.000/0000-00" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-                <input type="password" required minLength={6} className="w-full px-4 py-3 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-blue-600 text-slate-950 font-bold placeholder:text-slate-400 bg-slate-50 focus:bg-white transition-all" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} placeholder="No mínimo 6 caracteres" />
-              </div>
+
+            <div className="space-y-1 md:col-span-2">
+              <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Nome da Organização</label>
+              <input type="text" required className="w-full px-0 py-3 bg-transparent border-b border-[var(--border)] focus:border-blue-500 outline-none transition-all text-sm font-medium text-[var(--text-primary)] placeholder:text-slate-200" value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} placeholder="Sua Empresa Ltda" />
             </div>
-            <button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition-all active:scale-[0.98] mt-4">
-              {loading ? 'Processando...' : 'Criar Conta'}
-            </button>
-          </form>
-          <div className="mt-8 pt-6 border-t border-gray-100 text-center text-sm text-gray-600">
-            <p>Já possui cadastro? <Link to="/login" className="text-blue-600 font-semibold hover:underline">Acessar conta</Link></p>
+
+            <div className="space-y-1 text-left">
+              <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Documento (CNPJ)</label>
+              <input type="text" required maxLength={18} className={`w-full px-0 py-3 bg-transparent border-b outline-none transition-all text-sm font-medium text-[var(--text-primary)] placeholder:text-slate-200 ${errors.cnpj ? 'border-red-500 text-red-500' : 'border-[var(--border)] focus:border-blue-500'}`} value={formData.cnpj} onChange={handleCnpjChange} placeholder="00.000.000/0000-00" />
+            </div>
+
+            <div className="space-y-1 text-left">
+              <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Senha de Segurança</label>
+              <input type="password" required minLength={6} className="w-full px-0 py-3 bg-transparent border-b border-[var(--border)] focus:border-blue-500 outline-none transition-all text-sm font-medium text-[var(--text-primary)] placeholder:text-slate-200" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} placeholder="Mínimo 6 caracteres" />
+            </div>
           </div>
+
+          <div className="pt-6">
+            <button 
+              type="submit" 
+              disabled={loading} 
+              className="btn-primary w-full py-5 rounded-2xl always-white"
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : 'Finalizar e Acessar'}
+            </button>
+            <p className="mt-6 text-center text-[9px] text-slate-500 font-medium leading-relaxed">
+              Ao clicar em finalizar, você concorda com nossos <span className="text-blue-500 cursor-pointer underline">Termos</span> e com a <span className="text-blue-500 cursor-pointer underline">Política de Privacidade</span>.
+            </p>
+          </div>
+        </form>
+
+        <div className="text-center pt-8 border-t border-[var(--border)]">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            Já possui uma conta? <Link to="/login" className="text-blue-600 hover:underline ml-2">Entrar agora</Link>
+          </p>
         </div>
       </div>
+
+      <footer className="absolute bottom-10 left-0 right-0 text-center pointer-events-none">
+         <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] pointer-events-auto">
+            Solution © 2026 | Desenvolvido por <a href="https://felipe-84bca.web.app/" target="_blank" className="text-blue-600 hover:underline">Felipe Sadrak</a>
+         </p>
+      </footer>
     </div>
   );
 };

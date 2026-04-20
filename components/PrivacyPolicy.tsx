@@ -1,75 +1,76 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ShieldCheck, Lock } from 'lucide-react';
 
 export const PrivacyPolicy: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans">
-      <nav className="border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+    <div className="min-h-screen bg-black text-slate-500 selection:bg-blue-500/20 selection:text-white relative overflow-hidden">
+      <nav className="glass-nav sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="p-1.5 bg-blue-600 rounded-lg">
-              <ShieldCheck className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-bold text-lg tracking-tight">LGPD Fácil</span>
+          <Link to="/" className="flex items-center gap-3">
+             <div className="p-2 bg-orange-600 rounded-xl">
+               <ShieldCheck className="h-5 w-5 text-white" />
+             </div>
+             <span className="font-black text-lg text-white tracking-tighter">LGPD Fácil</span>
           </Link>
-          <Link to="/" className="text-sm font-bold text-gray-500 hover:text-blue-600 flex items-center gap-1 transition-colors">
-            <ChevronLeft className="h-4 w-4" /> Voltar
+          <Link to="/" className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white flex items-center gap-2 transition-all">
+            <ChevronLeft className="h-4 w-4" /> Voltar ao Início
           </Link>
         </div>
       </nav>
 
-      <main className="max-w-4xl mx-auto px-6 py-16">
-        <header className="mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+      <main className="max-w-4xl mx-auto px-6 py-24 relative z-10">
+        <header className="mb-16">
+          <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-white/5 border border-white/10 text-orange-500 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6">
             <Lock className="h-3 w-3" /> Sua privacidade em primeiro lugar
           </div>
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-4">Política de Privacidade</h1>
-          <p className="text-gray-500 font-medium italic">Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
+          <h1 className="text-5xl font-black text-white tracking-tighter mb-4">Política de Privacidade</h1>
+          <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
         </header>
 
-        <article className="prose prose-blue max-w-none space-y-8 text-gray-600 leading-relaxed">
+        <article className="glass-card p-10 md:p-16 border-white/5 space-y-12 leading-relaxed">
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">1. Compromisso com a Proteção de Dados</h2>
-            <p>
-              Como uma plataforma dedicada à conformidade com a LGPD, tratamos seus dados pessoais com o mais alto rigor de segurança. Esta política descreve como coletamos e utilizamos as informações de nossos usuários corporativos.
+            <h2 className="text-xl font-bold text-white tracking-tight">1. Compromisso com a Proteção de Dados</h2>
+            <p className="text-slate-500">
+              Como uma ferramenta projetada para automação da conformidade com a LGPD, tratamos seus dados pessoais com o mais alto rigor técnico e jurídico. Esta política descreve como operamos para garantir que sua jornada de adequação seja segura.
             </p>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">2. Dados que Coletamos</h2>
-            <ul className="list-disc pl-6 space-y-2">
-              <li><strong>Dados de Cadastro:</strong> Nome, e-mail, CNPJ e endereço comercial para criação da conta e personalização de documentos.</li>
-              <li><strong>Dados de Diagnóstico:</strong> Respostas sobre o fluxo de dados da sua empresa (estes dados são utilizados exclusivamente para gerar os seus documentos de conformidade).</li>
-              <li><strong>Logs de Acesso:</strong> IP e data/hora para segurança e prevenção a fraudes.</li>
-            </ul>
+            <h2 className="text-xl font-bold text-white tracking-tight">2. Dados que Coletamos</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-6 bg-white/[0.03] border border-white/5 rounded-[1.5rem]">
+                <p className="font-black text-white text-xs uppercase tracking-widest mb-2">Dados Cadastrais</p>
+                <p className="text-sm text-slate-500">Nome, e-mail corporativo, CNPJ e endereço para personalização de documentos e gestão de conta.</p>
+              </div>
+              <div className="p-6 bg-white/[0.03] border border-white/5 rounded-[1.5rem]">
+                <p className="font-black text-white text-xs uppercase tracking-widest mb-2">Dados de Diagnóstico</p>
+                <p className="text-sm text-slate-500">Fluxos de dados declarados durante o mapeamento para geração do RAT e das Políticas.</p>
+              </div>
+            </div>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">3. Finalidade do Tratamento</h2>
-            <p>
-              Os dados coletados são tratados com base na <strong>Execução de Contrato</strong> (prestação do serviço de adequação) e <strong>Cumprimento de Obrigação Legal</strong>. Não vendemos ou compartilhamos seus dados com terceiros para fins de marketing.
+            <h2 className="text-xl font-bold text-white tracking-tight">3. Finalidade e Base Jurídica</h2>
+            <p className="text-slate-500 text-sm">
+              Tratamos seus dados com base na <strong>Execução de Contrato</strong> (prestação do serviço de diagnóstico) e <strong>Cumprimento de Obrigação Legal</strong>. Não monetizamos seus dados nem os compartilhamos para fins publicitários de terceiros.
             </p>
           </section>
 
-          <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">4. Segurança dos Dados</h2>
-            <p>
-              Utilizamos criptografia para armazenamento e transporte de dados, além de backups regulares. Seus diagnósticos são armazenados de forma isolada e protegida por credenciais robustas.
+          <section className="space-y-6">
+            <h2 className="text-xl font-bold text-white tracking-tight">4. Segurança de Nível Bancário</h2>
+            <p className="text-slate-500 text-sm">
+              Implementamos criptografia de ponta a ponta (TLS 1.3) para transmissão e AES-256 para armazenamento. Seus documentos residem em um ambiente isolado, acessível apenas por autenticação robusta.
             </p>
-          </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">5. Seus Direitos</h2>
-            <p>
-              Conforme o Art. 18 da LGPD, você pode solicitar a confirmação do tratamento, acesso, correção ou exclusão de seus dados a qualquer momento através do nosso canal de suporte.
-            </p>
+            <div className="p-4 bg-orange-500/10 border border-orange-500/20 text-orange-500 rounded-2xl flex items-center gap-4">
+               <ShieldCheck className="h-6 w-6 shrink-0" />
+               <p className="text-[10px] font-black uppercase tracking-widest">Infraestrutura Blindada contra Vazamentos</p>
+            </div>
           </section>
         </article>
 
-        <footer className="mt-20 pt-8 border-t border-gray-100 text-center">
-          <p className="text-sm text-gray-400">© {new Date().getFullYear()} LGPD Fácil Tecnologia LTDA.</p>
+        <footer className="mt-24 text-center">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">© {new Date().getFullYear()} LGPD Fácil Tecnologia. Sem complicação.</p>
         </footer>
       </main>
     </div>

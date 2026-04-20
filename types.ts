@@ -7,9 +7,12 @@ export interface User {
   cnpj: string;
   address: string;
   onboardingCompleted: boolean;
-  plan: 'free' | 'pro' | 'enterprise';
+  plan: 'basico' | 'pro' | 'personalite';
   isAdmin?: boolean;
   status?: 'active' | 'suspended';
+  status_assinatura?: 'active' | 'canceled' | 'past_due' | 'trialing'; // Added for Stripe integration
+  stripeCustomerId?: string; // For Stripe
+  stripeSubscriptionId?: string; // For Stripe
   isOnline?: boolean;
   createdAt: string;
   lastLogin?: string;
@@ -155,7 +158,9 @@ export interface AuditLog {
 export interface Subscription {
   id: string;
   userId: string;
-  plan: 'free' | 'pro' | 'enterprise';
-  status: 'active' | 'canceled' | 'past_due';
+  plan: 'basico' | 'pro' | 'personalite';
+  status: 'active' | 'canceled' | 'past_due' | 'trialing';
   currentPeriodEnd: string;
+  stripeSubscriptionId?: string;
 }
+

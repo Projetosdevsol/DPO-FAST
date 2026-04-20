@@ -11,6 +11,8 @@ import { QuestionnaireData, SectorMapping, DataProcess, SectorAnswers } from '..
 import { storage } from '../lib/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
 import { useAuth } from '../context/AuthContext';
+import { PLAN_LIMITS } from '../lib/plans';
+import { useNavigate } from 'react-router-dom';
 
 interface QuestionnaireProps {
   initialData?: QuestionnaireData | null;
@@ -321,7 +323,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
          </div>
       </div>
 
-      <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl min-h-[500px]">
+      <div className="bg-white p-6 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl min-h-[500px]">
          {currentStep === 1 && (
            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
              <div className="flex items-center gap-3 mb-2">
@@ -857,7 +859,25 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, onSav
     }
   };
 
+  const navigate = useNavigate();
+
   const handleAddProcess = (sectorId: string, template?: { name: string; description: string }) => {
+    if (!authState.user) return;
+    
+    // Verificação de limite de processos por setor
+    const currentSector = (data.sectors || []).find(s => s.id === sectorId);
+    const processCount = currentSector?.processes?.length || 0;
+    const planLimits = PLAN_LIMITS[authState.user.plan] || PLAN_LIMITS.basico;
+
+    if (processCount >= planLimits.limite_processos_por_setor) {
+      const wantUpgrade = confirm(
+        `LIMITE DE PROCESSOS ATINGIDO\n\n` +
+        `Seu plano atual (${authState.user.plan.toUpperCase()}) permite apenas ${planLimits.limite_processos_por_setor} processos por setor.\n\n` +
+        `Deseja ver nossos planos Pro para processos ilimitados?`
+      );
+      if (wantUpgrade) navigate('/planos');
+      return;
+    }
     const newProcess: DataProcess = {
       id: Math.random().toString(36).substr(2, 9),
       name: template?.name || 'Novo Processo de Tratamento',
@@ -898,6 +918,22 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, onSav
   };
 
   const handleDuplicateProcess = (sectorId: string, process: DataProcess) => {
+    if (!authState.user) return;
+    
+    // Verificação de limite de processos por setor para duplicação
+    const currentSector = (data.sectors || []).find(s => s.id === sectorId);
+    const processCount = currentSector?.processes?.length || 0;
+    const planLimits = PLAN_LIMITS[authState.user.plan] || PLAN_LIMITS.basico;
+
+    if (processCount >= planLimits.limite_processos_por_setor) {
+      const wantUpgrade = confirm(
+        `LIMITE DE PROCESSOS ATINGIDO\n\n` +
+        `Seu plano atual (${authState.user.plan.toUpperCase()}) permite apenas ${planLimits.limite_processos_por_setor} processos por setor.\n\n` +
+        `Deseja ver nossos planos Pro para duplicar processos ilimitadamente?`
+      );
+      if (wantUpgrade) navigate('/planos');
+      return;
+    }
     const duplicated: DataProcess = {
       ...process,
       id: Math.random().toString(36).substr(2, 9),

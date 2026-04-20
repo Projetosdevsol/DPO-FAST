@@ -909,6 +909,13 @@ export const AdminPanel: React.FC = () => {
           >
             <LogOut className="h-5 w-5" /> Sair da Conta
           </button>
+
+          <footer className="pt-4 text-center">
+             <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.2em] leading-relaxed">
+                Solution © 2026<br/>
+                Desenvolvido por <a href="https://felipe-84bca.web.app/" target="_blank" className="text-indigo-400 hover:underline">Felipe Sadrak</a>
+             </p>
+          </footer>
         </div>
       </aside>
 

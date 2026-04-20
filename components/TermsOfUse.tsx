@@ -1,70 +1,74 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, FileText } from 'lucide-react';
 
 export const TermsOfUse: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans">
-      <nav className="border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+    <div className="min-h-screen bg-black text-slate-500 selection:bg-blue-500/20 selection:text-white relative overflow-hidden">
+      <nav className="glass-nav sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="p-1.5 bg-blue-600 rounded-lg">
-              <ShieldCheck className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-bold text-lg tracking-tight">LGPD Fácil</span>
+          <Link to="/" className="flex items-center gap-3">
+             <div className="p-2 bg-orange-600 rounded-xl font-bold">
+               <ShieldCheck className="h-5 w-5 text-white" />
+             </div>
+             <span className="font-black text-lg text-white tracking-tighter">LGPD Fácil</span>
           </Link>
-          <Link to="/" className="text-sm font-bold text-gray-500 hover:text-blue-600 flex items-center gap-1 transition-colors">
-            <ChevronLeft className="h-4 w-4" /> Voltar
+          <Link to="/" className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white flex items-center gap-2 transition-all">
+            <ChevronLeft className="h-4 w-4" /> Voltar ao Início
           </Link>
         </div>
       </nav>
 
-      <main className="max-w-4xl mx-auto px-6 py-16">
-        <header className="mb-12">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-4">Termos de Uso</h1>
-          <p className="text-gray-500 font-medium italic">Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
+      <main className="max-w-4xl mx-auto px-6 py-24 relative z-10">
+        <header className="mb-16">
+          <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-white/5 border border-white/10 text-orange-500 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+            <FileText className="h-3 w-3" /> Regras de Utilização
+          </div>
+          <h1 className="text-5xl font-black text-white tracking-tighter mb-4">Termos de Uso</h1>
+          <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
         </header>
 
-        <article className="prose prose-blue max-w-none space-y-8 text-gray-600 leading-relaxed">
+        <article className="glass-card p-10 md:p-16 border-white/5 space-y-12 leading-relaxed">
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">1. Aceitação dos Termos</h2>
-            <p>
-              Ao acessar e utilizar a plataforma LGPD Fácil, você concorda em cumprir e estar vinculado a estes Termos de Uso. Este sistema é destinado a auxiliar micro e pequenas empresas na jornada de adequação à Lei Geral de Proteção de Dados (LGPD).
+            <h2 className="text-xl font-bold text-white tracking-tight">1. Aceitação do Serviço</h2>
+            <p className="text-slate-500 text-sm">
+              Ao utilizar a plataforma LGPD Fácil, sua empresa adere a um modelo de adequação guiada. Este sistema foi desenhado para facilitar a jornada de conformidade, fornecendo tecnologia de ponta para automação de registros e auditorias.
             </p>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">2. Descrição do Serviço</h2>
-            <p>
-              O LGPD Fácil fornece ferramentas de diagnóstico, geração de modelos de documentos e cronogramas de implementação. Note que a plataforma automatiza processos baseados nas suas respostas, mas não substitui a consultoria jurídica especializada para casos complexos.
+            <h2 className="text-xl font-bold text-white tracking-tight">2. Escopo da Tecnologia</h2>
+            <p className="text-slate-500 text-sm leading-relaxed">
+              Fornecemos inteligência de software para diagnóstico setorial, geração de RAT e políticas customizadas. Nossos modelos são atualizados conforme as notas técnicas da ANPD, garantindo que você esteja sempre utilizando os padrões mais recentes do mercado.
             </p>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">3. Responsabilidades do Usuário</h2>
-            <p>
-              O usuário é responsável pela veracidade de todas as informações inseridas no sistema. A eficácia dos documentos gerados depende diretamente da precisão dos dados fornecidos durante o diagnóstico setorial.
+            <h2 className="text-xl font-bold text-white tracking-tight">3. Veracidade e Responsabilidade</h2>
+            <p className="text-slate-500 text-sm">
+              A precisão da sua documentação depende da veracidade das informações inseridas. O usuário assume total responsabilidade pelo conteúdo autodeclarado durante o mapeamento de processos.
             </p>
+          </section>
+
+          <section className="space-y-6">
+            <div className="p-8 bg-orange-500/10 border border-orange-500/20 rounded-[2rem] space-y-4">
+              <h2 className="text-xl font-bold text-white tracking-tight">4. Limitação de Responsabilidade Legal</h2>
+              <p className="text-orange-200/60 text-sm">
+                O LGPD Fácil é um assistente tecnológico. Embora ofereçamos suporte jurídico de base, o sistema não substitui a necessidade de implementação prática de medidas técnicas de segurança no dia a dia da sua organização.
+              </p>
+            </div>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900">4. Propriedade Intelectual</h2>
-            <p>
-              Todo o conteúdo, modelos de documentos, algoritmos e interface da plataforma são de propriedade exclusiva do LGPD Fácil. O uso é concedido apenas para fins de adequação da empresa cadastrada.
-            </p>
-          </section>
-
-          <section className="space-y-4 bg-blue-50 p-8 rounded-3xl border border-blue-100">
-            <h2 className="text-2xl font-bold text-blue-900">5. Isenção de Responsabilidade</h2>
-            <p className="text-blue-800">
-              O LGPD Fácil envida esforços para manter as informações atualizadas de acordo com as diretrizes da ANPD. No entanto, não garantimos imunidade total a fiscalizações ou incidentes se as medidas de segurança sugeridas não forem efetivamente implementadas no dia a dia da empresa.
+            <h2 className="text-xl font-bold text-white tracking-tight">5. Propriedade Intelectual</h2>
+            <p className="text-slate-500 text-sm">
+              Todos os algoritmos de análise, fluxos de diagnóstico e elementos de design são propriedade intelectual da LGPD Fácil. A licença de uso é intransferível e válida apenas para o domínio da empresa registrada.
             </p>
           </section>
         </article>
 
-        <footer className="mt-20 pt-8 border-t border-gray-100 text-center">
-          <p className="text-sm text-gray-400">© {new Date().getFullYear()} LGPD Fácil Tecnologia LTDA.</p>
+        <footer className="mt-24 text-center">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">© {new Date().getFullYear()} LGPD Fácil Tecnologia. Inteligência em Conformidade.</p>
         </footer>
       </main>
     </div>

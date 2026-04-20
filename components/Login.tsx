@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -12,7 +11,8 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
-  ShieldAlert
+  ShieldAlert,
+  ArrowLeft
 } from 'lucide-react';
 import { Logo } from './Logo';
 
@@ -47,11 +47,11 @@ export const Login: React.FC = () => {
       setLoading(false);
       
       if (err.message === "SUSPENDED_ACCOUNT") {
-        setError('Sua conta está suspensa. Por favor, entre em contato com o suporte para reativação.');
+        setError('Conta suspensa. Contate o suporte.');
       } else if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        setError('E-mail ou senha incorretos. Verifique seus dados.');
+        setError('Credenciais incorretas.');
       } else {
-        setError('Ocorreu um erro ao acessar. Tente novamente.');
+        setError('Erro ao acessar. Tente novamente.');
       }
     }
   };
@@ -65,139 +65,136 @@ export const Login: React.FC = () => {
     } catch (err: any) {
       console.error(err);
       setLoading(false);
-      if (err.message === "SUSPENDED_ACCOUNT") {
-        setError('Esta conta Google está vinculada a um perfil suspenso. Contate o suporte.');
-      } else {
-        setError('Falha na autenticação com o Google.');
-      }
+      setError('Falha na autenticação Google.');
     }
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
-      setError('Por favor, insira seu e-mail primeiro.');
+      setError('Insira seu e-mail.');
       return;
     }
     setLoading(true);
     setError('');
     try {
       await resetPassword(email);
-      setSuccess('E-mail de recuperação enviado! Verifique sua caixa de entrada.');
+      setSuccess('E-mail enviado.');
       setForgotPassMode(false);
     } catch (err) {
-      setError('Erro ao enviar e-mail de recuperação.');
+      setError('Erro ao recuperar senha.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-[#f9fafb] items-center justify-center px-4 py-12">
-      <div className="w-full max-w-[440px] animate-in fade-in zoom-in-95 duration-500">
-        <Link 
-          to="/" 
-          className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-blue-600 transition-colors mb-8 group"
-        >
-          <div className="p-1.5 bg-white rounded-lg border border-gray-100 group-hover:border-blue-100 shadow-sm transition-all">
-            <ChevronLeft className="h-4 w-4" />
-          </div>
-          Voltar ao início
-        </Link>
+    <div className="flex min-h-screen bg-[var(--background)] items-center justify-center px-6 py-12 relative overflow-hidden transition-colors duration-500">
+      {/* Back to Home Button */}
+      <Link 
+        to="/" 
+        className="absolute top-10 left-6 lg:left-12 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-[var(--text-primary)] transition-all group z-50"
+      >
+        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+        Voltar ao início
+      </Link>
 
-        <div className="text-center mb-10">
-          <div className="flex justify-center mb-6">
-            <Logo className="h-16 w-16" />
+      <div className="w-full max-w-[400px] z-10 space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        <div className="text-center space-y-8">
+          <div className="flex justify-center">
+            <Link to="/">
+              <Logo className="h-10 w-auto" />
+            </Link>
           </div>
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">LGPD Fácil</h1>
-          <p className="text-gray-500 mt-2 font-medium">Sua plataforma de adequação inteligente</p>
+          <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter">Entrar na Platforma</h1>
+          <p className="text-xs text-slate-500 font-medium tracking-tight">Insira suas credenciais para continuar.</p>
         </div>
 
-        <div className="bg-white p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 space-y-8">
-          {error && (
-            <div className={`p-4 rounded-2xl text-xs font-bold flex items-center gap-3 animate-in slide-in-from-top-2 ${error.includes('suspensa') ? 'bg-red-600 text-white' : 'bg-red-50 border border-red-100 text-red-700'}`}>
-              {error.includes('suspensa') ? <ShieldAlert className="h-6 w-6 shrink-0" /> : <AlertCircle className="h-5 w-5 shrink-0" />}
-              <div>
-                <p className="leading-tight">{error}</p>
-                {error.includes('suspensa') && <p className="mt-1 text-[10px] opacity-80 uppercase tracking-wider">Acesso Negado</p>}
-              </div>
+        <div className="space-y-8">
+          {(error || success) && (
+            <div className={`p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center animate-in fade-in slide-in-from-top-2 duration-500 ${
+              error ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-blue-500/10 text-blue-500 border border-blue-500/20'
+            }`}>
+              {error || success}
             </div>
           )}
-          {success && (
-            <div className="p-4 bg-green-50 border border-green-100 text-green-700 rounded-2xl text-xs font-bold flex items-center gap-3 animate-in slide-in-from-top-2">
-              <CheckCircle2 className="h-5 w-5 shrink-0" />
-              {success}
-            </div>
-          )}
-          <form onSubmit={forgotPassMode ? handleForgotPassword : handleEmailLogin} className="space-y-5">
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] ml-1">E-mail Corporativo</label>
-              <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors">
-                  <Mail className="h-5 w-5" />
-                </div>
-                <input
-                  type="email"
-                  placeholder="nome@empresa.com.br"
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-blue-50 focus:border-blue-600 outline-none transition-all text-sm font-bold text-slate-950 placeholder:text-slate-500"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  required
-                />
-              </div>
+          
+          <form onSubmit={forgotPassMode ? handleForgotPassword : handleEmailLogin} className="space-y-6">
+            <div className="space-y-1">
+              <input
+                type="email"
+                placeholder="E-mail Corporativo"
+                className="w-full px-0 py-4 bg-transparent border-b border-[var(--border)] focus:border-blue-500 outline-none transition-all text-sm font-medium text-[var(--text-primary)] placeholder:text-slate-500"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+              />
             </div>
             {!forgotPassMode && (
-              <div className="space-y-2">
-                <div className="flex justify-between items-center ml-1">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em]">Sua Senha</label>
-                  <button type="button" onClick={() => setForgotPassMode(true)} className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-wider">Esqueceu?</button>
-                </div>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors">
-                    <Lock className="h-5 w-5" />
-                  </div>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    className="w-full pl-12 pr-12 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-blue-50 focus:border-blue-600 outline-none transition-all text-sm font-bold text-slate-950 placeholder:text-slate-500"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    required
-                  />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
-                </div>
+              <div className="space-y-1 relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Senha de Acesso"
+                  className="w-full px-0 py-4 bg-transparent border-b border-[var(--border)] focus:border-blue-500 outline-none transition-all text-sm font-medium text-[var(--text-primary)] placeholder:text-slate-500"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                />
+                <button 
+                  type="button" 
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-0 top-4 text-slate-500 hover:text-blue-500 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             )}
+            
+            <div className="flex items-center justify-end pt-1">
+              <button type="button" onClick={() => setForgotPassMode(!forgotPassMode)} className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-blue-600 transition-colors">
+                {forgotPassMode ? 'Voltar para login' : 'Recuperar senha?'}
+              </button>
+            </div>
+
             <button 
               type="submit"
               disabled={loading}
-              className="w-full bg-gray-900 text-white font-bold py-4 rounded-2xl hover:bg-black transition-all shadow-xl shadow-gray-100 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50"
+              className="btn-primary w-full py-5 rounded-2xl always-white"
             >
-              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>{forgotPassMode ? 'Enviar Link' : 'Acessar Painel'} {!forgotPassMode && <ArrowRight className="h-5 w-5" />}</>}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : (forgotPassMode ? 'Enviar Link de Recuperação' : 'Entrar no Dashboard')}
             </button>
           </form>
+
           {!forgotPassMode && (
-            <button 
-              onClick={handleGoogleLogin}
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-4 py-4 border border-gray-100 rounded-2xl font-bold text-gray-600 hover:bg-gray-50 transition-all active:scale-[0.98] shadow-sm disabled:opacity-50"
-            >
-              <svg className="h-5 w-5" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
-              Google Login
-            </button>
+            <div className="space-y-8 pt-4">
+              <div className="relative flex items-center justify-center">
+                <div className="absolute inset-x-0 h-px bg-[var(--border)]"></div>
+                <span className="relative px-4 bg-[var(--background)] text-[9px] font-black text-slate-500 uppercase tracking-widest transition-colors duration-500">ou continue com</span>
+              </div>
+              
+              <button 
+                onClick={handleGoogleLogin}
+                disabled={loading}
+                className="w-full py-4 bg-transparent border border-[var(--border)] rounded-2xl text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-[var(--text-primary)] hover:border-[var(--text-primary)] transition-all disabled:opacity-30 flex items-center justify-center gap-3"
+              >
+                Google Identity
+              </button>
+            </div>
           )}
-          <div className="text-center pt-2">
-            <p className="text-sm text-gray-500 font-medium">Ainda não tem conta? <Link to="/register" className="text-blue-600 font-bold hover:underline ml-1">Começar agora</Link></p>
+
+          <div className="text-center pt-8 border-t border-[var(--border)]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+              Novo no LGPD Fácil? <Link to="/register" className="text-blue-600 hover:underline ml-2">Criar conta grátis</Link>
+            </p>
           </div>
         </div>
       </div>
+
+      <footer className="absolute bottom-10 left-0 right-0 text-center pointer-events-none">
+         <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] pointer-events-auto">
+            Solution © 2026 | Desenvolvido por <a href="https://felipe-84bca.web.app/" target="_blank" className="text-blue-600 hover:underline">Felipe Sadrak</a>
+         </p>
+      </footer>
     </div>
   );
 };

@@ -15,9 +15,10 @@ import { questionnaireService, tasksService } from '../services/firestoreService
 import { 
   FileCheck, ShieldCheck, ClipboardList, AlertTriangle, 
   ChevronRight, ArrowRight, CheckCircle2, FileSearch, Zap, 
-  TrendingUp, Info, Trophy, Download, LayoutGrid, Award, Star
+  TrendingUp, Info, Trophy, Download, LayoutGrid, Award, Star, Clock, Lock
 } from 'lucide-react';
 import { QuestionnaireData, ComplianceTask, User, ValidationResult } from '../types';
+import { PLAN_LIMITS } from '../lib/plans';
 
 const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTask[]; user: User }> = ({ qData, tasks, user }) => {
   const navigate = useNavigate();
@@ -41,6 +42,20 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Status de Conformidade</h1>
           <p className="text-slate-500 font-medium">Monitoramento em tempo real dos fluxos da <span className="text-blue-600 font-bold">{user.companyName}</span>.</p>
         </div>
+        
+        <div className={`px-6 py-4 rounded-3xl flex items-center gap-4 border shadow-sm ${
+          user.plan === 'personalite' ? 'bg-slate-900 border-slate-800 text-white' :
+          user.plan === 'pro' ? 'bg-blue-600 border-blue-500 text-white' :
+          'bg-white border-slate-100 text-slate-900'
+        }`}>
+          <div className={`p-2 rounded-xl ${user.plan === 'basico' ? 'bg-blue-50 text-blue-600' : 'bg-white/20'}`}>
+            <Clock className="h-5 w-5" />
+          </div>
+          <div>
+            <p className={`text-[9px] font-black uppercase tracking-widest ${user.plan === 'basico' ? 'text-slate-400' : 'text-white/60'}`}>SLA de Suporte</p>
+            <p className="text-xs font-bold">{(PLAN_LIMITS[user.plan] || PLAN_LIMITS.basico).sla_suporte_horas} horas úteis</p>
+          </div>
+        </div>
         {progress === 100 && (
           <div className="px-6 py-3 bg-indigo-600 text-white rounded-2xl shadow-xl flex items-center gap-3 animate-bounce">
             <Trophy className="h-5 w-5 text-amber-300" />
@@ -50,7 +65,7 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
       </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
+        <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity"><TrendingUp className="h-24 w-24 text-blue-600" /></div>
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Progresso do Mapeamento</p>
           <div className="flex items-end gap-2 mb-4">
@@ -63,7 +78,7 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
           <p className="text-[10px] text-slate-400 font-bold mt-4">{completedProcesses} de {totalProcesses} processos finalizados</p>
         </div>
 
-        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col justify-between">
+        <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-center gap-5">
             <div className="p-4 bg-green-50 text-green-600 rounded-2xl"><CheckCircle2 className="h-7 w-7" /></div>
             <div>
@@ -77,7 +92,7 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
           </button>
         </div>
 
-        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col justify-between">
+        <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-center gap-5">
             <div className="p-4 bg-amber-50 text-amber-600 rounded-2xl"><AlertTriangle className="h-7 w-7" /></div>
             <div>
@@ -91,7 +106,7 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm">
              <div className="flex items-center justify-between mb-8">
                <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
                  <LayoutGrid className="h-5 w-5 text-blue-600" /> Departamentos Ativos
@@ -211,8 +226,18 @@ const DocumentsListView: React.FC<{ qData: QuestionnaireData | null; tasks: Comp
 
   const availableDocs = useMemo(() => {
     if (!qData) return [];
+    const planLimits = PLAN_LIMITS[user.plan] || PLAN_LIMITS.basico;
     const docTypes = Array.from(new Set(tasks.map(t => t.targetDocument))) as string[];
-    return docTypes.map(type => generateDocument(type, qData, user));
+    
+    // Filtro de documentos avançados para plano básico
+    const filteredTypes = docTypes.filter(type => {
+      if (!planLimits.documentos_avancados) {
+        return type === 'Aviso de Privacidade' || type === 'Política Interna de Privacidade';
+      }
+      return true;
+    });
+
+    return filteredTypes.map(type => generateDocument(type, qData, user));
   }, [qData, tasks, user]);
 
   if (!qData) return <div className="py-20 text-center space-y-4 px-6 bg-white rounded-[2.5rem] border border-slate-100"><FileSearch className="h-12 w-12 text-slate-300 mx-auto" /><h3 className="text-xl font-bold">Inicie o diagnóstico</h3><p className="text-slate-400">Seus documentos serão gerados conforme você mapeia os processos.</p><button onClick={() => navigate('/dashboard/mapeamento')} className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-bold">Mapear Processos</button></div>;
@@ -233,6 +258,17 @@ const DocumentsListView: React.FC<{ qData: QuestionnaireData | null; tasks: Comp
             <button onClick={() => setPreviewDoc(doc)} className="p-3 bg-slate-900 text-white rounded-xl hover:bg-black transition-all shadow-lg"><ChevronRight className="h-5 w-5" /></button>
           </div>
         ))}
+        
+        {user.plan === 'basico' && (
+          <div 
+            onClick={() => navigate('/planos')}
+            className="bg-slate-50 p-8 rounded-[2.5rem] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-blue-300 hover:bg-white transition-all"
+          >
+            <Lock className="h-8 w-8 text-slate-300 mb-3 group-hover:text-blue-600 transition-colors" />
+            <h3 className="font-bold text-slate-400 group-hover:text-slate-900 transition-colors">Documentos Pro Desativados</h3>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Desbloqueie RAT e RIPD no plano Pro</p>
+          </div>
+        )}
       </div>
       {previewDoc && <DocumentPreview document={previewDoc} onClose={() => setPreviewDoc(null)} onDownload={() => {
          const printWindow = window.open('', '_blank');

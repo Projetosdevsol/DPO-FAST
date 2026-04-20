@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #020617;
+    --surface: #ffffff;
+    --surface-muted: #f8fafc;
+    --border: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-muted: #64748b;
+    --primary: #0047FF;
+    --primary-dark: #0039CC;
+    --secondary: #00D1FF;
+    --navy: #040940;
+    --card-bg: #ffffff;
+    --card-border: #f1f5f9;
+  }
+
+  .dark {
+    --background: #000000;
+    --foreground: #f8fafc;
+    --surface: #0a0a0a;
+    --surface-muted: #111111;
+    --border: #1e1e1e;
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --card-bg: rgba(255, 255, 255, 0.01);
+    --card-border: rgba(255, 255, 255, 0.05);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--text-muted);
+    @apply transition-colors duration-500 antialiased overflow-x-hidden;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Mobile-first Font Scaling */
+  html {
+    font-size: 14px;
+  }
+  @screen md {
+    html {
+      font-size: 16px;
+    }
+  }
+}
+
+/* 
+  High-Contrast Theme Overrides
+  Ensures that "white" elements become dark in Light mode automatically.
+*/
+
+/* 1. Reset all white text to follow the theme primary color by default */
+.text-white { 
+  color: var(--text-primary) !important; 
+}
+
+/* 2. Exception: Elements that MUST stay white (badges, blue buttons, etc) */
+.btn-primary, 
+.bg-blue-600, 
+.bg-blue-600 *, 
+.bg-slate-900, 
+.bg-slate-900 *, 
+.bg-indigo-600, 
+.bg-indigo-600 *,
+.always-white,
+.dark .text-white { 
+  color: #ffffff !important; 
+}
+
+/* 3. Handle Slate text colors to be legible in both modes */
+.text-slate-900, .text-slate-800, .text-slate-700 { color: var(--text-primary) !important; }
+.text-slate-600, .text-slate-500, .text-slate-400 { color: var(--text-muted) !important; }
+
+/* 4. Background Overrides */
+.bg-white { background-color: var(--surface) !important; }
+.bg-black { background-color: var(--background) !important; }
+.bg-slate-50 { background-color: var(--background) !important; }
+.bg-slate-50\/50 { background-color: var(--surface-muted) !important; }
+
+/* 5. Special Background Handling for Dark Mode */
+.dark .bg-blue-50, .dark .bg-blue-100 { background-color: rgba(0, 71, 255, 0.1) !important; }
+.dark .bg-green-50, .dark .bg-green-100 { background-color: rgba(34, 197, 94, 0.1) !important; }
+.dark .bg-amber-50, .dark .bg-amber-100 { background-color: rgba(245, 158, 11, 0.1) !important; }
+
+/* 6. Border Overrides */
+.border-slate-100, .border-slate-200, .border-white\/10, .border-white\/5 { 
+  border-color: var(--border) !important; 
+}
+
+@layer components {
+  .btn-primary {
+    background-color: var(--primary);
+    @apply px-8 py-4 font-black rounded-full hover:scale-105 transition-all shadow-xl shadow-blue-500/10 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply px-8 py-4 bg-white/[0.05] border border-[var(--border)] font-bold rounded-full hover:bg-white/[0.1] transition-all;
+    color: var(--text-primary) !important;
+  }
+
+  .glass-card {
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+    @apply backdrop-blur-xl border rounded-[2.5rem];
+  }
+}
+
+h1, h2, h3, h4 { 
+  @apply tracking-tight font-black leading-tight; 
+  color: var(--text-primary) !important; 
+}
+
+/* Responsive Heading Sizes */
+h1 { @apply text-2xl md:text-4xl lg:text-5xl; }
+h2 { @apply text-xl md:text-3xl lg:text-4xl; }
+h3 { @apply text-lg md:text-2xl lg:text-3xl; }
+h4 { @apply text-base md:text-xl lg:text-2xl; }
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-blue-600 to-cyan-500;
+}
+.dark .text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-white to-white/50;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #0047FF;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.page-transition {
+  @apply animate-in fade-in slide-in-from-bottom-2 duration-500;
+}

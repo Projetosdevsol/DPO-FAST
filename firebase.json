@@ -2,7 +2,7 @@
 {
   "hosting": {
     "site": "lgpd-facil-b7246",
-    "public": ".",
+    "public": "dist",
     "ignore": [
       "firebase.json",
       "**/.*",

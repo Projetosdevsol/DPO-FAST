@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   ShieldCheck, 
@@ -19,23 +18,202 @@ import {
   Briefcase,
   Users,
   Search,
-  Scale
+  Scale,
+  Sparkles,
+  Layout,
+  MessageSquare,
+  Activity,
+  Calendar,
+  Layers,
+  MousePointer2
 } from 'lucide-react';
+import { Pricing } from './Pricing';
+import { Logo } from './Logo';
+import { ThemeToggle } from './ThemeToggle';
+
+const InterfaceCarousel: React.FC = () => {
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  const slides = [
+    {
+      id: 'dashboard',
+      title: 'Dashboard Estratégico',
+      desc: 'Visualize sua conformidade em tempo real com métricas precisas.',
+      icon: Activity,
+      color: 'blue'
+    },
+    {
+      id: 'compliance',
+      title: 'Cronograma Progressivo',
+      desc: 'Gestão de prazos e tarefas em um calendário inteligente.',
+      icon: Calendar,
+      color: 'indigo'
+    },
+    {
+      id: 'docs',
+      title: 'Dossiê Automatizado',
+      desc: 'Geração de documentos legais com apenas alguns cliques.',
+      icon: FileText,
+      color: 'cyan'
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  return (
+    <div className="mt-32 relative max-w-5xl mx-auto space-y-8 animate-in fade-in duration-1000 delay-500">
+      <div className="flex justify-center gap-2 mb-8">
+        {slides.map((_, i) => (
+          <button 
+            key={i}
+            onClick={() => setActiveSlide(i)}
+            className={`h-1 transition-all duration-500 rounded-full ${activeSlide === i ? 'w-12 bg-blue-600' : 'w-4 bg-slate-200'}`}
+          />
+        ))}
+      </div>
+
+      <div className="relative border border-[var(--border)] rounded-[3rem] bg-[var(--surface-muted)] overflow-hidden aspect-[16/8] shadow-2xl shadow-black/[0.02] group">
+        {/* Simulação de Interface Dashboard */}
+        <div className={`absolute inset-0 transition-opacity duration-700 ${activeSlide === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+           <div className="p-10 h-full flex flex-col gap-8">
+              <div className="flex items-center justify-between">
+                 <div className="flex items-center gap-4">
+                    <div className="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center text-white"><Activity className="h-5 w-5" /></div>
+                    <div className="h-4 w-32 bg-slate-200 rounded-full"></div>
+                 </div>
+                 <div className="flex gap-2">
+                    <div className="h-8 w-8 bg-slate-100 rounded-lg"></div>
+                    <div className="h-8 w-8 bg-slate-100 rounded-lg"></div>
+                 </div>
+              </div>
+              <div className="grid grid-cols-3 gap-6 flex-1">
+                 <div className="bg-white rounded-3xl border border-slate-100 p-6 flex flex-col justify-between shadow-sm">
+                    <div className="h-3 w-12 bg-blue-50 rounded-full"></div>
+                    <div className="flex items-end gap-2">
+                       <span className="text-3xl font-black text-slate-900">82%</span>
+                       <span className="text-[10px] font-bold text-green-500 mb-1">+12%</span>
+                    </div>
+                 </div>
+                 <div className="bg-white rounded-3xl border border-slate-100 p-6 flex flex-col justify-between">
+                    <div className="h-3 w-16 bg-indigo-50 rounded-full"></div>
+                    <div className="h-10 w-full bg-slate-50 rounded-xl"></div>
+                 </div>
+                 <div className="bg-slate-900 rounded-3xl p-6 flex flex-col justify-between shadow-xl">
+                    <Sparkles className="h-6 w-6 text-blue-400" />
+                    <div className="space-y-2">
+                       <div className="h-2 w-full bg-white/20 rounded-full"></div>
+                       <div className="h-2 w-2/3 bg-white/10 rounded-full"></div>
+                    </div>
+                 </div>
+              </div>
+              <div className="h-24 bg-white rounded-3xl border border-slate-100 p-6 flex items-center justify-between">
+                 <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 bg-slate-100 rounded-2xl"></div>
+                    <div className="space-y-2">
+                       <div className="h-3 w-40 bg-slate-200 rounded-full"></div>
+                       <div className="h-2 w-24 bg-slate-100 rounded-full"></div>
+                    </div>
+                 </div>
+                 <div className="h-10 px-6 bg-blue-600 rounded-xl"></div>
+              </div>
+           </div>
+        </div>
+
+        {/* Simulação de Interface Calendário */}
+        <div className={`absolute inset-0 transition-opacity duration-700 ${activeSlide === 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+           <div className="p-10 h-full flex flex-col">
+              <div className="flex items-center gap-4 mb-10">
+                 <div className="h-4 w-40 bg-slate-200 rounded-full"></div>
+                 <div className="h-4 w-4 bg-slate-100 rounded-full"></div>
+              </div>
+              <div className="grid grid-cols-7 gap-4 flex-1">
+                 {[...Array(14)].map((_, i) => (
+                   <div key={i} className="bg-white rounded-2xl border border-slate-100 p-4 relative group/day">
+                      <span className="text-[10px] font-black text-slate-300">{i + 1}</span>
+                      {i === 4 && <div className="absolute inset-x-2 bottom-2 h-4 bg-blue-600 rounded-lg shadow-lg"></div>}
+                      {i === 8 && <div className="absolute inset-x-2 bottom-2 h-4 bg-red-100 rounded-lg"></div>}
+                      {i === 11 && <div className="absolute inset-x-2 bottom-2 h-4 bg-green-100 rounded-lg"></div>}
+                   </div>
+                 ))}
+              </div>
+           </div>
+        </div>
+
+        {/* Simulação de Interface Documentos */}
+        <div className={`absolute inset-0 transition-opacity duration-700 ${activeSlide === 2 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+           <div className="p-10 h-full flex gap-10">
+              <div className="w-1/3 space-y-4">
+                 {[...Array(4)].map((_, i) => (
+                   <div key={i} className={`p-4 rounded-2xl border transition-all ${i === 0 ? 'bg-white border-blue-200 shadow-lg' : 'bg-transparent border-slate-100'}`}>
+                      <div className="h-2 w-20 bg-slate-200 rounded-full mb-2"></div>
+                      <div className="h-1.5 w-full bg-slate-100 rounded-full"></div>
+                   </div>
+                 ))}
+              </div>
+              <div className="flex-1 bg-white rounded-[2rem] border border-slate-100 p-8 shadow-2xl relative">
+                 <div className="space-y-6">
+                    <div className="h-4 w-32 bg-slate-200 rounded-full mx-auto mb-10"></div>
+                    <div className="space-y-3">
+                       {[...Array(8)].map((_, i) => (
+                         <div key={i} className="h-2 w-full bg-slate-50 rounded-full" style={{ width: `${100 - (i * 3)}%` }}></div>
+                       ))}
+                    </div>
+                    <div className="pt-10 flex justify-end gap-3">
+                       <div className="h-10 w-24 bg-slate-100 rounded-xl"></div>
+                       <div className="h-10 w-32 bg-blue-600 rounded-xl"></div>
+                    </div>
+                 </div>
+                 <div className="absolute top-4 right-4"><Zap className="h-5 w-5 text-amber-500" /></div>
+              </div>
+           </div>
+        </div>
+
+        {/* Overlay Hover para Lead Capture */}
+        <div className="absolute inset-0 bg-blue-600/0 hover:bg-blue-600/5 transition-all flex items-center justify-center group/overlay cursor-pointer">
+           <div className="p-4 bg-white rounded-full shadow-2xl scale-0 group-hover/overlay:scale-100 transition-all duration-300">
+              <MousePointer2 className="h-6 w-6 text-blue-600" />
+           </div>
+        </div>
+      </div>
+
+      {/* Info do Slide Atual */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-8">
+        <div className="space-y-2 text-center md:text-left transition-all duration-500">
+           <h3 className="text-2xl font-black text-[var(--text-primary)] tracking-tighter uppercase">{slides[activeSlide].title}</h3>
+           <p className="text-slate-500 font-medium">{slides[activeSlide].desc}</p>
+        </div>
+        <Link to="/register" className="group flex items-center gap-4 bg-[var(--surface)] px-10 py-5 rounded-2xl border border-[var(--border)] hover:border-blue-600 transition-all shadow-xl shadow-black/5 hover:-translate-y-1">
+           <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">Testar Gratuitamente</span>
+           <div className="p-2 bg-blue-600 rounded-xl text-white group-hover:px-4 transition-all">
+              <ArrowRight className="h-4 w-4" />
+           </div>
+        </Link>
+      </div>
+    </div>
+  );
+};
 
 const FAQItem: React.FC<{ question: string; answer: string }> = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="border-b border-gray-100 last:border-0">
+    <div className="border-b border-[var(--border)] last:border-0 group">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full py-6 flex items-center justify-between text-left focus:outline-none group"
+        className="w-full py-7 flex items-center justify-between text-left focus:outline-none transition-all"
       >
-        <span className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{question}</span>
-        {isOpen ? <ChevronUp className="h-5 w-5 text-blue-600" /> : <ChevronDown className="h-5 w-5 text-gray-400" />}
+        <span className={`text-base font-medium transition-all ${isOpen ? 'text-[var(--text-primary)]' : 'text-slate-500 group-hover:text-[var(--text-primary)]'}`}>{question}</span>
+        <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-500' : 'text-slate-600'}`}>
+          <ChevronDown className="h-4 w-4" />
+        </div>
       </button>
       {isOpen && (
-        <div className="pb-6 animate-in slide-in-from-top-2 duration-300">
-          <p className="text-gray-600 leading-relaxed">{answer}</p>
+        <div className="pb-7 animate-in fade-in duration-700">
+          <p className="text-slate-500 leading-relaxed max-w-2xl text-sm">{answer}</p>
         </div>
       )}
     </div>
@@ -44,337 +222,168 @@ const FAQItem: React.FC<{ question: string; answer: string }> = ({ question, ans
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const faqData = [
+  const features = [
     {
-      question: "O que é a LGPD e por que minha empresa precisa dela?",
-      answer: "A Lei Geral de Proteção de Dados (LGPD) é a norma que regula o tratamento de dados pessoais no Brasil. Todas as empresas, independente do tamanho, que lidam com nomes, e-mails ou documentos de clientes e funcionários precisam estar adequadas para evitar multas de até 2% do faturamento e proteger sua reputação."
+      title: "Diagnóstico",
+      desc: "Mapeamento simplificado por áreas estratégicas.",
+      icon: Layout
     },
     {
-      question: "Minha empresa é pequena ou sou MEI, eu realmente preciso me adequar?",
-      answer: "Sim. Embora a ANPD (Autoridade Nacional) ofereça regras simplificadas para pequenos negócios e MEIs, a obrigação de proteger os dados e respeitar os direitos dos titulares permanece. O LGPD Fácil já aplica essas simplificações automaticamente para você."
+      title: "Inteligência Legal",
+      desc: "Sugestões automáticas baseadas em IA.",
+      icon: Sparkles
     },
     {
-      question: "Quanto tempo leva o processo de adequação no sistema?",
-      answer: "O diagnóstico inicial leva cerca de 10 a 15 minutos. Após o preenchimento, seus principais documentos (Políticas, Termos e RAT) são gerados instantaneamente. A implementação completa das sugestões de segurança costuma levar de 15 a 45 dias dependendo da sua agilidade."
+      title: "Privacidade",
+      desc: "Gestão centralizada de direitos dos titulares.",
+      icon: MessageSquare
     },
     {
-      question: "Os documentos gerados são válidos juridicamente?",
-      answer: "Sim. Nossos templates são baseados nas melhores práticas recomendadas pela ANPD e em padrões de conformidade internacional, adaptados para o contexto de micro e pequenas empresas brasileiras."
-    },
-    {
-      question: "Como funciona o suporte em caso de dúvidas?",
-      answer: "Oferecemos tutoriais guiados dentro da plataforma e suporte via e-mail para todos os planos. Nosso objetivo é que você consiga se adequar sem precisar contratar uma consultoria externa cara."
+      title: "Documentação",
+      desc: "Geração instantânea de RAT e Avisos.",
+      icon: FileText
     }
   ];
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden font-sans">
+    <div className="min-h-screen bg-[var(--background)] text-slate-500 selection:bg-blue-500/30 selection:text-white">
+      {/* Background Glows Removed strictly as requested */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        {/* No blue squares/glows here anymore */}
+      </div>
+
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-blue-600 rounded-lg">
-              <ShieldCheck className="h-6 w-6 text-white" />
-            </div>
-            <span className="font-bold text-xl tracking-tight">LGPD Fácil</span>
+      <nav className="fixed top-0 left-0 right-0 z-[100] py-6 md:py-10 transition-all bg-[var(--background)] md:bg-transparent backdrop-blur-md md:backdrop-blur-none border-b border-[var(--border)] md:border-0">
+        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+             <Logo className="h-8 md:h-10 w-auto" />
+             <span className="font-bold text-xl md:text-2xl text-[var(--text-primary)] tracking-tighter">LGPD Fácil</span>
           </div>
           
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
-            <a href="#funcionalidades" className="hover:text-blue-600 transition-colors">Funcionalidades</a>
-            <a href="#beneficios" className="hover:text-blue-600 transition-colors">Benefícios</a>
-            <a href="#faq" className="hover:text-blue-600 transition-colors">FAQ</a>
+          <div className="flex items-center gap-4 md:hidden">
+             <ThemeToggle />
+             <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 text-[var(--text-primary)]">
+                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <div className="space-y-1.5"><div className="h-0.5 w-6 bg-current" /><div className="h-0.5 w-6 bg-current" /></div>}
+             </button>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Link to="/login" className="text-sm font-bold text-gray-700 hover:text-blue-600 transition-colors">Acessar</Link>
-            <Link 
-              to="/register" 
-              className="px-5 py-2.5 bg-gray-900 text-white text-sm font-bold rounded-xl hover:bg-black transition-all shadow-lg shadow-gray-200"
-            >
-              Começar Agora
+          <div className="hidden md:flex items-center gap-12 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500/60 transition-colors">
+            <a href="#recursos" className="hover:text-[var(--text-primary)] transition-colors">Funcionalidades</a>
+            <a href="#planos" className="hover:text-[var(--text-primary)] transition-colors">Planos</a>
+            <Link to="/login" className="hover:text-[var(--text-primary)] transition-colors">Entrar</Link>
+            <ThemeToggle />
+            <Link to="/register" className="px-6 py-2 border border-[var(--border)] rounded-full text-[var(--text-primary)] hover:bg-[var(--text-primary)] hover:text-[var(--background)] transition-all">
+              Começar
             </Link>
           </div>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        {isMobileMenuOpen && (
+          <div className="fixed inset-0 top-[73px] bg-[var(--background)] z-[90] md:hidden animate-in fade-in slide-in-from-top-4 duration-300 p-8 flex flex-col gap-10">
+            <div className="flex flex-col gap-8 text-sm font-black uppercase tracking-widest text-[var(--text-primary)]">
+               <a href="#recursos" onClick={() => setIsMobileMenuOpen(false)}>Funcionalidades</a>
+               <a href="#planos" onClick={() => setIsMobileMenuOpen(false)}>Planos</a>
+               <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>Entrar</Link>
+            </div>
+            <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-5 bg-blue-600 text-white rounded-2xl flex items-center justify-center gap-3 always-white">
+               Testar Agora <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-7xl mx-auto text-center lg:text-left flex flex-col lg:flex-row items-center gap-12">
-          <div className="lg:w-1/2 space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider">
-              <Zap className="h-3.5 w-3.5" /> Adequação em tempo recorde
-            </div>
-            <h1 className="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-[1.1]">
-              A LGPD não precisa ser um <span className="text-blue-600">pesadelo</span> jurídico.
+      <section className="relative pt-64 pb-32 px-6">
+        <div className="max-w-4xl mx-auto text-center space-y-12">
+          <div className="space-y-6">
+            <h1 className="text-5xl md:text-7xl font-black text-[var(--text-primary)] leading-[1.1] tracking-tight animate-in fade-in slide-in-from-bottom-4 duration-1000">
+              Conformidade digital <br />
+              <span className="text-slate-500/50 italic font-medium">sem complexidade.</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-xl mx-auto lg:mx-0">
-              Automatize seus documentos, mapeie riscos e proteja sua empresa com a plataforma de conformidade mais simples do Brasil.
+            <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-light animate-in fade-in slide-in-from-bottom-4 delay-200 duration-1000">
+              Uma abordagem minimalista para gerir a privacidade da sua empresa com inteligência e segurança comprovada.
             </p>
-            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-              <Link 
-                to="/register" 
-                className="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-blue-700 shadow-xl shadow-blue-100 transition-all text-lg"
-              >
-                Começar agora <ChevronRight className="h-5 w-5" />
-              </Link>
-              <a 
-                href="#funcionalidades"
-                className="w-full sm:w-auto px-8 py-4 bg-gray-50 text-gray-600 rounded-2xl font-bold hover:bg-gray-100 transition-all text-lg text-center"
-              >
-                Explorar Recursos
-              </a>
-            </div>
-            <div className="flex items-center gap-6 justify-center lg:justify-start text-xs font-medium text-gray-400">
-              <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="h-4 w-4 text-green-500" /> Sem cartão de crédito
-              </div>
-              <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="h-4 w-4 text-green-500" /> Pronto em minutos
-              </div>
-            </div>
           </div>
-          <div className="lg:w-1/2 relative">
-            <div className="bg-blue-600/5 absolute inset-0 blur-3xl rounded-full -z-10 transform scale-150"></div>
-            <div className="bg-white p-4 rounded-[2rem] shadow-2xl border border-gray-100 transform lg:rotate-2 hover:rotate-0 transition-transform duration-500">
-               <img 
-                 src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80" 
-                 alt="Painel de Controle LGPD" 
-                 className="rounded-2xl shadow-inner border border-gray-100"
-               />
-               <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-3xl shadow-xl border border-gray-50 max-w-[200px] animate-bounce">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                    <span className="text-[10px] font-bold text-gray-400 uppercase">Status Global</span>
-                  </div>
-                  <p className="text-sm font-bold">100% Protegido</p>
-               </div>
-            </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4 animate-in fade-in slide-in-from-bottom-4 delay-500 duration-1000">
+            <Link to="/register" className="btn-primary px-10 py-5 rounded-2xl shadow-blue-500/20 shadow-2xl always-white">
+              Iniciar Diagnóstico Grátis
+            </Link>
+            <a href="#recursos" className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-[var(--text-primary)] transition-colors bg-[var(--surface-muted)] px-8 py-5 rounded-2xl border border-[var(--border)]">
+              Explorar Recursos
+            </a>
           </div>
+
+          {/* Interactive Interface Carousel */}
+          <InterfaceCarousel />
         </div>
       </section>
 
-      {/* Funcionalidades Detalhadas */}
-      <section id="funcionalidades" className="py-24 px-6 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
-            <h2 className="text-blue-600 text-sm font-bold uppercase tracking-widest">O que oferecemos</h2>
-            <h3 className="text-4xl font-extrabold">Funcionalidades poderosas, uso simplificado</h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 hover:shadow-xl transition-all duration-300">
-              <div className="p-3 bg-blue-50 rounded-2xl w-fit mb-6">
-                <Search className="h-6 w-6 text-blue-600" />
-              </div>
-              <h4 className="font-bold text-lg mb-3">Diagnóstico Setorial</h4>
-              <p className="text-gray-500 text-sm leading-relaxed">Mapeamento específico para cada área da sua empresa (RH, Vendas, TI) sem complicações.</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 hover:shadow-xl transition-all duration-300">
-              <div className="p-3 bg-green-50 rounded-2xl w-fit mb-6">
-                <Scale className="h-6 w-6 text-green-600" />
-              </div>
-              <h4 className="font-bold text-lg mb-3">Base Legal Inteligente</h4>
-              <p className="text-gray-500 text-sm leading-relaxed">O sistema sugere automaticamente a base jurídica (Consentimento, Legítimo Interesse, etc) para cada dado.</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 hover:shadow-xl transition-all duration-300">
-              <div className="p-3 bg-purple-50 rounded-2xl w-fit mb-6">
-                <Users className="h-6 w-6 text-purple-600" />
-              </div>
-              <h4 className="font-bold text-lg mb-3">Gestão de Titulares</h4>
-              <p className="text-gray-500 text-sm leading-relaxed">Painel para organizar e responder solicitações de clientes sobre seus dados pessoais.</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 hover:shadow-xl transition-all duration-300">
-              <div className="p-3 bg-amber-50 rounded-2xl w-fit mb-6">
-                <Lock className="h-6 w-6 text-amber-600" />
-              </div>
-              <h4 className="font-bold text-lg mb-3">RAT Automatizado</h4>
-              <p className="text-gray-500 text-sm leading-relaxed">Geração automática do Registro de Atividades de Tratamento, o documento mais exigido pela ANPD.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Benefícios por Porte/Setor */}
-      <section id="beneficios" className="py-24 px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
-            <h2 className="text-blue-600 text-sm font-bold uppercase tracking-widest">Feito para você</h2>
-            <h3 className="text-4xl font-extrabold text-gray-900">Soluções sob medida para o seu porte</h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="space-y-6 p-8 border border-gray-100 rounded-[2.5rem] hover:border-blue-200 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gray-50 rounded-2xl">
-                  <Store className="h-6 w-6 text-gray-700" />
+      {/* Features - Grid Refinado */}
+      <section id="recursos" className="py-48 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
+            {features.map((f, i) => (
+              <div key={i} className="space-y-6 group">
+                <div className="p-4 bg-[var(--surface-muted)] border border-[var(--border)] rounded-2xl w-fit group-hover:bg-blue-600 transition-all duration-500 group-hover:shadow-xl group-hover:shadow-blue-600/20 group-hover:-translate-y-1">
+                  <f.icon className="h-5 w-5 text-slate-500 group-hover:text-white" />
                 </div>
-                <h4 className="text-xl font-bold">MEI & Autônomos</h4>
-              </div>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle2 className="h-4 w-4 text-green-500" /> Adequação em 10 minutos
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle2 className="h-4 w-4 text-green-500" /> Termos de uso para WhatsApp
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle2 className="h-4 w-4 text-green-500" /> Dispensa de DPO formalizada
-                </li>
-              </ul>
-              <p className="text-sm text-gray-500 bg-gray-50 p-4 rounded-2xl italic">"Ideal para quem quer apenas a segurança jurídica mínima sem burocracia."</p>
-            </div>
-
-            <div className="space-y-6 p-8 border-2 border-blue-600 rounded-[2.5rem] relative shadow-2xl shadow-blue-50">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">
-                Mais Popular
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-50 rounded-2xl">
-                  <Building className="h-6 w-6 text-blue-600" />
+                <div className="space-y-2">
+                  <h4 className="text-[var(--text-primary)] font-bold text-base tracking-tight">{f.title}</h4>
+                  <p className="text-sm text-slate-500 leading-relaxed font-light">{f.desc}</p>
                 </div>
-                <h4 className="text-xl font-bold">Microempresas</h4>
               </div>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-sm text-gray-600 font-bold">
-                  <CheckCircle2 className="h-4 w-4 text-green-500" /> Mapeamento de até 5 setores
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle2 className="h-4 w-4 text-green-500" /> Política Interna de RH
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle2 className="h-4 w-4 text-green-500" /> Treinamento para equipe
-                </li>
-              </ul>
-              <p className="text-sm text-blue-700 bg-blue-50 p-4 rounded-2xl italic">"Perfeito para quem está crescendo e precisa fechar contratos corporativos."</p>
-            </div>
-
-            <div className="space-y-6 p-8 border border-gray-100 rounded-[2.5rem] hover:border-blue-200 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gray-50 rounded-2xl">
-                  <Briefcase className="h-6 w-6 text-gray-700" />
-                </div>
-                <h4 className="text-xl font-bold">Pequenas Empresas</h4>
-              </div>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle2 className="h-4 w-4 text-green-500" /> Gestão completa de riscos
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle2 className="h-4 w-4 text-green-500" /> Inventário de Dados (Data Mapping)
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-600">
-                  <CheckCircle2 className="h-4 w-4 text-green-500" /> Cronograma de 12 meses
-                </li>
-              </ul>
-              <p className="text-sm text-gray-500 bg-gray-50 p-4 rounded-2xl italic">"Ideal para empresas com muitos funcionários ou base de clientes ativa."</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Seção de FAQ */}
-      <section id="faq" className="py-24 px-6 bg-gray-50">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-blue-600 text-sm font-bold uppercase tracking-widest">Dúvidas Comuns</h2>
-            <h3 className="text-4xl font-extrabold">Perguntas Frequentes</h3>
-          </div>
-          
-          <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
-            {faqData.map((item, index) => (
-              <FAQItem key={index} question={item.question} answer={item.answer} />
             ))}
           </div>
-
-          <div className="mt-12 text-center p-8 bg-blue-600 rounded-[2.5rem] text-white shadow-xl shadow-blue-100">
-            <h4 className="text-xl font-bold mb-4">Ainda tem dúvidas?</h4>
-            <p className="text-blue-100 mb-6">Nossa equipe está pronta para te ajudar a entender o melhor caminho para a sua empresa.</p>
-            <Link 
-              to="/register" 
-              className="inline-flex items-center gap-2 px-8 py-3 bg-white text-blue-600 rounded-xl font-bold hover:bg-blue-50 transition-all"
-            >
-              Falar com um Especialista
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* CTA Final */}
-      <section className="py-24 px-6 text-center">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="p-4 bg-green-50 text-green-700 rounded-2xl w-fit mx-auto text-xs font-bold uppercase tracking-widest mb-4">
-            Livre de burocracia
+      {/* Pricing Section */}
+      <section id="planos" className="relative py-20 overflow-hidden bg-[var(--surface-muted)] border-y border-[var(--border)]">
+        <Pricing isLandingPage={true} />
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-48 px-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="space-y-2 mb-16">
+             <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight uppercase tracking-widest">Questões Comuns</h2>
+             <p className="text-slate-500 font-medium italic">Respostas rápidas para sua jornada inicial.</p>
           </div>
-          <h3 className="text-4xl md:text-5xl font-extrabold leading-tight">Prepare sua empresa para o futuro digital.</h3>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            A conformidade com a LGPD gera confiança, evita multas e organiza sua operação. 
-            Comece agora sem pagar nada pelo cadastro.
-          </p>
-          <div className="pt-4">
-            <Link 
-              to="/register" 
-              className="inline-flex items-center gap-3 px-12 py-6 bg-blue-600 text-white rounded-[2rem] font-extrabold text-2xl hover:bg-blue-700 shadow-2xl shadow-blue-200 transition-all hover:-translate-y-1"
-            >
-              Começar minha adequação <ArrowRight className="h-7 w-7" />
-            </Link>
-          </div>
-          <div className="flex flex-wrap justify-center gap-8 text-sm font-medium text-gray-400 mt-12">
-            <span className="flex items-center gap-2"><Lock className="h-4 w-4" /> Dados Criptografados</span>
-            <span className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4" /> 100% Online</span>
-            <span className="flex items-center gap-2"><Scale className="h-4 w-4" /> Suporte Jurídico</span>
+          
+          <div className="space-y-2">
+             <FAQItem 
+               question="Como funciona o diagnóstico automatizado?" 
+               answer="Nossa ferramenta guia você por uma série de perguntas estruturadas sobre o tratamento de dados em cada área da empresa, gerando a documentação necessária baseada nas suas respostas em segundos." 
+             />
+             <FAQItem 
+               question="Meus dados estão seguros na nuvem?" 
+               answer="Sim. Utilizamos criptografia padrão bancário AES-256 e TLS 1.3 em toda a plataforma. Seus dados nunca são compartilhados ou vendidos, permanecendo sob sua total custódia." 
+             />
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-100 py-16 px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          <div className="col-span-1 md:col-span-2 space-y-6">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-blue-600 rounded-lg">
-                <ShieldCheck className="h-6 w-6 text-white" />
-              </div>
-              <span className="font-bold text-2xl tracking-tight">LGPD Fácil</span>
-            </div>
-            <p className="text-gray-500 max-w-sm leading-relaxed">
-              A solução definitiva para micro e pequenas empresas brasileiras que buscam segurança jurídica e proteção de dados sem a complexidade tradicional.
-            </p>
+      <footer className="py-24 px-6 border-t border-[var(--border)]">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+          <div className="flex items-center gap-2">
+             <Logo className="h-5 w-auto" />
+             <span className="font-bold text-[var(--text-primary)] tracking-tighter">LGPD Fácil</span>
           </div>
           
-          <div className="space-y-4">
-            <h5 className="font-bold text-gray-900">Plataforma</h5>
-            <ul className="space-y-2 text-sm text-gray-500 font-medium">
-              <li><a href="#funcionalidades" className="hover:text-blue-600">Funcionalidades</a></li>
-              <li><a href="#beneficios" className="hover:text-blue-600">Planos</a></li>
-              <li><Link to="/register" className="hover:text-blue-600">Documentos</Link></li>
-              <li><Link to="/register" className="hover:text-blue-600">Treinamentos</Link></li>
-            </ul>
+          <div className="flex gap-10 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+             <a href="#" className="hover:text-blue-600 transition-colors">LinkedIn</a>
+             <a href="#" className="hover:text-blue-600 transition-colors">Termos</a>
+             <a href="#" className="hover:text-blue-600 transition-colors">Privacidade</a>
           </div>
 
-          <div className="space-y-4">
-            <h5 className="font-bold text-gray-900">Legal</h5>
-            <ul className="space-y-2 text-sm text-gray-500 font-medium">
-              <li><Link to="/termos" className="hover:text-blue-600">Termos de Uso</Link></li>
-              <li><Link to="/privacidade" className="hover:text-blue-600">Política de Privacidade</Link></li>
-              <li><Link to="/login" className="hover:text-blue-600">Compliance</Link></li>
-              <li><Link to="/login" className="hover:text-blue-600">DPO</Link></li>
-            </ul>
-          </div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-gray-400 font-medium">
-            © {new Date().getFullYear()} LGPD Fácil Tecnologia LTDA. Todos os direitos reservados.
+          <p className="text-[10px] font-black text-slate-400 tracking-widest uppercase">
+             Solution © 2026 | Desenvolvido por <a href="https://felipe-84bca.web.app/" target="_blank" className="hover:text-blue-600 transition-colors">Felipe Sadrak</a>
           </p>
-          <div className="flex gap-6">
-            <div className="flex items-center gap-2 text-xs font-bold text-gray-400 bg-white px-3 py-1.5 rounded-lg border border-gray-100 uppercase tracking-widest">
-              <ShieldCheck className="h-3 w-3 text-green-500" /> Adequado à LGPD
-            </div>
-          </div>
         </div>
       </footer>
     </div>
