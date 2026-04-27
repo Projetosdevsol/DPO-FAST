@@ -1,0 +1,5 @@
+{
+  "runtime": {
+    "command": "npx tsx src/index.ts"
+  }
+}

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { QuestionnaireData, ComplianceTask, User, ValidationResult } from '../types';
 import { PLAN_LIMITS } from '../lib/plans';
+import { DPOAssistant } from './DPOAssistant';
 
 const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTask[]; user: User }> = ({ qData, tasks, user }) => {
   const navigate = useNavigate();
@@ -215,6 +216,7 @@ export const Dashboard: React.FC = () => {
             <Route path="/configuracoes" element={<Settings initialQData={qData} onSaveQData={handleSaveQuestionnaire} />} />
           </Routes>
         </div>
+        <DPOAssistant />
       </main>
     </div>
   );
