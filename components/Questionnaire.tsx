@@ -5,7 +5,7 @@ import {
   Trash2, Layers, ClipboardCheck, Database, Cloud, Lock, 
   Share2, Info, ShieldCheck, Loader2, Edit3, Copy, AlertCircle,
   Briefcase, MessageSquare, Zap, HardDrive, Shield, UserCheck, RefreshCw, Trash,
-  CheckCircle2, Users, Scale, BookOpen, Lightbulb, HelpCircle, Upload, Paperclip, FileText, X
+  CheckCircle2, Users, Scale, BookOpen, Lightbulb, HelpCircle, Upload, Paperclip, FileText, X, Award, Star
 } from 'lucide-react';
 import { QuestionnaireData, SectorMapping, DataProcess, SectorAnswers } from '../types';
 import { storage } from '../lib/firebase';
@@ -13,9 +13,12 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.c
 import { useAuth } from '../context/AuthContext';
 import { PLAN_LIMITS } from '../lib/plans';
 import { useNavigate } from 'react-router-dom';
+import { checkCertificationEligibility, generateComplianceCertificatePDF } from '../lib/certificateGenerator';
+import { ComplianceTask } from '../types';
 
 interface QuestionnaireProps {
   initialData?: QuestionnaireData | null;
+  tasks?: ComplianceTask[];
   onSave: (data: QuestionnaireData, isFinal?: boolean) => Promise<void>;
 }
 
@@ -828,7 +831,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
 };
 
 
-export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, onSave }) => {
+export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks = [], onSave }) => {
   const { authState } = useAuth();
   const [view, setView] = useState<'mapping' | 'sector-hub' | 'process-form'>(
     initialData?.industry ? 'sector-hub' : 'mapping'
@@ -837,12 +840,31 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, onSav
   const [activeSectorId, setActiveSectorId] = useState<string | null>(null);
   const [activeProcessId, setActiveProcessId] = useState<string | null>(null);
 
-  const [data, setData] = useState<QuestionnaireData>(initialData || {
-    companySize: 'ME' as any,
-    industry: '',
-    sectors: [],
-    lastUpdated: new Date().toISOString()
+  const [data, setData] = useState<QuestionnaireData>(() => {
+    const saved = localStorage.getItem(`dpo_fast_qdata_${authState.user?.id}`);
+    if (saved) return JSON.parse(saved);
+    return initialData || {
+      companySize: 'ME' as any,
+      industry: '',
+      sectors: [],
+      lastUpdated: new Date().toISOString()
+    };
   });
+
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  React.useEffect(() => {
+    if (initialData && JSON.stringify(initialData) !== JSON.stringify(data)) {
+      setData(initialData);
+    }
+  }, [initialData]);
+
+  // Backup to localStorage
+  React.useEffect(() => {
+    if (authState.user?.id && data.industry) {
+      localStorage.setItem(`dpo_fast_qdata_${authState.user.id}`, JSON.stringify(data));
+    }
+  }, [data, authState.user?.id]);
 
   const handleToggleSector = (name: string) => {
     const sectors = data.sectors || [];
@@ -955,6 +977,38 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, onSav
     setData({ ...data, sectors: updatedSectors });
   };
 
+  const handleCertifyProcess = async (sectorId: string, process: DataProcess) => {
+    if (!authState.user) return;
+    
+    const eligibility = checkCertificationEligibility(process.id, tasks, process);
+    if (!eligibility.eligible) {
+      alert(`Não é possível gerar o certificado:\n${eligibility.reason}`);
+      return;
+    }
+
+    try {
+      const cert = await generateComplianceCertificatePDF(authState.user, process, tasks);
+      
+      const updatedSectors = (data.sectors || []).map(s => 
+        s.id === sectorId ? { 
+          ...s, 
+          processes: (s.processes || []).map(p => 
+            p.id === process.id ? { ...p, isCertified: true, currentCertificateId: cert.id } : p
+          ) 
+        } : s
+      );
+
+      const updatedData = { ...data, sectors: updatedSectors };
+      setData(updatedData);
+      await onSave(updatedData);
+      
+      alert("Certificado gerado com sucesso! O processo agora está marcado como PROTEGIDO.");
+    } catch (error) {
+      console.error("Error generating certificate:", error);
+      alert("Erro ao gerar certificado.");
+    }
+  };
+
   const handleStartProcessQuestionnaire = (sectorId: string, processId: string) => {
     setActiveSectorId(sectorId);
     setActiveProcessId(processId);
@@ -962,8 +1016,16 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, onSav
   };
 
   const syncData = async (updatedData: QuestionnaireData, isFinal: boolean = false) => {
-    setData(updatedData);
-    await onSave(updatedData, isFinal);
+    setIsSyncing(true);
+    try {
+      setData(updatedData);
+      await onSave(updatedData, isFinal);
+    } catch (err) {
+      console.error("Sync error:", err);
+      alert("Erro ao salvar dados. Verifique sua conexão.");
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   if (view === 'mapping') {
@@ -1068,8 +1130,8 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, onSav
             </div>
           </div>
         </div>
-        <button onClick={() => syncData(data).then(() => setView('sector-hub'))} disabled={!data.sectors || data.sectors.length === 0 || !data.industry || data.industry === 'OUTRO_SELECTED'} className="w-full md:w-auto px-12 py-5 bg-blue-600 text-white rounded-[2rem] font-black text-lg flex items-center justify-center gap-3 ml-auto block shadow-xl hover:bg-blue-700 transition-all disabled:opacity-50 active:scale-95">
-          Confirmar Dados Iniciais <ChevronRight className="h-6 w-6" />
+        <button onClick={() => syncData(data).then(() => setView('sector-hub'))} disabled={isSyncing || !data.sectors || data.sectors.length === 0 || !data.industry || data.industry === 'OUTRO_SELECTED'} className="w-full md:w-auto px-12 py-5 bg-blue-600 text-white rounded-[2rem] font-black text-lg flex items-center justify-center gap-3 ml-auto block shadow-xl hover:bg-blue-700 transition-all disabled:opacity-50 active:scale-95">
+          {isSyncing ? <Loader2 className="h-6 w-6 animate-spin" /> : <>Confirmar Dados Iniciais <ChevronRight className="h-6 w-6" /></>}
         </button>
       </div>
     );
@@ -1132,38 +1194,79 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, onSav
                   </div>
                 ))}
 
-                {(sector.processes || []).map(process => (
-                  <div key={process.id} className={`bg-white border rounded-[2rem] p-6 flex flex-col justify-between hover:shadow-xl transition-all group ${process.status === 'completed' ? 'border-green-100 shadow-green-100/50' : 'border-slate-100'}`}>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                         <div className={`p-2.5 rounded-xl ${process.status === 'completed' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
-                           <ClipboardCheck className="h-5 w-5" />
-                         </div>
-                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                           <button onClick={(e) => { e.stopPropagation(); handleDuplicateProcess(sector.id, process); }} title="Duplicar Processo" className="p-2 text-slate-300 hover:text-blue-600 transition-colors"><Copy className="h-4 w-4" /></button>
-                           <button onClick={(e) => { e.stopPropagation(); handleRemoveProcess(sector.id, process.id); }} title="Remover" className="p-2 text-slate-300 hover:text-red-500 transition-colors"><Trash2 className="h-4 w-4" /></button>
-                         </div>
+                {(sector.processes || []).map(process => {
+                  const eligibility = checkCertificationEligibility(process.id, tasks, process);
+                  return (
+                    <div key={process.id} className={`bg-white border rounded-[2rem] p-6 flex flex-col justify-between hover:shadow-xl transition-all group ${process.isCertified ? 'border-indigo-200 shadow-indigo-100/50' : process.status === 'completed' ? 'border-green-100 shadow-green-100/50' : 'border-slate-100'}`}>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                           <div className={`p-2.5 rounded-xl ${process.isCertified ? 'bg-indigo-600 text-white' : process.status === 'completed' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
+                             {process.isCertified ? <ShieldCheck className="h-5 w-5" /> : <ClipboardCheck className="h-5 w-5" />}
+                           </div>
+                           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                             <button onClick={(e) => { e.stopPropagation(); handleDuplicateProcess(sector.id, process); }} title="Duplicar Processo" className="p-2 text-slate-300 hover:text-blue-600 transition-colors"><Copy className="h-4 w-4" /></button>
+                             <button onClick={(e) => { e.stopPropagation(); handleRemoveProcess(sector.id, process.id); }} title="Remover" className="p-2 text-slate-300 hover:text-red-500 transition-colors"><Trash2 className="h-4 w-4" /></button>
+                           </div>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-bold text-slate-900 text-sm">{process.name}</h4>
+                            {process.isCertified && (
+                              <div className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[8px] font-black uppercase rounded-full flex items-center gap-1">
+                                <Star className="h-2 w-2 fill-indigo-700" /> Protegido
+                              </div>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-400 font-medium leading-relaxed mt-1 line-clamp-2">{process.description}</p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-sm">{process.name}</h4>
-                        <p className="text-[10px] text-slate-400 font-medium leading-relaxed mt-1 line-clamp-2">{process.description}</p>
-                      </div>
-                    </div>
 
-                    <div className="mt-6 space-y-3">
-                       <div className="flex items-center justify-between text-[8px] font-black uppercase tracking-widest">
-                         <span className={process.status === 'completed' ? 'text-green-600' : 'text-amber-600'}>{process.status === 'completed' ? 'Mapeado' : `Etapa ${process.lastStep || 1}/7`}</span>
-                         <span className="text-slate-400">{process.status === 'completed' ? '100%' : `${Math.round(((process.lastStep || 1) / 7) * 100)}%`}</span>
-                       </div>
-                       <div className="h-1.5 bg-slate-50 rounded-full overflow-hidden">
-                         <div className={`h-full transition-all duration-700 ${process.status === 'completed' ? 'bg-green-500' : 'bg-amber-500'}`} style={{ width: `${((process.lastStep || 1) / 7) * 100}%` }} />
-                       </div>
-                       <button onClick={() => handleStartProcessQuestionnaire(sector.id, process.id)} className={`w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${process.status === 'completed' ? 'bg-slate-50 text-slate-600 hover:bg-slate-100' : 'bg-blue-600 text-white shadow-lg shadow-blue-100 hover:bg-blue-700'}`}>
-                         {process.status === 'completed' ? 'Editar Respostas' : 'Continuar Mapeamento'}
-                       </button>
+                      <div className="mt-6 space-y-3">
+                         <div className="flex items-center justify-between text-[8px] font-black uppercase tracking-widest">
+                           <span className={process.status === 'completed' ? 'text-green-600' : 'text-amber-600'}>{process.status === 'completed' ? 'Mapeado' : `Etapa ${process.lastStep || 1}/7`}</span>
+                           <span className="text-slate-400">{process.status === 'completed' ? '100%' : `${Math.round(((process.lastStep || 1) / 7) * 100)}%`}</span>
+                         </div>
+                         <div className="h-1.5 bg-slate-50 rounded-full overflow-hidden">
+                           <div className={`h-full transition-all duration-700 ${process.status === 'completed' ? 'bg-green-500' : 'bg-amber-500'}`} style={{ width: `${((process.lastStep || 1) / 7) * 100}%` }} />
+                         </div>
+
+                         {process.status === 'completed' && !eligibility.eligible && (
+                           <div className="p-3 bg-amber-50/50 rounded-xl border border-amber-100/50 space-y-1">
+                             <p className="text-[8px] font-black text-amber-600 uppercase tracking-widest flex items-center gap-1">
+                               <AlertCircle className="h-3 w-3" /> Certificação Pendente
+                             </p>
+                             <p className="text-[9px] font-bold text-amber-700 leading-tight">
+                               {eligibility.reason}
+                             </p>
+                           </div>
+                         )}
+
+                         <div className="flex flex-col gap-2">
+                           <button onClick={() => handleStartProcessQuestionnaire(sector.id, process.id)} className={`w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${process.status === 'completed' ? 'bg-slate-50 text-slate-600 hover:bg-slate-100' : 'bg-blue-600 text-white shadow-lg shadow-blue-100 hover:bg-blue-700'}`}>
+                             {process.status === 'completed' ? 'Editar Respostas' : 'Continuar Mapeamento'}
+                           </button>
+                           
+                           {process.status === 'completed' && (
+                             <button 
+                               onClick={() => handleCertifyProcess(sector.id, process)} 
+                               disabled={!eligibility.eligible || isSyncing}
+                               className={`w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${
+                                 !eligibility.eligible 
+                                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+                                 : process.isCertified 
+                                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' 
+                                   : 'bg-emerald-600 text-white shadow-lg shadow-emerald-100'
+                               }`}
+                             >
+                               {isSyncing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Award className="h-3 w-3" />}
+                               {process.isCertified ? 'Reemitir Certificado' : 'Gerar Certificado'}
+                             </button>
+                           )}
+                         </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
           ))}

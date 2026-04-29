@@ -32,6 +32,11 @@ export const tasksService = {
     await setDoc(docRef, { items: tasks });
   },
 
+  async get(uid: string): Promise<ComplianceTask[]> {
+    const docSnap = await getDoc(doc(db, 'tasks', uid));
+    return docSnap.exists() ? (docSnap.data() as { items: ComplianceTask[] }).items : [];
+  },
+
   subscribe(uid: string, callback: (tasks: ComplianceTask[]) => void) {
     return onSnapshot(doc(db, 'tasks', uid), (doc) => {
       callback(doc.exists() ? (doc.data() as { items: ComplianceTask[] }).items : []);

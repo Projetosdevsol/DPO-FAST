@@ -32,6 +32,10 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
     return qData?.sectors?.reduce((acc, s) => acc + (s.processes?.filter(p => p.status === 'completed').length || 0), 0) || 0;
   }, [qData]);
 
+  const certifiedProcesses = useMemo(() => {
+    return qData?.sectors?.reduce((acc, s) => acc + (s.processes?.filter(p => p.isCertified).length || 0), 0) || 0;
+  }, [qData]);
+
   const progress = totalProcesses > 0 ? Math.round((completedProcesses / totalProcesses) * 100) : 0;
   const completedTasks = tasks?.filter(t => t.status === 'Concluída').length || 0;
   const highPriorityTasks = tasks?.filter(t => t.status === 'Pendente' && t.priority === 'Alta') || [];
@@ -57,8 +61,16 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
             <p className="text-xs font-bold">{(PLAN_LIMITS[user.plan] || PLAN_LIMITS.basico).sla_suporte_horas} horas úteis</p>
           </div>
         </div>
-        {progress === 100 && (
-          <div className="px-6 py-3 bg-indigo-600 text-white rounded-2xl shadow-xl flex items-center gap-3 animate-bounce">
+        {certifiedProcesses > 0 ? (
+          <div className="px-6 py-3 bg-indigo-600 text-white rounded-2xl shadow-xl flex items-center gap-3 animate-in fade-in zoom-in-95">
+            <ShieldCheck className="h-5 w-5 text-indigo-200" />
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black uppercase tracking-widest leading-tight">Empresa Protegida</span>
+              <span className="text-xs font-bold">{certifiedProcesses} {certifiedProcesses === 1 ? 'Processo Certificado' : 'Processos Certificados'}</span>
+            </div>
+          </div>
+        ) : progress === 100 && (
+          <div className="px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-xl flex items-center gap-3 animate-bounce">
             <Trophy className="h-5 w-5 text-amber-300" />
             <span className="text-xs font-black uppercase">Pronto para Certificar</span>
           </div>
@@ -129,8 +141,13 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
                         <span>{total > 0 ? `${comp}/${total} Processos` : 'Sem processos'}</span>
                         <span>{total > 0 ? Math.round((comp/total)*100) : 0}%</span>
                       </div>
-                      <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-1 bg-slate-100 rounded-full overflow-hidden flex items-center gap-1">
                         <div className="h-full bg-blue-600" style={{ width: `${total > 0 ? (comp/total)*100 : 0}%` }} />
+                        {sector.processes?.some(p => p.isCertified) && (
+                          <div className="ml-auto flex items-center gap-1">
+                             <ShieldCheck className="h-3 w-3 text-indigo-600" />
+                          </div>
+                        )}
                       </div>
                    </div>
                  );
@@ -166,12 +183,33 @@ export const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (authState.user) {
-      const unsubQ = questionnaireService.subscribe(authState.user.id, (data) => {
+      const unsubQ = questionnaireService.subscribe(authState.user.id, async (data) => {
         setQData(data);
         if (data) {
-          const newTasks = generateComplianceTasks(data);
-          setTasks(newTasks);
-          tasksService.saveAll(authState.user!.id, newTasks);
+          // Only generate and save initial tasks if they don't exist
+          // Or merge them to avoid overwriting progress
+          const existingTasksSnap = await tasksService.get(authState.user!.id);
+          const generatedTasks = generateComplianceTasks(data);
+          
+          if (!existingTasksSnap || existingTasksSnap.length === 0) {
+             setTasks(generatedTasks);
+             await tasksService.saveAll(authState.user!.id, generatedTasks);
+          } else {
+             // Merge: keep existing tasks that match by ID, add new ones
+             const mergedTasks = generatedTasks.map(gt => {
+                const existing = existingTasksSnap.find(et => et.id === gt.id);
+                return existing ? { ...gt, ...existing } : gt;
+             });
+             
+             // Check if we actually have new tasks to add
+             const hasNewTasks = generatedTasks.some(gt => !existingTasksSnap.find(et => et.id === gt.id));
+             if (hasNewTasks) {
+                setTasks(mergedTasks);
+                await tasksService.saveAll(authState.user!.id, mergedTasks);
+             } else {
+                setTasks(existingTasksSnap);
+             }
+          }
         }
         setIsSyncing(false);
       });
@@ -209,7 +247,7 @@ export const Dashboard: React.FC = () => {
           <Routes>
             <Route path="/" element={<Overview qData={qData} tasks={tasks} user={authState.user!} />} />
             <Route path="/departamentos" element={<SectorsView qData={qData} onSave={handleSaveQuestionnaire} />} />
-            <Route path="/mapeamento" element={<Questionnaire initialData={qData} onSave={handleSaveQuestionnaire} />} />
+            <Route path="/mapeamento" element={<Questionnaire initialData={qData} tasks={tasks} onSave={handleSaveQuestionnaire} />} />
             <Route path="/documentos" element={<DocumentsListView qData={qData} tasks={tasks} user={authState.user!} />} />
             <Route path="/conformidade" element={<ComplianceView tasks={tasks} user={authState.user!} onUpdateTask={handleUpdateTask} qData={qData} />} />
             <Route path="/conquistas" element={<AchievementsPage user={authState.user!} />} />

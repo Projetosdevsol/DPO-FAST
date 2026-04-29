@@ -12,8 +12,14 @@
   "dependencies": {
     "@genkit-ai/googleai": "^1.28.0",
     "@google/genai": "latest",
+    "@types/qrcode": "^1.5.6",
     "genkit": "^1.33.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.562.0",
+    "qrcode": "^1.5.4",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-router-dom": "^7.12.0"

@@ -17,6 +17,18 @@ export interface User {
   createdAt: string;
   lastLogin?: string;
   achievements?: string[];
+  certificates?: ComplianceCertificate[];
+}
+
+export interface ComplianceCertificate {
+  id: string;
+  processId: string;
+  issueDate: string;
+  expiryDate?: string;
+  status: 'active' | 'expired' | 'revoked';
+  qrCodeUrl?: string;
+  pdfUrl?: string;
+  version: number;
 }
 
 export interface AccessLog {
@@ -42,6 +54,8 @@ export interface DataProcess {
   description: string;
   status: 'pending' | 'in_progress' | 'completed';
   lastStep: number;
+  isCertified?: boolean;
+  currentCertificateId?: string;
   answers?: SectorAnswers;
 }
 
