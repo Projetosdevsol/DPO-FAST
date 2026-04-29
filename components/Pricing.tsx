@@ -31,12 +31,10 @@ export const Pricing: React.FC<{ isLandingPage?: boolean }> = ({ isLandingPage }
       period: '/mês',
       description: 'O plano completo para empresas em crescimento com auditoria automatizada.',
       features: [
-        { text: 'Todos os Documentos (RIPD, RAT)', icon: FileText },
-        { text: 'Auditoria de Terceiros e Contratos', icon: Shield },
-        { text: 'Até 10 Setores e 20 Processos', icon: Database },
         { text: 'Análise Profunda com IA Qwen', icon: Zap },
+        { text: 'DPO Assistant (Chat com IA)', icon: Star },
         { text: 'SLA de Suporte: 24h úteis', icon: Clock },
-        { text: 'Recomendações Personalizadas', icon: Star },
+        { text: 'Todos os Documentos (RIPD, RAT)', icon: FileText },
       ],
       color: 'indigo',
       buttonText: 'Garantir Plano Pro',
@@ -53,9 +51,9 @@ export const Pricing: React.FC<{ isLandingPage?: boolean }> = ({ isLandingPage }
         { text: 'Documentação Customizada', icon: FileText },
         { text: 'Múltiplas Empresas (CNPJs)', icon: Database },
         { text: 'Auditoria Humana por DPOs', icon: Shield },
+        { text: 'DPO Assistant (Acesso Ilimitado)', icon: Zap },
         { text: 'SLA Prioritário: 4h úteis', icon: Clock },
         { text: 'Gerente de Conta Dedicado', icon: Crown },
-        { text: 'Treinamentos para Equipe', icon: Star },
       ],
       color: 'slate',
       buttonText: 'Agendar com Especialista',
@@ -146,8 +144,10 @@ export const Pricing: React.FC<{ isLandingPage?: boolean }> = ({ isLandingPage }
                 onClick={() => {
                   if (plan.id === 'personalite') {
                     window.open('https://api.whatsapp.com/send?phone=YOUR_NUMBER&text=Olá! Gostaria de saber mais sobre o plano Personalité do LGPD Fácil.', '_blank');
-                  } else if (plan.stripeUrl) {
-                    window.location.href = plan.stripeUrl;
+                  } else {
+                    // Se estiver na landing page ou página de planos, sempre manda pro registro primeiro
+                    // O Register.tsx cuidará do redirecionamento pro Stripe após o cadastro
+                    navigate(`/register?plan=${plan.id}`);
                   }
                 }}
                 className={`btn-primary w-full py-5 rounded-2xl flex items-center justify-center gap-3 always-white shadow-xl group-hover:shadow-blue-600/30 transition-all`}

@@ -218,6 +218,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       plan: data.plan || 'basico',
       isAdmin: isTargetAdmin,
       status: 'active',
+      status_assinatura: (data.plan === 'free' || isTargetAdmin) ? 'active' : 'past_due',
       isOnline: true,
       lastLogin,
       createdAt: new Date().toISOString()

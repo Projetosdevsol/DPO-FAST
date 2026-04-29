@@ -216,7 +216,7 @@ export const Dashboard: React.FC = () => {
             <Route path="/configuracoes" element={<Settings initialQData={qData} onSaveQData={handleSaveQuestionnaire} />} />
           </Routes>
         </div>
-        <DPOAssistant />
+        {['pro', 'personalite'].includes(authState.user?.plan || '') && <DPOAssistant />}
       </main>
     </div>
   );

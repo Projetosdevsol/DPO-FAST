@@ -12,6 +12,16 @@ export interface PlanFeatureLimits {
 }
 
 export const PLAN_LIMITS: Record<User['plan'], PlanFeatureLimits> = {
+  free: {
+    documentos_essenciais: true,
+    documentos_avancados: false,
+    ia_analise_profunda: false,
+    limite_setores: 1,
+    limite_processos_por_setor: 1,
+    sla_suporte_horas: 72,
+    gerente_conta: false,
+    auditoria_humana: false,
+  },
   basico: {
     documentos_essenciais: true,
     documentos_avancados: false,
@@ -33,6 +43,16 @@ export const PLAN_LIMITS: Record<User['plan'], PlanFeatureLimits> = {
     auditoria_humana: false,
   },
   personalite: {
+    documentos_essenciais: true,
+    documentos_avancados: true,
+    ia_analise_profunda: true,
+    limite_setores: 999, // Ilimitado
+    limite_processos_por_setor: 999, // Ilimitado
+    sla_suporte_horas: 4,
+    gerente_conta: true,
+    auditoria_humana: true,
+  },
+  enterprise: {
     documentos_essenciais: true,
     documentos_avancados: true,
     ia_analise_profunda: true,

@@ -4,9 +4,32 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Logo } from './Logo';
 
+import { doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db } from '../lib/firebase';
+
 export const SuccessPay: React.FC = () => {
   const navigate = useNavigate();
-  const { authState } = useAuth();
+  const { authState, updateUser } = useAuth();
+
+  useEffect(() => {
+    const activateSubscription = async () => {
+      if (authState.user?.id) {
+        try {
+          // Atualiza no Firestore para garantir persistência
+          await updateDoc(doc(db, 'users', authState.user.id), {
+            status_assinatura: 'active'
+          });
+          // Atualiza o estado local para navegação imediata
+          await updateUser({ status_assinatura: 'active' });
+          console.log('Assinatura ativada com sucesso via página de retorno.');
+        } catch (error) {
+          console.error('Erro ao ativar assinatura:', error);
+        }
+      }
+    };
+
+    activateSubscription();
+  }, [authState.user?.id, authState.user?.status_assinatura]);
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-6 py-12 relative overflow-hidden transition-colors duration-500">

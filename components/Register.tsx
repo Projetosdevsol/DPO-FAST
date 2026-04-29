@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { AlertCircle, ChevronLeft, Loader2, ShieldCheck, User, Building, Mail, Lock, Hash, ArrowLeft } from 'lucide-react';
+import { Loader2, ChevronDown } from 'lucide-react';
 import { Logo } from './Logo';
+import { STRIPE_LINKS } from '../lib/stripe';
 
 export const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -20,11 +21,7 @@ export const Register: React.FC = () => {
   const [searchParams] = useSearchParams();
   const selectedPlan = searchParams.get('plan') || 'basico';
 
-  useEffect(() => {
-    if (authState.isAuthenticated && !authState.loading) {
-      navigate('/dashboard', { state: { isFirstVisit: true } });
-    }
-  }, [authState.isAuthenticated, authState.loading, navigate]);
+  // Removido useEffect de redirecionamento automático para não interferir no fluxo do Stripe após cadastro
 
   const validateCnpj = (cnpj: string) => {
     const digitsOnly = cnpj.replace(/\D/g, '');
@@ -54,6 +51,18 @@ export const Register: React.FC = () => {
     setLoading(true);
     try {
       await register({ ...formData, plan: selectedPlan });
+      
+      if (['basico', 'pro', 'personalite'].includes(selectedPlan)) {
+        const stripeUrl = STRIPE_LINKS[selectedPlan as keyof typeof STRIPE_LINKS];
+        console.log('Iniciando redirecionamento para o Stripe:', selectedPlan, stripeUrl);
+
+        if (stripeUrl && stripeUrl.startsWith('http')) {
+          window.location.href = stripeUrl;
+          return;
+        }
+      }
+      
+      navigate('/dashboard', { state: { isFirstVisit: true } });
     } catch (err: any) {
       setLoading(false);
       setErrors({ general: 'Erro ao cadastrar. Tente outro e-mail.' });
@@ -61,87 +70,85 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[var(--background)] items-center justify-center px-6 py-20 relative overflow-hidden transition-colors duration-500">
-      {/* Back to Home Button */}
-      <Link 
-        to="/" 
-        className="absolute top-10 left-6 lg:left-12 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-[var(--text-primary)] transition-all group z-50"
-      >
-        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-        Voltar ao início
-      </Link>
-
-      <div className="w-full max-w-2xl z-10 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-        <div className="text-center space-y-6">
-          <div className="flex justify-center">
-            <Link to="/">
-              <Logo className="h-10 w-auto" />
-            </Link>
+    <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-4 transition-colors duration-500 overflow-y-auto">
+      <div className="google-card max-w-2xl animate-in fade-in zoom-in-95 duration-500 my-8">
+        <div className="flex flex-col items-center text-center space-y-4 mb-10">
+          <Link to="/" className="mb-2">
+            <Logo className="h-8 md:h-10 w-auto" />
+          </Link>
+          <div className="space-y-1">
+            <h1 className="text-2xl font-normal text-[var(--text-primary)]">Criar sua Conta</h1>
+            <p className="text-base text-[var(--text-primary)]">Comece sua jornada de conformidade</p>
           </div>
-          <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter">Criar sua Conta</h1>
-          <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-blue-600/10 border border-blue-500/20 rounded-full">
-            <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Plano Selecionado:</span>
-            <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">{selectedPlan}</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/20 rounded-full">
+            <span className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">Plano:</span>
+            <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-widest">{selectedPlan}</span>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-10">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {errors.general && (
-            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-500 text-center">{errors.general}</div>
+            <div className="p-3 bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-400 text-sm rounded-lg border border-red-200 dark:border-red-800/20 animate-in fade-in slide-in-from-top-2">
+              {errors.general}
+            </div>
           )}
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Nome Completo</label>
-              <input type="text" required className="w-full px-0 py-3 bg-transparent border-b border-[var(--border)] focus:border-blue-500 outline-none transition-all text-sm font-medium text-[var(--text-primary)] placeholder:text-slate-200" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="Ex: João Silva" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="google-input-container">
+              <input type="text" id="name" required className="google-input peer" placeholder=" " value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+              <label htmlFor="name" className="floating-label">Nome Completo</label>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">E-mail Profissional</label>
-              <input type="email" required className="w-full px-0 py-3 bg-transparent border-b border-[var(--border)] focus:border-blue-500 outline-none transition-all text-sm font-medium text-[var(--text-primary)] placeholder:text-slate-200" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="joao@empresa.com" />
+            <div className="google-input-container">
+              <input type="email" id="email" required className="google-input peer" placeholder=" " value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+              <label htmlFor="email" className="floating-label">E-mail Profissional</label>
             </div>
 
-            <div className="space-y-1 md:col-span-2">
-              <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Nome da Organização</label>
-              <input type="text" required className="w-full px-0 py-3 bg-transparent border-b border-[var(--border)] focus:border-blue-500 outline-none transition-all text-sm font-medium text-[var(--text-primary)] placeholder:text-slate-200" value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} placeholder="Sua Empresa Ltda" />
+            <div className="google-input-container md:col-span-2">
+              <input type="text" id="companyName" required className="google-input peer" placeholder=" " value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} />
+              <label htmlFor="companyName" className="floating-label">Nome da Organização</label>
             </div>
 
-            <div className="space-y-1 text-left">
-              <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Documento (CNPJ)</label>
-              <input type="text" required maxLength={18} className={`w-full px-0 py-3 bg-transparent border-b outline-none transition-all text-sm font-medium text-[var(--text-primary)] placeholder:text-slate-200 ${errors.cnpj ? 'border-red-500 text-red-500' : 'border-[var(--border)] focus:border-blue-500'}`} value={formData.cnpj} onChange={handleCnpjChange} placeholder="00.000.000/0000-00" />
+            <div className="google-input-container">
+              <input type="text" id="cnpj" required maxLength={18} className={`google-input peer ${errors.cnpj ? 'border-red-500' : ''}`} placeholder=" " value={formData.cnpj} onChange={handleCnpjChange} />
+              <label htmlFor="cnpj" className={`floating-label ${errors.cnpj ? 'text-red-500' : ''}`}>Documento (CNPJ)</label>
             </div>
 
-            <div className="space-y-1 text-left">
-              <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Senha de Segurança</label>
-              <input type="password" required minLength={6} className="w-full px-0 py-3 bg-transparent border-b border-[var(--border)] focus:border-blue-500 outline-none transition-all text-sm font-medium text-[var(--text-primary)] placeholder:text-slate-200" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} placeholder="Mínimo 6 caracteres" />
+            <div className="google-input-container">
+              <input type="password" id="password" required minLength={6} className="google-input peer" placeholder=" " value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
+              <label htmlFor="password" className="floating-label">Senha de Segurança</label>
             </div>
           </div>
 
-          <div className="pt-6">
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <Link to="/login" className="text-[var(--primary)] font-bold text-sm hover:bg-blue-50 dark:hover:bg-blue-900/10 px-4 py-2 rounded transition-colors w-full sm:w-auto text-center">
+              Já tenho uma conta
+            </Link>
             <button 
               type="submit" 
               disabled={loading} 
-              className="btn-primary w-full py-5 rounded-2xl always-white"
+              className="btn-primary w-full sm:min-w-[160px] flex items-center justify-center py-3 sm:py-2.5"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : 'Finalizar e Acessar'}
+              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Finalizar e Acessar'}
             </button>
-            <p className="mt-6 text-center text-[9px] text-slate-500 font-medium leading-relaxed">
-              Ao clicar em finalizar, você concorda com nossos <span className="text-blue-500 cursor-pointer underline">Termos</span> e com a <span className="text-blue-500 cursor-pointer underline">Política de Privacidade</span>.
-            </p>
           </div>
-        </form>
-
-        <div className="text-center pt-8 border-t border-[var(--border)]">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-            Já possui uma conta? <Link to="/login" className="text-blue-600 hover:underline ml-2">Entrar agora</Link>
+          <p className="text-[11px] text-[var(--text-muted)] text-center leading-relaxed max-w-md mx-auto">
+            Ao clicar em finalizar, você concorda com nossos <span className="text-[var(--primary)] cursor-pointer hover:underline">Termos</span> e <span className="text-[var(--primary)] cursor-pointer hover:underline">Política de Privacidade</span>.
           </p>
-        </div>
+        </form>
       </div>
 
-      <footer className="absolute bottom-10 left-0 right-0 text-center pointer-events-none">
-         <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] pointer-events-auto">
-            Solution © 2026 | Desenvolvido por <a href="https://felipe-84bca.web.app/" target="_blank" className="text-blue-600 hover:underline">Felipe Sadrak</a>
-         </p>
+      <footer className="mt-auto py-8 w-full max-w-4xl px-6 flex flex-col md:flex-row justify-between items-center text-xs text-[var(--text-muted)] space-y-6 md:space-y-0">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 px-3 py-2 rounded-lg transition-colors">
+            Português (Brasil) <ChevronDown className="h-3 w-3" />
+          </div>
+        </div>
+        <div className="flex items-center gap-8">
+          <a href="#" className="hover:text-[var(--text-primary)] transition-colors">Ajuda</a>
+          <a href="#" className="hover:text-[var(--text-primary)] transition-colors">Privacidade</a>
+          <a href="#" className="hover:text-[var(--text-primary)] transition-colors">Termos</a>
+        </div>
       </footer>
     </div>
   );

@@ -1,34 +1,35 @@
 import { db } from '../config';
 
-export type SubscriptionPlan = 'Basic' | 'Pro' | 'Personalité';
+export type SubscriptionPlan = 'free' | 'basico' | 'pro' | 'personalite' | 'enterprise';
 
 /**
  * Busca o plano de assinatura do usuário no Firestore.
  * Mapeia os níveis de acesso:
- * - Basic: Apenas Agente de Diagnóstico.
- * - Pro: Diagnóstico + Sugestão.
- * - Personalité: Ciclo completo (Diagnóstico, Sugestão e Execução).
+ * - free/basico: Apenas Agente de Diagnóstico.
+ * - pro: Diagnóstico + Sugestão.
+ * - personalite/enterprise: Ciclo completo (Diagnóstico, Sugestão e Execução).
  */
 export async function getUserPlan(userId: string): Promise<SubscriptionPlan> {
   try {
     const userDoc = await db.collection('users').doc(userId).get();
     if (!userDoc.exists) {
-      console.warn(`Usuário ${userId} não encontrado, assumindo plano Basic.`);
-      return 'Basic';
+      console.warn(`Usuário ${userId} não encontrado, assumindo plano basico.`);
+      return 'basico';
     }
     
     const data = userDoc.data();
-    const plan = data?.subscription?.plan;
+    // Tenta pegar de user.plan primeiro, depois de subscription.plan
+    const plan = (data?.plan || data?.subscription?.plan || 'basico').toLowerCase();
     
-    // Mapeamento de nomes antigos (se houver) para os novos
-    if (plan === 'Bronze') return 'Basic';
-    if (plan === 'Prata') return 'Pro';
-    if (plan === 'Ouro') return 'Personalité';
+    // Mapeamento de nomes antigos ou variações
+    if (plan === 'bronze' || plan === 'basic') return 'basico';
+    if (plan === 'prata') return 'pro';
+    if (plan === 'ouro' || plan === 'personalité') return 'personalite';
     
-    return (plan as SubscriptionPlan) || 'Basic';
+    return plan as SubscriptionPlan;
   } catch (error) {
     console.error('Erro ao buscar plano do usuário:', error);
-    return 'Basic';
+    return 'basico';
   }
 }
 
@@ -37,7 +38,7 @@ export async function getUserPlan(userId: string): Promise<SubscriptionPlan> {
  */
 export function hasPermission(plan: SubscriptionPlan, feature: 'discovery' | 'suggestion' | 'execution'): boolean {
   if (feature === 'discovery') return true; // Todos têm acesso
-  if (feature === 'suggestion') return plan === 'Pro' || plan === 'Personalité';
-  if (feature === 'execution') return plan === 'Personalité';
+  if (feature === 'suggestion') return plan === 'pro' || plan === 'personalite' || plan === 'enterprise';
+  if (feature === 'execution') return plan === 'personalite' || plan === 'enterprise';
   return false;
 }

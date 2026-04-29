@@ -4,128 +4,212 @@
 
 @layer base {
   :root {
-    --background: #ffffff;
-    --foreground: #020617;
+    --background: #f8f9fa;
+    --foreground: #202124;
     --surface: #ffffff;
-    --surface-muted: #f8fafc;
-    --border: #e2e8f0;
-    --text-primary: #0f172a;
-    --text-muted: #64748b;
-    --primary: #0047FF;
-    --primary-dark: #0039CC;
-    --secondary: #00D1FF;
-    --navy: #040940;
+    --surface-muted: #f1f3f4;
+    --border: #dadce0;
+    --text-primary: #202124;
+    --text-muted: #5f6368;
+    --primary: #1a73e8;
+    --primary-hover: #1b66c9;
+    --primary-active: #185abc;
+    --primary-disabled: #e8eaed;
+    --primary-text-disabled: #9aa0a6;
     --card-bg: #ffffff;
-    --card-border: #f1f5f9;
+    --card-border: #dadce0;
+    --shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
   }
 
   .dark {
-    --background: #000000;
-    --foreground: #f8fafc;
-    --surface: #0a0a0a;
-    --surface-muted: #111111;
-    --border: #1e1e1e;
-    --text-primary: #f8fafc;
-    --text-muted: #94a3b8;
-    --card-bg: rgba(255, 255, 255, 0.01);
-    --card-border: rgba(255, 255, 255, 0.05);
+    --background: #121212;
+    --foreground: #e8eaed;
+    --surface: #202124;
+    --surface-muted: #303134;
+    --border: #3c4043;
+    --text-primary: #e8eaed;
+    --text-muted: #9aa0a6;
+    --primary: #8ab4f8;
+    --primary-hover: #93baf9;
+    --primary-active: #aecbfa;
+    --primary-disabled: #3c4043;
+    --primary-text-disabled: #5f6368;
+    --card-bg: #202124;
+    --card-border: #3c4043;
+    --shadow: 0 1px 2px 0 rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
   }
 
   body {
-    background-color: var(--background);
-    color: var(--text-muted);
-    @apply transition-colors duration-500 antialiased overflow-x-hidden;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  }
+  background-color: var(--background);
+  color: var(--text-muted);
+  transition: background-color 0.5s, color 0.5s;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-  /* Mobile-first Font Scaling */
+/* Base Font Scaling */
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
   html {
-    font-size: 14px;
-  }
-  @screen md {
-    html {
-      font-size: 16px;
-    }
+    font-size: 16px;
   }
 }
 
 /* 
-  High-Contrast Theme Overrides
-  Ensures that "white" elements become dark in Light mode automatically.
+  Custom Components (Standard CSS)
 */
 
-/* 1. Reset all white text to follow the theme primary color by default */
-.text-white { 
-  color: var(--text-primary) !important; 
+.btn-primary {
+  background-color: #1a73e8 !important; /* Force blue color as requested */
+  color: #ffffff !important;
+  padding: 0.625rem 1.5rem;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
 }
 
-/* 2. Exception: Elements that MUST stay white (badges, blue buttons, etc) */
-.btn-primary, 
-.bg-blue-600, 
-.bg-blue-600 *, 
-.bg-slate-900, 
-.bg-slate-900 *, 
-.bg-indigo-600, 
-.bg-indigo-600 *,
-.always-white,
-.dark .text-white { 
-  color: #ffffff !important; 
+.btn-primary:hover {
+  background-color: #1765cc !important;
+  box-shadow: 0 1px 3px 1px rgba(60,64,67,0.15), 0 1px 2px 0 rgba(60,64,67,0.3);
 }
 
-/* 3. Handle Slate text colors to be legible in both modes */
-.text-slate-900, .text-slate-800, .text-slate-700 { color: var(--text-primary) !important; }
-.text-slate-600, .text-slate-500, .text-slate-400 { color: var(--text-muted) !important; }
-
-/* 4. Background Overrides */
-.bg-white { background-color: var(--surface) !important; }
-.bg-black { background-color: var(--background) !important; }
-.bg-slate-50 { background-color: var(--background) !important; }
-.bg-slate-50\/50 { background-color: var(--surface-muted) !important; }
-
-/* 5. Special Background Handling for Dark Mode */
-.dark .bg-blue-50, .dark .bg-blue-100 { background-color: rgba(0, 71, 255, 0.1) !important; }
-.dark .bg-green-50, .dark .bg-green-100 { background-color: rgba(34, 197, 94, 0.1) !important; }
-.dark .bg-amber-50, .dark .bg-amber-100 { background-color: rgba(245, 158, 11, 0.1) !important; }
-
-/* 6. Border Overrides */
-.border-slate-100, .border-slate-200, .border-white\/10, .border-white\/5 { 
-  border-color: var(--border) !important; 
+.btn-primary:active {
+  background-color: #1557b0 !important;
+  transform: scale(0.98);
 }
 
-@layer components {
-  .btn-primary {
-    background-color: var(--primary);
-    @apply px-8 py-4 font-black rounded-full hover:scale-105 transition-all shadow-xl shadow-blue-500/10 active:scale-95;
-  }
+.btn-primary:disabled {
+  background-color: var(--primary-disabled) !important;
+  color: var(--primary-text-disabled) !important;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
 
-  .btn-secondary {
-    @apply px-8 py-4 bg-white/[0.05] border border-[var(--border)] font-bold rounded-full hover:bg-white/[0.1] transition-all;
-    color: var(--text-primary) !important;
-  }
+/* Dark mode override for primary button if desired, 
+   but user specifically asked for it to be BLUE in both. 
+   Keeping it blue but maybe a slightly lighter blue in dark mode for better glow? 
+   No, let's stick to visible blue as requested. */
+.dark .btn-primary {
+  background-color: #8ab4f8 !important; /* Lighter blue for dark mode visibility */
+  color: #202124 !important; /* Dark text for contrast on light blue */
+}
 
-  .glass-card {
-    background-color: var(--card-bg);
-    border-color: var(--card-border);
-    @apply backdrop-blur-xl border rounded-[2.5rem];
+.google-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: transparent;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  outline: none;
+  transition: all 0.2s;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.google-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.google-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  max-width: 448px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .google-card {
+    border-radius: 1rem;
   }
+}
+
+@media (min-width: 768px) {
+  .google-card {
+    padding: 3rem;
+  }
+}
+
+.glass-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(20px);
+  border-radius: 2.5rem;
+}
+}
+
+.google-input-container {
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.google-input:placeholder-shown + .floating-label {
+  top: 0.75rem;
+  left: 1rem;
+  font-size: 1rem;
+  background-color: transparent;
+}
+
+.google-input:focus + .floating-label,
+.google-input:not(:placeholder-shown) + .floating-label {
+  top: -0.6rem;
+  left: 0.75rem;
+  font-size: 0.75rem;
+  background-color: var(--surface);
+  padding: 0 0.25rem;
+  color: var(--primary);
+  z-index: 10;
+}
+
+.floating-label {
+  position: absolute;
+  pointer-events: none;
+  transition: all 0.2s;
+  color: var(--text-muted);
+  top: 0.75rem;
+  left: 1rem;
 }
 
 h1, h2, h3, h4 { 
-  @apply tracking-tight font-black leading-tight; 
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  line-height: 1.2;
   color: var(--text-primary) !important; 
 }
 
-/* Responsive Heading Sizes */
-h1 { @apply text-2xl md:text-4xl lg:text-5xl; }
-h2 { @apply text-xl md:text-3xl lg:text-4xl; }
-h3 { @apply text-lg md:text-2xl lg:text-3xl; }
-h4 { @apply text-base md:text-xl lg:text-2xl; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+
+@media (min-width: 768px) {
+  h1 { font-size: 3rem; }
+  h2 { font-size: 2.25rem; }
+  h3 { font-size: 1.875rem; }
+}
 
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-br from-blue-600 to-cyan-500;
+  background: linear-gradient(to bottom right, #1a73e8, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
+
 .dark .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-br from-white to-white/50;
+  background: linear-gradient(to bottom right, #ffffff, rgba(255,255,255,0.5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -154,7 +238,12 @@ h4 { @apply text-base md:text-xl lg:text-2xl; }
 }
 
 .page-transition {
-  @apply animate-in fade-in slide-in-from-bottom-2 duration-500;
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Chat Assistant Animations */

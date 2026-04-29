@@ -121,8 +121,11 @@ export const Sidebar: React.FC = () => {
             </div>
           )}
 
-          <div className="px-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-2xl flex items-center gap-3 shadow-sm">
-            <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-700 dark:text-blue-300 font-bold shrink-0 relative">
+          <div 
+            onClick={() => navigate('/dashboard/configuracoes')}
+            className="px-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-2xl flex items-center gap-3 shadow-sm cursor-pointer hover:border-blue-500/50 hover:bg-slate-500/5 transition-all group/user"
+          >
+            <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-700 dark:text-blue-300 font-bold shrink-0 relative group-hover/user:scale-105 transition-transform">
               {authState.user?.name.charAt(0)}
               <div className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-[var(--surface)] flex items-center justify-center ${
                 authState.user?.plan === 'personalite' ? 'bg-amber-400' : 
@@ -132,7 +135,7 @@ export const Sidebar: React.FC = () => {
               </div>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-[var(--text-primary)] truncate">{authState.user?.name}</p>
+              <p className="text-sm font-bold text-[var(--text-primary)] truncate group-hover/user:text-blue-600 transition-colors">{authState.user?.name}</p>
               <div className="flex items-center gap-1.5">
                 <span className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${
                   authState.user?.plan === 'personalite' ? 'bg-amber-100 text-amber-700' :

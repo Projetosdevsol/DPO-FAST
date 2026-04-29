@@ -7,7 +7,7 @@ export interface User {
   cnpj: string;
   address: string;
   onboardingCompleted: boolean;
-  plan: 'basico' | 'pro' | 'personalite';
+  plan: 'free' | 'basico' | 'pro' | 'personalite' | 'enterprise';
   isAdmin?: boolean;
   status?: 'active' | 'suspended';
   status_assinatura?: 'active' | 'canceled' | 'past_due' | 'trialing'; // Added for Stripe integration
@@ -89,7 +89,7 @@ export interface SectorAnswers {
 }
 
 export interface QuestionnaireData {
-  companySize: 'MEI' | 'Microempresa' | 'Pequena Empresa';
+  companySize: 'MEI' | 'ME' | 'EPP' | 'EM' | 'EG';
   industry: string;
   sectors: SectorMapping[];
   lastUpdated: string;
@@ -158,7 +158,7 @@ export interface AuditLog {
 export interface Subscription {
   id: string;
   userId: string;
-  plan: 'basico' | 'pro' | 'personalite';
+  plan: 'free' | 'basico' | 'pro' | 'personalite' | 'enterprise';
   status: 'active' | 'canceled' | 'past_due' | 'trialing';
   currentPeriodEnd: string;
   stripeSubscriptionId?: string;

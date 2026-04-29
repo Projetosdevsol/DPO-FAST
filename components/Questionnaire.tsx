@@ -829,6 +829,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
 
 
 export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, onSave }) => {
+  const { authState } = useAuth();
   const [view, setView] = useState<'mapping' | 'sector-hub' | 'process-form'>(
     initialData?.industry ? 'sector-hub' : 'mapping'
   );
@@ -837,7 +838,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, onSav
   const [activeProcessId, setActiveProcessId] = useState<string | null>(null);
 
   const [data, setData] = useState<QuestionnaireData>(initialData || {
-    companySize: 'Microempresa' as any,
+    companySize: 'ME' as any,
     industry: '',
     sectors: [],
     lastUpdated: new Date().toISOString()
@@ -982,24 +983,50 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, onSav
                 value={data.companySize} 
                 onChange={e => setData({...data, companySize: e.target.value as any})}
               >
-                <option value="MEI">MEI</option>
-                <option value="Microempresa">Microempresa</option>
-                <option value="Pequena Empresa">Pequena Empresa</option>
+                <option value="MEI">Microempreendedor Individual (MEI): Até R$ 81.000/ano</option>
+                <option value="ME">Microempresa (ME): Até R$ 360.000/ano</option>
+                <option value="EPP">Empresa de Pequeno Porte (EPP): R$ 360 mil a R$ 4,8 milhões/ano</option>
+                <option value="EM">Empresa de Médio Porte (EM): R$ 4,8 milhões a R$ 12 milhões/ano</option>
+                <option value="EG">Empresa de Grande Porte (EG): Acima de R$ 12 milhões/ano</option>
               </select>
             </div>
             <div className="space-y-4">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Setor de Atuação Principal</label>
-              <select className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-50 focus:bg-white transition-all cursor-pointer" value={data.industry} onChange={e => setData({...data, industry: e.target.value})}>
-                <option value="">Selecione...</option>
-                {['Tecnologia', 'Varejo', 'Saúde', 'Educação', 'Serviços', 'Indústria'].map(r => <option key={r} value={r}>{r}</option>)}
-              </select>
+              <div className="relative">
+                <select 
+                  className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-50 focus:bg-white transition-all cursor-pointer mb-2" 
+                  value={['Tecnologia', 'Varejo', 'Saúde', 'Educação', 'Serviços', 'Indústria', 'Logística', 'Agronegócio', 'Construção Civil'].includes(data.industry) ? data.industry : (data.industry === 'OUTRO_SELECTED' ? 'Outro' : (data.industry ? 'Outro' : ''))} 
+                  onChange={e => {
+                    if (e.target.value === 'Outro') {
+                      setData({...data, industry: 'OUTRO_SELECTED'});
+                    } else {
+                      setData({...data, industry: e.target.value});
+                    }
+                  }}
+                >
+                  <option value="">Selecione...</option>
+                  {['Tecnologia', 'Varejo', 'Saúde', 'Educação', 'Serviços', 'Indústria', 'Logística', 'Agronegócio', 'Construção Civil'].map(r => <option key={r} value={r}>{r}</option>)}
+                  <option value="Outro">Outro (especificar...)</option>
+                </select>
+                
+                {(data.industry === 'OUTRO_SELECTED' || (!['Tecnologia', 'Varejo', 'Saúde', 'Educação', 'Serviços', 'Indústria', 'Logística', 'Agronegócio', 'Construção Civil', ''].includes(data.industry))) && (
+                  <input
+                    type="text"
+                    autoFocus
+                    placeholder="Digite o setor de atuação..."
+                    className="w-full p-4 rounded-2xl bg-white border border-blue-200 font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-100 transition-all animate-in slide-in-from-top-2"
+                    value={data.industry === 'OUTRO_SELECTED' ? '' : data.industry}
+                    onChange={e => setData({...data, industry: e.target.value})}
+                  />
+                )}
+              </div>
             </div>
           </div>
 
           <div className="pt-8 border-t border-slate-100 space-y-6">
             <label className="text-sm font-bold text-slate-700 block">Quais departamentos sua empresa possui inicialmente?</label>
             <div className="flex flex-wrap gap-2">
-              {['RH / DP', 'Marketing', 'Vendas', 'Atendimento', 'Financeiro', 'TI', 'Jurídico'].map(s => {
+              {['RH / DP', 'Marketing', 'Vendas', 'Atendimento', 'Financeiro', 'TI', 'Jurídico', 'Logística', 'Produção', 'Compras', 'Manutenção', 'Segurança', 'Compliance', 'Qualidade'].map(s => {
                 const isSelected = (data.sectors || []).some(sec => sec.name === s);
                 return (
                   <button key={s} onClick={() => handleToggleSector(s)} className={`px-5 py-2.5 rounded-full border text-xs font-bold transition-all ${isSelected ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100' : 'bg-white border-slate-200 text-slate-500 hover:border-blue-300'}`}>
@@ -1007,10 +1034,41 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, onSav
                   </button>
                 );
               })}
+              
+              <div className="flex items-center gap-2 mt-2 w-full sm:w-auto">
+                <input 
+                  id="custom-sector-input"
+                  type="text" 
+                  placeholder="Adicionar outro departamento..." 
+                  className="px-4 py-2 rounded-full border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-blue-100 outline-none w-full sm:w-64"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      const val = (e.target as HTMLInputElement).value.trim();
+                      if (val && !(data.sectors || []).some(s => s.name === val)) {
+                        handleToggleSector(val);
+                        (e.target as HTMLInputElement).value = '';
+                      }
+                    }
+                  }}
+                />
+                <button 
+                  onClick={() => {
+                    const input = document.getElementById('custom-sector-input') as HTMLInputElement;
+                    const val = input.value.trim();
+                    if (val && !(data.sectors || []).some(s => s.name === val)) {
+                      handleToggleSector(val);
+                      input.value = '';
+                    }
+                  }}
+                  className="p-2 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-        <button onClick={() => syncData(data).then(() => setView('sector-hub'))} disabled={!data.sectors || data.sectors.length === 0 || !data.industry} className="w-full md:w-auto px-12 py-5 bg-blue-600 text-white rounded-[2rem] font-black text-lg flex items-center justify-center gap-3 ml-auto block shadow-xl hover:bg-blue-700 transition-all disabled:opacity-50 active:scale-95">
+        <button onClick={() => syncData(data).then(() => setView('sector-hub'))} disabled={!data.sectors || data.sectors.length === 0 || !data.industry || data.industry === 'OUTRO_SELECTED'} className="w-full md:w-auto px-12 py-5 bg-blue-600 text-white rounded-[2rem] font-black text-lg flex items-center justify-center gap-3 ml-auto block shadow-xl hover:bg-blue-700 transition-all disabled:opacity-50 active:scale-95">
           Confirmar Dados Iniciais <ChevronRight className="h-6 w-6" />
         </button>
       </div>

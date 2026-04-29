@@ -12,6 +12,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { Pricing } from './components/Pricing';
 import { SuccessPay } from './components/SuccessPay';
+import { PaymentGate } from './components/PaymentGate';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { authState } = useAuth();
@@ -55,7 +56,9 @@ const App: React.FC = () => {
               path="/dashboard/*" 
               element={
                 <PrivateRoute>
-                  <Dashboard />
+                  <PaymentGate>
+                    <Dashboard />
+                  </PaymentGate>
                 </PrivateRoute>
               } 
             />
