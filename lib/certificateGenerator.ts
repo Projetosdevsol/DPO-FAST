@@ -32,9 +32,7 @@ export const checkCertificationEligibility = (
   if (!answers.legalBasis) return { eligible: false, reason: 'Base Legal não definida (Etapa 3)' };
   
   // Requirement: Governance measures (Step 6)
-  if (!answers.hasIncidentPlan || !answers.hasStaffTraining) {
-     return { eligible: false, reason: 'Medidas de Governança (Plano de Incidente/Treinamento) pendentes na Etapa 6' };
-  }
+  // Agora validado via tarefas (task-incident e task-training) criadas em complianceEngine.ts
 
   return { eligible: true };
 };

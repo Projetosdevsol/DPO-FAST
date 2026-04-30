@@ -176,6 +176,42 @@ Referência: Art. 46.`,
           sectorId: sector.id
         }));
       }
+
+      // Plano de Incidente
+      if (!answers.hasIncidentPlan) {
+         tasks.push(createTask({
+          id: `task-incident-${process.id}`,
+          title: `Elaborar Plano de Resposta a Incidentes: ${process.name}`,
+          description: `A empresa não possui um plano estruturado para lidar com incidentes de segurança (como vazamentos) neste processo.`,
+          explanation: `COMO FAZER: 
+1. Crie um documento detalhando quem deve ser acionado caso ocorra um vazamento de dados. 
+2. Defina os prazos para notificar a ANPD e os titulares (geralmente até 2 dias úteis). 
+3. Mantenha os contatos da TI e do setor jurídico atualizados.`,
+          priority: 'Alta',
+          status: 'Pendente',
+          targetDocument: 'Política Interna de Privacidade',
+          processId: process.id,
+          sectorId: sector.id
+        }));
+      }
+
+      // Treinamento de Equipe
+      if (!answers.hasStaffTraining) {
+         tasks.push(createTask({
+          id: `task-training-${process.id}`,
+          title: `Realizar Treinamento da Equipe: ${process.name}`,
+          description: `A equipe envolvida neste processo não foi treinada nas diretrizes de proteção de dados e privacidade.`,
+          explanation: `COMO FAZER: 
+1. Organize uma reunião com todos os colaboradores do setor. 
+2. Explique os cuidados básicos e as penalidades por não seguir a Política Interna. 
+3. Colete assinaturas em uma lista de presença para comprovar o treinamento.`,
+          priority: 'Média',
+          status: 'Pendente',
+          targetDocument: 'Política Interna de Privacidade',
+          processId: process.id,
+          sectorId: sector.id
+        }));
+      }
     });
   });
 
