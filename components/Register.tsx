@@ -140,7 +140,7 @@ export const Register: React.FC = () => {
 
       <footer className="mt-auto py-8 w-full max-w-4xl px-6 flex flex-col md:flex-row justify-between items-center text-xs text-[var(--text-muted)] space-y-6 md:space-y-0">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 px-3 py-2 rounded-lg transition-colors">
+          <div className="flex items-center gap-2 cursor-pointer hover:bg-black/5 dark:hover:bg-[var(--surface)]/5 px-3 py-2 rounded-lg transition-colors">
             Português (Brasil) <ChevronDown className="h-3 w-3" />
           </div>
         </div>

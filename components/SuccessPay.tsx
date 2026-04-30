@@ -51,7 +51,7 @@ export const SuccessPay: React.FC = () => {
             <Logo className="h-8 w-10 opacity-50" />
           </div>
           <h1 className="text-4xl font-black text-[var(--text-primary)] tracking-tighter">Assinatura Ativada!</h1>
-          <p className="text-slate-500 font-medium leading-relaxed">Sua conta agora está sob a proteção da rede <span className="text-blue-500 font-bold">LGPD Fácil</span>.</p>
+          <p className="text-[var(--text-muted)] font-medium leading-relaxed">Sua conta agora está sob a proteção da rede <span className="text-blue-500 font-bold">LGPD Fácil</span>.</p>
         </div>
 
         <div className="space-y-4 pt-4 border-t border-[var(--border)]">
@@ -62,7 +62,7 @@ export const SuccessPay: React.FC = () => {
           ].map((text, i) => (
             <div key={i} className="flex items-center gap-3 justify-center group">
               <Sparkles className="h-4 w-4 text-blue-400 opacity-50 group-hover:opacity-100 transition-all" />
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{text}</span>
+              <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest">{text}</span>
             </div>
           ))}
         </div>

@@ -128,7 +128,7 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
             className={`p-5 rounded-[2rem] border transition-all text-left group ${selectedSectorId === stat.id ? 'bg-blue-600 border-blue-600 shadow-xl shadow-blue-100' : 'bg-[var(--surface)] border-[var(--border)] hover:border-blue-500/50'}`}
           >
             <div className="flex items-center justify-between mb-3">
-              <div className={`p-2 rounded-xl shrink-0 ${selectedSectorId === stat.id ? 'bg-white/20 text-white' : 'bg-blue-600/10 text-blue-600'}`}>
+              <div className={`p-2 rounded-xl shrink-0 ${selectedSectorId === stat.id ? 'bg-[var(--surface)]/20 text-white' : 'bg-blue-600/10 text-blue-600'}`}>
                 <Activity className="h-4 w-4" />
               </div>
               <span className={`text-[10px] font-black ${selectedSectorId === stat.id ? 'text-blue-100' : 'text-slate-400'}`}>
@@ -140,7 +140,7 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
             </h4>
             <div className="mt-3 h-1 w-full bg-black/10 rounded-full overflow-hidden">
               <div 
-                className={`h-full transition-all duration-700 ${selectedSectorId === stat.id ? 'bg-white' : 'bg-blue-600'}`} 
+                className={`h-full transition-all duration-700 ${selectedSectorId === stat.id ? 'bg-[var(--surface)]' : 'bg-blue-600'}`} 
                 style={{ width: `${stat.percent}%` }}
               />
             </div>
@@ -149,7 +149,7 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
       </div>
 
       {/* 2. FILTROS */}
-      <div className="bg-[var(--surface)] p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border border-[var(--border)] shadow-sm space-y-6">
+      <div className="bg-[var(--surface)] p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] space-y-6">
         <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
@@ -164,10 +164,10 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
           
           <div className="flex flex-col sm:flex-row flex-wrap gap-4">
             <div className="flex bg-[var(--surface-muted)] p-1 rounded-xl md:rounded-2xl border border-[var(--border)] w-full sm:w-auto">
-               <button onClick={() => setViewMode('list')} className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 rounded-lg md:rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'list' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-blue-600'}`}>
+               <button onClick={() => setViewMode('list')} className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 rounded-lg md:rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'list' ? 'bg-blue-600 text-white shadow-lg' : 'text-[var(--text-muted)] hover:text-blue-600'}`}>
                  <LayoutList className="h-4 w-4" /> <span className="hidden xs:inline">Lista</span>
                </button>
-               <button onClick={() => setViewMode('calendar')} className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 rounded-lg md:rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'calendar' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-blue-600'}`}>
+               <button onClick={() => setViewMode('calendar')} className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 rounded-lg md:rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'calendar' ? 'bg-blue-600 text-white shadow-lg' : 'text-[var(--text-muted)] hover:text-blue-600'}`}>
                  <CalendarIcon className="h-4 w-4" /> <span className="hidden xs:inline">Calendário</span>
                </button>
             </div>
@@ -194,7 +194,7 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
             const process = sector?.processes?.find(p => p.id === task.processId);
             
             return (
-              <div key={task.id} className={`bg-[var(--surface)] rounded-[2rem] md:rounded-[2.5rem] border transition-all duration-500 ${isExpanded ? 'border-blue-500 shadow-2xl shadow-blue-500/10' : 'border-[var(--border)] shadow-sm hover:border-blue-500/30'}`}>
+              <div key={task.id} className={`bg-[var(--surface)] rounded-[2rem] md:rounded-[2.5rem] border transition-all duration-500 ${isExpanded ? 'border-blue-500 shadow-2xl shadow-blue-500/10' : 'border-[var(--border)] shadow-[var(--shadow)] hover:border-blue-500/30'}`}>
                 <div className="p-6 md:p-8 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6" onClick={() => toggleExpand(task.id)}>
                   <div className="flex items-start gap-4 md:gap-6">
                     <div className={`p-3 md:p-4 rounded-xl md:rounded-2xl shrink-0 ${task.status === 'Concluída' ? 'bg-green-600/10 text-green-600' : task.priority === 'Alta' ? 'bg-red-600/10 text-red-600' : 'bg-blue-600/10 text-blue-600'}`}>
@@ -242,7 +242,7 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
               </div>
             );
           }) : (
-            <div className="py-20 text-center bg-[var(--surface)] rounded-[2rem] border border-[var(--border)] shadow-sm">
+            <div className="py-20 text-center bg-[var(--surface)] rounded-[2rem] border border-[var(--border)] shadow-[var(--shadow)]">
               <FileSearch className="h-12 w-12 text-slate-300 mx-auto mb-4" />
               <h4 className="font-black text-[var(--text-primary)] text-lg">Nada encontrado</h4>
             </div>
@@ -266,7 +266,7 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
                    </button>
                 </div>
              </div>
-             <div className="grid grid-cols-7 border-t border-l border-[var(--border)] overflow-hidden rounded-2xl md:rounded-3xl">
+             <div className="min-w-[500px] grid grid-cols-7 border-t border-l border-[var(--border)] overflow-hidden rounded-2xl md:rounded-3xl">
                 {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(d => (
                   <div key={d} className="p-3 md:p-6 bg-[var(--surface-muted)] border-b border-r border-[var(--border)] text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">{d}</div>
                 ))}
@@ -281,7 +281,7 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
                       </div>
                       <div className="space-y-1 overflow-y-auto max-h-[60px] md:max-h-[80px] custom-scrollbar pr-1">
                          {dayTasks.map(t => (
-                           <div key={t.id} onClick={() => { setSelectedTask(t); toggleExpand(t.id); setViewMode('list'); }} className={`px-2 py-1.5 rounded-lg text-[8px] font-bold leading-tight cursor-pointer transition-all hover:scale-[1.03] shadow-sm truncate ${t.status === 'Concluída' ? 'bg-green-600/10 text-green-700 border border-green-500/20' : t.priority === 'Alta' ? 'bg-red-600/10 text-red-700 border border-red-500/20' : 'bg-blue-600/10 text-blue-700 border border-blue-500/20'}`}>
+                           <div key={t.id} onClick={() => { setSelectedTask(t); toggleExpand(t.id); setViewMode('list'); }} className={`px-2 py-1.5 rounded-lg text-[8px] font-bold leading-tight cursor-pointer transition-all hover:scale-[1.03] shadow-[var(--shadow)] truncate ${t.status === 'Concluída' ? 'bg-green-600/10 text-green-700 border border-green-500/20' : t.priority === 'Alta' ? 'bg-red-600/10 text-red-700 border border-red-500/20' : 'bg-blue-600/10 text-blue-700 border border-blue-500/20'}`}>
                              {t.title}
                            </div>
                          ))}

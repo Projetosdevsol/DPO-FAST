@@ -69,16 +69,16 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
     <div className="space-y-8 page-transition pb-20">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Status de Conformidade</h1>
-          <p className="text-slate-500 font-medium">Monitoramento em tempo real dos fluxos da <span className="text-blue-600 font-bold">{user.companyName}</span>.</p>
+          <h1 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">Status de Conformidade</h1>
+          <p className="text-[var(--text-muted)] font-medium">Monitoramento em tempo real dos fluxos da <span className="text-blue-600 font-bold">{user.companyName}</span>.</p>
         </div>
         
-        <div className={`px-6 py-4 rounded-3xl flex items-center gap-4 border shadow-sm ${
+        <div className={`px-6 py-4 rounded-3xl flex items-center gap-4 border shadow-[var(--shadow)] ${
           user.plan === 'personalite' ? 'bg-slate-900 border-slate-800 text-white' :
           user.plan === 'pro' ? 'bg-blue-600 border-blue-500 text-white' :
-          'bg-white border-slate-100 text-slate-900'
+          'bg-[var(--surface)] border-[var(--border)] text-[var(--text-primary)]'
         }`}>
-          <div className={`p-2 rounded-xl ${user.plan === 'basico' ? 'bg-blue-50 text-blue-600' : 'bg-white/20'}`}>
+          <div className={`p-2 rounded-xl ${user.plan === 'basico' ? 'bg-blue-50 text-blue-600' : 'bg-[var(--surface)]/20'}`}>
             <Clock className="h-5 w-5" />
           </div>
           <div>
@@ -103,11 +103,11 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
       </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
+        <div className="bg-[var(--surface)] p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity"><TrendingUp className="h-24 w-24 text-blue-600" /></div>
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Progresso do Mapeamento</p>
           <div className="flex items-end gap-2 mb-4">
-            <span className="text-5xl font-black text-slate-900">{progress}%</span>
+            <span className="text-5xl font-black text-[var(--text-primary)]">{progress}%</span>
             <span className="text-xs font-bold text-blue-600 mb-1.5 uppercase">Concluído</span>
           </div>
           <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
@@ -116,26 +116,26 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
           <p className="text-[10px] text-slate-400 font-bold mt-4">{completedProcesses} de {totalProcesses} processos finalizados</p>
         </div>
 
-        <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col justify-between">
+        <div className="bg-[var(--surface)] p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] flex flex-col justify-between">
           <div className="flex items-center gap-5">
             <div className="p-4 bg-green-50 text-green-600 rounded-2xl"><CheckCircle2 className="h-7 w-7" /></div>
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tarefas Executadas</p>
-              <p className="text-3xl font-black text-slate-900 mt-1">{completedTasks}</p>
+              <p className="text-3xl font-black text-[var(--text-primary)] mt-1">{completedTasks}</p>
             </div>
           </div>
-          <button onClick={() => navigate('/dashboard/conformidade')} className="mt-8 flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-all group">
-            <span className="text-xs font-bold text-slate-600">Ver plano de ação</span>
+          <button onClick={() => navigate('/dashboard/conformidade')} className="mt-8 flex items-center justify-between p-4 bg-[var(--surface-muted)] rounded-2xl hover:bg-slate-100 transition-all group">
+            <span className="text-xs font-bold text-[var(--text-muted)]">Ver plano de ação</span>
             <ChevronRight className="h-4 w-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
 
-        <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col justify-between">
+        <div className="bg-[var(--surface)] p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] flex flex-col justify-between">
           <div className="flex items-center gap-5">
             <div className="p-4 bg-amber-50 text-amber-600 rounded-2xl"><AlertTriangle className="h-7 w-7" /></div>
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Riscos Críticos</p>
-              <p className="text-3xl font-black text-slate-900 mt-1">{highPriorityTasks.length}</p>
+              <p className="text-3xl font-black text-[var(--text-primary)] mt-1">{highPriorityTasks.length}</p>
             </div>
           </div>
           <p className="text-[10px] text-slate-400 font-medium leading-relaxed mt-4">Foque na resolução das pendências de <span className="text-amber-600 font-bold">ALTA prioridade</span> para reduzir sua exposição legal.</p>
@@ -144,9 +144,9 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <div className="bg-[var(--surface)] p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)]">
              <div className="flex items-center justify-between mb-8">
-               <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
+               <h3 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-3">
                  <LayoutGrid className="h-5 w-5 text-blue-600" /> Departamentos Ativos
                </h3>
                <button onClick={() => navigate('/dashboard/departamentos')} className="text-xs font-bold text-blue-600 hover:underline">Gerenciar Estrutura</button>
@@ -157,9 +157,9 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
                  const comp = sector.processes?.filter(p => p.status === 'completed').length || 0;
                  const total = sector.processes?.length || 0;
                  return (
-                   <div key={sector.id} className="p-5 border border-slate-100 rounded-3xl bg-slate-50/50 hover:bg-white transition-all group cursor-pointer" onClick={() => navigate('/dashboard/mapeamento')}>
+                   <div key={sector.id} className="p-5 border border-[var(--border)] rounded-3xl bg-[var(--surface-muted)]/50 hover:bg-[var(--surface)] transition-all group cursor-pointer" onClick={() => navigate('/dashboard/mapeamento')}>
                       <div className="flex items-center justify-between mb-3">
-                        <span className="font-bold text-slate-900 text-sm">{sector.name}</span>
+                        <span className="font-bold text-[var(--text-primary)] text-sm">{sector.name}</span>
                         <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-blue-600 transition-colors" />
                       </div>
                       <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2">
@@ -186,7 +186,7 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
              <div className="absolute -top-10 -right-10 h-32 w-32 bg-blue-600/20 rounded-full blur-3xl" />
              <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><FileSearch className="h-5 w-5 text-blue-400" /> RAT Consolidado</h3>
              <p className="text-slate-400 text-xs leading-relaxed mb-6">O Registro de Atividades de Tratamento é gerado automaticamente com base nos processos que você finaliza.</p>
-             <button onClick={() => navigate('/dashboard/documentos')} className="w-full py-4 bg-white text-slate-900 rounded-2xl font-black text-xs hover:bg-blue-50 transition-all">Acessar Dossiê de Documentos</button>
+             <button onClick={() => navigate('/dashboard/documentos')} className="w-full py-4 bg-[var(--surface)] text-[var(--text-primary)] rounded-2xl font-black text-xs hover:bg-blue-50 transition-all">Acessar Dossiê de Documentos</button>
            </div>
 
            <div className="bg-blue-50 p-6 rounded-[2.5rem] border border-blue-100 flex items-start gap-4">
@@ -331,7 +331,7 @@ export const Dashboard: React.FC = () => {
   if (authState.loading || isSyncing) return <div className="h-screen flex items-center justify-center font-bold text-slate-400 animate-pulse">Sincronizando ambiente seguro...</div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-[var(--surface-muted)] flex flex-col lg:flex-row">
       <Sidebar />
       <main className="flex-1 lg:pl-72 transition-all pt-16 lg:pt-0">
         <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-screen">
@@ -341,7 +341,7 @@ export const Dashboard: React.FC = () => {
             <Route path="/mapeamento" element={<Questionnaire initialData={qData} tasks={tasks} onSave={handleSaveQuestionnaire} />} />
             <Route path="/documentos" element={<DocumentsListView qData={qData} tasks={tasks} user={authState.user!} />} />
             <Route path="/conformidade" element={<ComplianceView tasks={tasks} user={authState.user!} onUpdateTask={handleUpdateTask} qData={qData} />} />
-            <Route path="/conquistas" element={<AchievementsPage user={authState.user!} />} />
+            <Route path="/conquistas" element={<AchievementsPage user={authState.user!} qData={qData} tasks={tasks} />} />
             <Route path="/configuracoes" element={<Settings initialQData={qData} onSaveQData={handleSaveQuestionnaire} />} />
           </Routes>
         </div>
@@ -374,20 +374,20 @@ const DocumentsListView: React.FC<{ qData: QuestionnaireData | null; tasks: Comp
     return filteredTypes.map(type => generateDocument(type, qData, user));
   }, [qData, tasks, user]);
 
-  if (!qData) return <div className="py-20 text-center space-y-4 px-6 bg-white rounded-[2.5rem] border border-slate-100"><FileSearch className="h-12 w-12 text-slate-300 mx-auto" /><h3 className="text-xl font-bold">Inicie o diagnóstico</h3><p className="text-slate-400">Seus documentos serão gerados conforme você mapeia os processos.</p><button onClick={() => navigate('/dashboard/mapeamento')} className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-bold">Mapear Processos</button></div>;
+  if (!qData) return <div className="py-20 text-center space-y-4 px-6 bg-[var(--surface)] rounded-[2.5rem] border border-[var(--border)]"><FileSearch className="h-12 w-12 text-slate-300 mx-auto" /><h3 className="text-xl font-bold">Inicie o diagnóstico</h3><p className="text-slate-400">Seus documentos serão gerados conforme você mapeia os processos.</p><button onClick={() => navigate('/dashboard/mapeamento')} className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-bold">Mapear Processos</button></div>;
 
   return (
     <div className="space-y-8 page-transition">
       <header>
-        <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Central de Documentos</h2>
-        <p className="text-slate-500 font-medium">Consulte e faça o download dos registros oficiais de conformidade da empresa.</p>
+        <h2 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">Central de Documentos</h2>
+        <p className="text-[var(--text-muted)] font-medium">Consulte e faça o download dos registros oficiais de conformidade da empresa.</p>
       </header>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {availableDocs.map((doc, idx) => (
-          <div key={idx} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center justify-between group hover:shadow-lg transition-all border-l-8 border-l-blue-600">
+          <div key={idx} className="bg-[var(--surface)] p-8 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] flex items-center justify-between group hover:shadow-lg transition-all border-l-8 border-l-blue-600">
             <div className="flex items-center gap-6">
               <div className="p-4 bg-blue-50 text-blue-600 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-all"><FileCheck className="h-6 w-6" /></div>
-              <div><h3 className="font-bold text-slate-900">{doc.title}</h3><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Sincronizado</p></div>
+              <div><h3 className="font-bold text-[var(--text-primary)]">{doc.title}</h3><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Sincronizado</p></div>
             </div>
             <button onClick={() => setPreviewDoc(doc)} className="p-3 bg-slate-900 text-white rounded-xl hover:bg-black transition-all shadow-lg"><ChevronRight className="h-5 w-5" /></button>
           </div>
@@ -396,10 +396,10 @@ const DocumentsListView: React.FC<{ qData: QuestionnaireData | null; tasks: Comp
         {user.plan === 'basico' && (
           <div 
             onClick={() => navigate('/planos')}
-            className="bg-slate-50 p-8 rounded-[2.5rem] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-blue-300 hover:bg-white transition-all"
+            className="bg-[var(--surface-muted)] p-8 rounded-[2.5rem] border-2 border-dashed border-[var(--border)] flex flex-col items-center justify-center text-center group cursor-pointer hover:border-blue-300 hover:bg-[var(--surface)] transition-all"
           >
             <Lock className="h-8 w-8 text-slate-300 mb-3 group-hover:text-blue-600 transition-colors" />
-            <h3 className="font-bold text-slate-400 group-hover:text-slate-900 transition-colors">Documentos Pro Desativados</h3>
+            <h3 className="font-bold text-slate-400 group-hover:text-[var(--text-primary)] transition-colors">Documentos Pro Desativados</h3>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Desbloqueie RAT e RIPD no plano Pro</p>
           </div>
         )}
@@ -418,8 +418,8 @@ const ComplianceView: React.FC<{ tasks: ComplianceTask[]; user: User; onUpdateTa
   return (
     <div className="space-y-8 page-transition">
       <header>
-        <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Caminho da Conformidade</h2>
-        <p className="text-slate-500 font-medium">Siga as orientações geradas pelo diagnóstico para zerar seus riscos.</p>
+        <h2 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">Caminho da Conformidade</h2>
+        <p className="text-[var(--text-muted)] font-medium">Siga as orientações geradas pelo diagnóstico para zerar seus riscos.</p>
       </header>
       <ImplementationSchedule tasks={tasks} user={user} onUpdateTask={onUpdateTask} qData={qData} />
     </div>

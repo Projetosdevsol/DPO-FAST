@@ -243,7 +243,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                   <p className="text-xs font-medium text-slate-100 leading-relaxed">{how}</p>
                 </div>
                 {tip && (
-                  <div className="pt-3 flex items-center gap-2.5 bg-white/5 p-3 rounded-xl border border-white/5">
+                  <div className="pt-3 flex items-center gap-2.5 bg-[var(--surface)]/5 p-3 rounded-xl border border-white/5">
                      <Lightbulb className="h-4 w-4 text-amber-400 shrink-0" />
                      <p className="text-[11px] font-bold text-amber-100 leading-snug italic">{tip}</p>
                   </div>
@@ -258,7 +258,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
 
   const Toggle = ({ id, label, value, onChange, icon: Icon, why, how, tip }: any) => (
     <div className="space-y-2 relative">
-      <button onClick={() => onChange(!value)} className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all ${value ? 'bg-blue-600 border-blue-600 text-white shadow-lg' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
+      <button onClick={() => onChange(!value)} className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all ${value ? 'bg-blue-600 border-blue-600 text-white shadow-lg' : 'bg-[var(--surface-muted)] border-[var(--border)] text-[var(--text-muted)]'}`}>
         <div className="flex items-center gap-3">
           {Icon && <Icon className="h-4 w-4" />}
           <span className="text-xs font-bold">{label}</span>
@@ -271,7 +271,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
            >
              <HelpCircle className="h-4 w-4" />
            </div>
-           {value ? <CheckCircle2 className="h-4 w-4" /> : <div className="h-4 w-4 rounded-full border-2 border-slate-200" />}
+           {value ? <CheckCircle2 className="h-4 w-4" /> : <div className="h-4 w-4 rounded-full border-2 border-[var(--border)]" />}
         </div>
       </button>
       {activeTooltipId === id && (
@@ -290,7 +290,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                   <p className="text-xs font-medium text-slate-100 leading-relaxed">{how}</p>
                 </div>
                 {tip && (
-                  <div className="pt-3 flex items-center gap-2.5 bg-white/5 p-3 rounded-xl border border-white/5 text-left">
+                  <div className="pt-3 flex items-center gap-2.5 bg-[var(--surface)]/5 p-3 rounded-xl border border-white/5 text-left">
                      <Lightbulb className="h-4 w-4 text-amber-400 shrink-0" />
                      <p className="text-[11px] font-bold text-amber-100 leading-snug italic">{tip}</p>
                   </div>
@@ -304,12 +304,12 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 page-transition">
-      <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm sticky top-2 z-40">
+      <div className="bg-[var(--surface)] p-6 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] sticky top-2 z-40">
          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 bg-blue-600 text-white rounded-xl flex items-center justify-center font-black">{currentStep}</div>
               <div>
-                <h3 className="font-bold text-slate-900 leading-tight">{answers.processName || process.name}</h3>
+                <h3 className="font-bold text-[var(--text-primary)] leading-tight">{answers.processName || process.name}</h3>
                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Setor Ativo</p>
               </div>
             </div>
@@ -319,19 +319,19 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
            <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2 z-0 rounded-full" />
            <div className="absolute top-1/2 left-0 h-1 bg-blue-600 -translate-y-1/2 z-0 transition-all duration-700 rounded-full" style={{ width: `${((currentStep - 1) / 6) * 100}%` }} />
            {steps.map(s => (
-             <div key={s.id} className={`relative z-10 h-8 w-8 rounded-full border-4 flex items-center justify-center transition-all ${currentStep >= s.id ? 'bg-blue-600 border-blue-100 text-white' : 'bg-white border-slate-50 text-slate-300'}`}>
+             <div key={s.id} className={`relative z-10 h-8 w-8 rounded-full border-4 flex items-center justify-center transition-all ${currentStep >= s.id ? 'bg-blue-600 border-blue-100 text-white' : 'bg-[var(--surface)] border-slate-50 text-slate-300'}`}>
                <s.icon className="h-3 w-3" />
              </div>
            ))}
          </div>
       </div>
 
-      <div className="bg-white p-6 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl min-h-[500px]">
+      <div className="bg-[var(--surface)] p-6 md:p-10 rounded-[2.5rem] border border-[var(--border)] shadow-xl min-h-[500px]">
          {currentStep === 1 && (
            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
              <div className="flex items-center gap-3 mb-2">
                <div className="p-3 bg-blue-50 rounded-2xl text-blue-600"><Info className="h-6 w-6" /></div>
-               <h4 className="text-xl font-black text-slate-900">Configuração do Contexto</h4>
+               <h4 className="text-xl font-black text-[var(--text-primary)]">Configuração do Contexto</h4>
              </div>
              
              <div className="space-y-8">
@@ -342,7 +342,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                    why="Para identificar este fluxo no seu Registro de Atividades (RAT). Sem um nome claro, você não saberá qual processo está protegendo em caso de fiscalização." 
                    how="Use nomes simples que descrevam a ação. Exemplos: 'Folha de Pagamento', 'Campanha de E-mail Marketing' ou 'Contratação de Software'." 
                  />
-                 <input type="text" value={answers.processName} onChange={e => setAnswers({...answers, processName: e.target.value})} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-50 outline-none transition-all text-slate-950 font-bold placeholder:text-slate-400" />
+                 <input type="text" value={answers.processName} onChange={e => setAnswers({...answers, processName: e.target.value})} className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] focus:bg-[var(--surface)] focus:border-blue-600 focus:ring-4 focus:ring-blue-50 outline-none transition-all text-slate-950 font-bold placeholder:text-slate-400" />
                </div>
                
                <div>
@@ -352,7 +352,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                    why="A LGPD exige que a empresa saiba quem tem o controle operacional do dado (Accountability). Isso ajuda a definir quem deve receber treinamento específico." 
                    how="Insira o CARGO ou DEPARTAMENTO, não o nome da pessoa física. Ex: 'Gerente Comercial' ou 'Equipe de Faturamento'." 
                  />
-                 <input type="text" value={answers.responsibleRole} onChange={e => setAnswers({...answers, responsibleRole: e.target.value})} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-50 outline-none transition-all text-slate-950 font-bold placeholder:text-slate-400" placeholder="Ex: Analista de RH Senior" />
+                 <input type="text" value={answers.responsibleRole} onChange={e => setAnswers({...answers, responsibleRole: e.target.value})} className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] focus:bg-[var(--surface)] focus:border-blue-600 focus:ring-4 focus:ring-blue-50 outline-none transition-all text-slate-950 font-bold placeholder:text-slate-400" placeholder="Ex: Analista de RH Senior" />
                </div>
 
                <div>
@@ -363,7 +363,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                    how="Explique para que o dado é usado na prática. Ex: 'Dados coletados para processar a venda e emitir a nota fiscal obrigatória por lei'." 
                    tip="Se você não consegue explicar a finalidade, talvez não devesse estar coletando esse dado."
                  />
-                 <textarea value={answers.purpose} onChange={e => setAnswers({...answers, purpose: e.target.value})} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-50 outline-none transition-all text-slate-950 font-bold h-32 resize-none placeholder:text-slate-400" placeholder="Descreva exatamente por que esses dados são tratados..." />
+                 <textarea value={answers.purpose} onChange={e => setAnswers({...answers, purpose: e.target.value})} className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] focus:bg-[var(--surface)] focus:border-blue-600 focus:ring-4 focus:ring-blue-50 outline-none transition-all text-slate-950 font-bold h-32 resize-none placeholder:text-slate-400" placeholder="Descreva exatamente por que esses dados são tratados..." />
                </div>
              </div>
            </div>
@@ -373,7 +373,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
              <div className="flex items-center gap-3 mb-2">
                <div className="p-3 bg-purple-50 rounded-2xl text-purple-600"><Database className="h-6 w-6" /></div>
-               <h4 className="text-xl font-black text-slate-900">Inventário de Dados</h4>
+               <h4 className="text-xl font-black text-[var(--text-primary)]">Inventário de Dados</h4>
              </div>
 
              <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 mb-6">
@@ -395,7 +395,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                          const sensitiveIds = ['Sindicato', 'Saude', 'Biometria', 'GeneroOrientacao', 'EtniaRaca'];
                          setAnswers({...answers, collectedData: list, hasSensitiveData: list.some(i => sensitiveIds.includes(i))});
                        }} 
-                       className={`w-full p-5 rounded-2xl border text-xs font-bold transition-all text-left flex items-center justify-between relative group ${isSelected ? 'bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-100 scale-[1.02]' : 'bg-white border-slate-100 text-slate-600 hover:border-blue-200 hover:bg-slate-50 shadow-sm'}`}
+                       className={`w-full p-5 rounded-2xl border text-xs font-bold transition-all text-left flex items-center justify-between relative group ${isSelected ? 'bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-100 scale-[1.02]' : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-muted)] hover:border-blue-200 hover:bg-[var(--surface-muted)] shadow-[var(--shadow)]'}`}
                      >
                        <div className="flex items-center gap-2">
                          {d.isSensitive && <Shield className={`h-3 w-3 ${isSelected ? 'text-blue-200' : 'text-amber-500'}`} />}
@@ -420,7 +420,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                })}
              </div>
 
-             <div className="pt-8 border-t border-slate-100">
+             <div className="pt-8 border-t border-[var(--border)]">
                <FieldLabel 
                  id="fn-subjects"
                  label="Quem são os titulares?"
@@ -429,7 +429,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                />
                <div className="flex flex-wrap gap-2 mb-4">
                  {['Clientes', 'Colaboradores', 'Candidatos', 'Fornecedores', 'Leads'].map(t => (
-                   <button key={t} onClick={() => setAnswers({...answers, dataSubjects: (answers.dataSubjects || []).includes(t) ? answers.dataSubjects.filter(i => i !== t) : [...(answers.dataSubjects || []), t]})} className={`px-5 py-2.5 rounded-full border text-xs font-bold transition-all ${answers.dataSubjects?.includes(t) ? 'bg-slate-900 text-white border-slate-900 shadow-lg' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}>{t}</button>
+                   <button key={t} onClick={() => setAnswers({...answers, dataSubjects: (answers.dataSubjects || []).includes(t) ? answers.dataSubjects.filter(i => i !== t) : [...(answers.dataSubjects || []), t]})} className={`px-5 py-2.5 rounded-full border text-xs font-bold transition-all ${answers.dataSubjects?.includes(t) ? 'bg-slate-900 text-white border-slate-900 shadow-lg' : 'bg-[var(--surface)] text-[var(--text-muted)] border-[var(--border)] hover:border-slate-300'}`}>{t}</button>
                  ))}
                </div>
              </div>
@@ -440,20 +440,20 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
              <div className="flex items-center gap-3 mb-2">
                <div className="p-3 bg-green-50 rounded-2xl text-green-600"><ClipboardCheck className="h-6 w-6" /></div>
-               <h4 className="text-xl font-black text-slate-900">Fundamentação Jurídica</h4>
+               <h4 className="text-xl font-black text-[var(--text-primary)]">Fundamentação Jurídica</h4>
              </div>
              
-             <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 space-y-4">
-               <div className="flex items-center gap-3 text-slate-800">
+             <div className="bg-[var(--surface-muted)] p-6 rounded-[2rem] border border-[var(--border)] space-y-4">
+               <div className="flex items-center gap-3 text-[var(--text-primary)]">
                   <Scale className="h-5 w-5 text-indigo-600" />
                   <h5 className="text-sm font-black uppercase tracking-tight">O que é a Base Legal?</h5>
                </div>
-               <p className="text-xs text-slate-600 leading-relaxed font-medium">
+               <p className="text-xs text-[var(--text-muted)] leading-relaxed font-medium">
                  De acordo com a LGPD (Art. 7º), todo tratamento de dados pessoais precisa ter uma "âncora jurídica". Isso significa que você deve justificar legalmente por que coleta e guarda essas informações.
                </p>
-               <div className="flex items-start gap-2 bg-white/60 p-3 rounded-xl">
+               <div className="flex items-start gap-2 bg-[var(--surface)]/60 p-3 rounded-xl">
                  <Lightbulb className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
-                 <p className="text-[11px] font-bold text-slate-600">
+                 <p className="text-[11px] font-bold text-[var(--text-muted)]">
                    Dica: Se o dado é essencial para entregar o produto, use <span className="text-blue-600">Execução de Contrato</span>. Se for para marketing opcional, use <span className="text-blue-600">Consentimento</span>.
                  </p>
                </div>
@@ -470,7 +470,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                  <select 
                    value={answers.legalBasis} 
                    onChange={e => setAnswers({...answers, legalBasis: e.target.value})} 
-                   className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-50 focus:bg-white transition-all"
+                   className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-50 focus:bg-[var(--surface)] transition-all"
                  >
                    <option value="">Selecione a base jurídica...</option>
                    {LEGAL_BASES.map(b => <option key={b} value={b}>{LEGAL_BASES_INFO[b].label}</option>)}
@@ -501,7 +501,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                         </p>
                       </div>
 
-                      <div className="flex items-start gap-2 bg-white/50 p-3 rounded-xl">
+                      <div className="flex items-start gap-2 bg-[var(--surface)]/50 p-3 rounded-xl">
                         <BookOpen className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
                         <p className="text-[11px] font-medium text-blue-700 italic leading-snug">
                           <strong>Exemplo prático:</strong> {LEGAL_BASES_INFO[answers.legalBasis].hint}
@@ -520,7 +520,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                        why="Se a base é consentimento, você precisa provar que ele foi livre. Se não houver registro, o tratamento é nulo." 
                        how="Descreva o canal. Ex: 'E-mail de confirmação', 'Checkbox em Landing Page' ou 'Assinatura em papel'." 
                      />
-                     <input type="text" value={answers.consentMechanism} onChange={e => setAnswers({...answers, consentMechanism: e.target.value})} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-slate-950 focus:bg-white focus:border-blue-600 outline-none transition-all placeholder:text-slate-400" placeholder="Ex: Checkbox no formulário do site" />
+                     <input type="text" value={answers.consentMechanism} onChange={e => setAnswers({...answers, consentMechanism: e.target.value})} className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] font-bold text-slate-950 focus:bg-[var(--surface)] focus:border-blue-600 outline-none transition-all placeholder:text-slate-400" placeholder="Ex: Checkbox no formulário do site" />
                    </div>
                    <Toggle 
                      id="fn-consent-proof"
@@ -541,7 +541,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
              <div className="flex items-center gap-3 mb-2">
                <div className="p-3 bg-amber-50 rounded-2xl text-amber-600"><Cloud className="h-6 w-6" /></div>
-               <h4 className="text-xl font-black text-slate-900">Armazenamento e Infraestrutura</h4>
+               <h4 className="text-xl font-black text-[var(--text-primary)]">Armazenamento e Infraestrutura</h4>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                <div>
@@ -551,7 +551,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                    why="Para avaliar o risco de perda ou acesso indevido. Roubo de papel exige tranca física; invasão digital exige antivírus e firewall." 
                    how="Selecione o formato predominante onde as informações ficam guardadas." 
                  />
-                 <select value={answers.storageType} onChange={e => setAnswers({...answers, storageType: e.target.value as any})} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-50 focus:bg-white transition-all">
+                 <select value={answers.storageType} onChange={e => setAnswers({...answers, storageType: e.target.value as any})} className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-50 focus:bg-[var(--surface)] transition-all">
                    <option value="Digital">100% Digital (Nuvem/Local)</option>
                    <option value="Físico">Apenas Físico (Papel/Arquivo)</option>
                    <option value="Híbrido">Híbrido (Digital e Físico)</option>
@@ -564,7 +564,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                    why="Identificar quem é o seu 'operador' (subcontratado). Se o servidor deles falhar, sua empresa pode ser responsabilizada." 
                    how="Informe o nome da plataforma ou empresa onde os dados ficam salvos." 
                  />
-                 <input type="text" value={answers.cloudProvider} onChange={e => setAnswers({...answers, cloudProvider: e.target.value})} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-slate-950 focus:bg-white focus:border-blue-600 outline-none transition-all placeholder:text-slate-400" placeholder="Ex: Google Drive, AWS, Hostgator..." />
+                 <input type="text" value={answers.cloudProvider} onChange={e => setAnswers({...answers, cloudProvider: e.target.value})} className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] font-bold text-slate-950 focus:bg-[var(--surface)] focus:border-blue-600 outline-none transition-all placeholder:text-slate-400" placeholder="Ex: Google Drive, AWS, Hostgator..." />
                </div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-50">
@@ -594,7 +594,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
              <div className="flex items-center gap-3 mb-2">
                <div className="p-3 bg-blue-50 rounded-2xl text-blue-600"><Share2 className="h-6 w-6" /></div>
-               <h4 className="text-xl font-black text-slate-900">Fluxos e Compartilhamentos</h4>
+               <h4 className="text-xl font-black text-[var(--text-primary)]">Fluxos e Compartilhamentos</h4>
              </div>
              <div className="space-y-6">
                <Toggle 
@@ -633,7 +633,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                        why="Para gerar a cláusula de compartilhamento no seu Aviso de Privacidade (Transparência)." 
                        how="Liste os nomes ou categorias das empresas parceiras." 
                      />
-                     <input type="text" value={answers.externalThirdParties} onChange={e => setAnswers({...answers, externalThirdParties: e.target.value})} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-slate-950 focus:bg-white focus:border-blue-600 outline-none transition-all placeholder:text-slate-400" placeholder="Ex: Contabilidade, Agência de Marketing..." />
+                     <input type="text" value={answers.externalThirdParties} onChange={e => setAnswers({...answers, externalThirdParties: e.target.value})} className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] font-bold text-slate-950 focus:bg-[var(--surface)] focus:border-blue-600 outline-none transition-all placeholder:text-slate-400" placeholder="Ex: Contabilidade, Agência de Marketing..." />
                    </div>
 
                    <div className="space-y-4">
@@ -647,7 +647,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                       {!answers.sharedExternalDocumentUrl ? (
                         <div 
                           onClick={() => !uploading && fileInputRef.current?.click()}
-                          className={`p-10 rounded-[2rem] border-2 border-dashed transition-all flex flex-col items-center justify-center gap-3 cursor-pointer ${uploading ? 'bg-slate-50 border-slate-200 opacity-60 cursor-not-allowed' : 'bg-slate-50 border-slate-200 hover:border-blue-400 hover:bg-blue-50'}`}
+                          className={`p-10 rounded-[2rem] border-2 border-dashed transition-all flex flex-col items-center justify-center gap-3 cursor-pointer ${uploading ? 'bg-[var(--surface-muted)] border-[var(--border)] opacity-60 cursor-not-allowed' : 'bg-[var(--surface-muted)] border-[var(--border)] hover:border-blue-400 hover:bg-blue-50'}`}
                         >
                           <input type="file" ref={fileInputRef} className="hidden" accept=".pdf,.docx,.doc,.jpg,.png" onChange={handleFileChange} />
                           {uploading ? (
@@ -658,13 +658,13 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                           ) : (
                             <>
                               <Upload className="h-8 w-8 text-slate-400" />
-                              <span className="text-xs font-bold text-slate-500">Clique para anexar o contrato assinado</span>
+                              <span className="text-xs font-bold text-[var(--text-muted)]">Clique para anexar o contrato assinado</span>
                               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">PDF, DOCX ou Imagem</span>
                             </>
                           )}
                         </div>
                       ) : (
-                        <div className="p-5 bg-emerald-50 border border-emerald-100 rounded-[1.5rem] flex items-center justify-between shadow-sm animate-in zoom-in-95">
+                        <div className="p-5 bg-emerald-50 border border-emerald-100 rounded-[1.5rem] flex items-center justify-between shadow-[var(--shadow)] animate-in zoom-in-95">
                           <div className="flex items-center gap-4">
                             <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
                               <FileText className="h-6 w-6" />
@@ -709,7 +709,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
              <div className="flex items-center gap-3 mb-2">
                <div className="p-3 bg-red-50 rounded-2xl text-red-600"><ShieldCheck className="h-6 w-6" /></div>
-               <h4 className="text-xl font-black text-slate-900">Defesa e Segurança (Art. 46)</h4>
+               <h4 className="text-xl font-black text-[var(--text-primary)]">Defesa e Segurança (Art. 46)</h4>
              </div>
              <div className="space-y-8">
                <div>
@@ -719,7 +719,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                    why="A ANPD exige provas de que você tenta impedir o acesso de curiosos. O controle de acesso é a primeira barreira contra vazamentos." 
                    how="Exemplos: 'Login e Senha individual', 'Chave física em armário', 'Apenas IPs autorizados'." 
                  />
-                 <input type="text" value={answers.accessControl} onChange={e => setAnswers({...answers, accessControl: e.target.value})} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-slate-950 focus:bg-white focus:border-blue-600 outline-none transition-all placeholder:text-slate-400" />
+                 <input type="text" value={answers.accessControl} onChange={e => setAnswers({...answers, accessControl: e.target.value})} className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] font-bold text-slate-950 focus:bg-[var(--surface)] focus:border-blue-600 outline-none transition-all placeholder:text-slate-400" />
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <Toggle 
@@ -758,7 +758,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
              <div className="flex items-center gap-3 mb-2">
                <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600"><HardDrive className="h-6 w-6" /></div>
-               <h4 className="text-xl font-black text-slate-900">Ciclo de Vida e Retenção</h4>
+               <h4 className="text-xl font-black text-[var(--text-primary)]">Ciclo de Vida e Retenção</h4>
              </div>
              <div className="space-y-8">
                <div>
@@ -768,7 +768,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                    why="Princípio da Limitação do Armazenamento. Você não pode guardar dados 'para sempre'. Dados velhos são um risco inútil." 
                    how="Informe o prazo. Ex: '5 anos (Fiscal)', '2 anos (Seleção)' ou 'Enquanto durar a conta do usuário'." 
                  />
-                 <input type="text" value={answers.retentionPeriod} onChange={e => setAnswers({...answers, retentionPeriod: e.target.value})} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-slate-950 focus:bg-white focus:border-blue-600 outline-none transition-all placeholder:text-slate-400" placeholder="Ex: 5 anos após fim do contrato" />
+                 <input type="text" value={answers.retentionPeriod} onChange={e => setAnswers({...answers, retentionPeriod: e.target.value})} className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] font-bold text-slate-950 focus:bg-[var(--surface)] focus:border-blue-600 outline-none transition-all placeholder:text-slate-400" placeholder="Ex: 5 anos após fim do contrato" />
                </div>
                <div>
                  <FieldLabel 
@@ -777,7 +777,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                    why="Para garantir que o dado não possa ser recuperado por terceiros após o descarte." 
                    how="Selecione o método técnico ou físico de destruição da informação." 
                  />
-                 <select value={answers.deletionMethod} onChange={e => setAnswers({...answers, deletionMethod: e.target.value})} className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-50 focus:bg-white transition-all">
+                 <select value={answers.deletionMethod} onChange={e => setAnswers({...answers, deletionMethod: e.target.value})} className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-50 focus:bg-[var(--surface)] transition-all">
                    <option value="Exclusão Permanente">Exclusão Permanente (Lixeira limpa)</option>
                    <option value="Trituração">Trituração Física (Papel)</option>
                    <option value="Anonimização">Anonimização (Os dados deixam de ser pessoais)</option>
@@ -799,7 +799,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
          )}
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-[var(--surface)] p-6 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)]">
          <button 
            onClick={() => { if(currentStep === 1) setView('sector-hub'); else setCurrentStep(s => s - 1); }} 
            className="w-full sm:w-auto px-8 py-4 text-slate-400 font-bold hover:text-blue-600 flex items-center justify-center gap-2 transition-colors"
@@ -811,7 +811,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
            <button 
               onClick={() => updateStep(currentStep, false, true)}
               disabled={isSaving || uploading}
-              className="px-6 py-4 bg-slate-50 text-slate-600 rounded-[1.5rem] font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-all border border-slate-200 disabled:opacity-50"
+              className="px-6 py-4 bg-[var(--surface-muted)] text-[var(--text-muted)] rounded-[1.5rem] font-bold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-all border border-[var(--border)] disabled:opacity-50"
            >
              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
              Salvar Rascunho e Sair
@@ -1031,17 +1031,17 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
   if (view === 'mapping') {
     return (
       <div className="max-w-4xl mx-auto space-y-8 page-transition">
-        <div className="bg-white p-12 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-10">
+        <div className="bg-[var(--surface)] p-12 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] space-y-10">
           <header>
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Estrutura da Empresa</h2>
-            <p className="text-slate-500 font-medium">Defina os parâmetros base da sua empresa para iniciarmos o mapeamento.</p>
+            <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Estrutura da Empresa</h2>
+            <p className="text-[var(--text-muted)] font-medium">Defina os parâmetros base da sua empresa para iniciarmos o mapeamento.</p>
           </header>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="space-y-4">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Porte da Empresa</label>
               <select 
-                className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-50 focus:bg-white transition-all cursor-pointer" 
+                className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-50 focus:bg-[var(--surface)] transition-all cursor-pointer" 
                 value={data.companySize} 
                 onChange={e => setData({...data, companySize: e.target.value as any})}
               >
@@ -1056,7 +1056,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Setor de Atuação Principal</label>
               <div className="relative">
                 <select 
-                  className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-50 focus:bg-white transition-all cursor-pointer mb-2" 
+                  className="w-full p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-50 focus:bg-[var(--surface)] transition-all cursor-pointer mb-2" 
                   value={['Tecnologia', 'Varejo', 'Saúde', 'Educação', 'Serviços', 'Indústria', 'Logística', 'Agronegócio', 'Construção Civil'].includes(data.industry) ? data.industry : (data.industry === 'OUTRO_SELECTED' ? 'Outro' : (data.industry ? 'Outro' : ''))} 
                   onChange={e => {
                     if (e.target.value === 'Outro') {
@@ -1076,7 +1076,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
                     type="text"
                     autoFocus
                     placeholder="Digite o setor de atuação..."
-                    className="w-full p-4 rounded-2xl bg-white border border-blue-200 font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-100 transition-all animate-in slide-in-from-top-2"
+                    className="w-full p-4 rounded-2xl bg-[var(--surface)] border border-blue-200 font-bold text-slate-950 outline-none focus:ring-4 focus:ring-blue-100 transition-all animate-in slide-in-from-top-2"
                     value={data.industry === 'OUTRO_SELECTED' ? '' : data.industry}
                     onChange={e => setData({...data, industry: e.target.value})}
                   />
@@ -1085,13 +1085,13 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
             </div>
           </div>
 
-          <div className="pt-8 border-t border-slate-100 space-y-6">
+          <div className="pt-8 border-t border-[var(--border)] space-y-6">
             <label className="text-sm font-bold text-slate-700 block">Quais departamentos sua empresa possui inicialmente?</label>
             <div className="flex flex-wrap gap-2">
               {['RH / DP', 'Marketing', 'Vendas', 'Atendimento', 'Financeiro', 'TI', 'Jurídico', 'Logística', 'Produção', 'Compras', 'Manutenção', 'Segurança', 'Compliance', 'Qualidade'].map(s => {
                 const isSelected = (data.sectors || []).some(sec => sec.name === s);
                 return (
-                  <button key={s} onClick={() => handleToggleSector(s)} className={`px-5 py-2.5 rounded-full border text-xs font-bold transition-all ${isSelected ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100' : 'bg-white border-slate-200 text-slate-500 hover:border-blue-300'}`}>
+                  <button key={s} onClick={() => handleToggleSector(s)} className={`px-5 py-2.5 rounded-full border text-xs font-bold transition-all ${isSelected ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100' : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-muted)] hover:border-blue-300'}`}>
                     {s}
                   </button>
                 );
@@ -1102,7 +1102,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
                   id="custom-sector-input"
                   type="text" 
                   placeholder="Adicionar outro departamento..." 
-                  className="px-4 py-2 rounded-full border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-blue-100 outline-none w-full sm:w-64"
+                  className="px-4 py-2 rounded-full border border-[var(--border)] text-xs font-bold focus:ring-2 focus:ring-blue-100 outline-none w-full sm:w-64"
                   onKeyDown={e => {
                     if (e.key === 'Enter') {
                       const val = (e.target as HTMLInputElement).value.trim();
@@ -1142,8 +1142,8 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
       <div className="max-w-5xl mx-auto space-y-8 page-transition pb-20">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-4">
           <div>
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Mapeamento de Processos</h2>
-            <p className="text-slate-500 font-medium">Mapeie as atividades de tratamento de dados pessoais em cada departamento.</p>
+            <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Mapeamento de Processos</h2>
+            <p className="text-[var(--text-muted)] font-medium">Mapeie as atividades de tratamento de dados pessoais em cada departamento.</p>
           </div>
           <div className="flex items-center gap-3">
              <div className="text-right hidden sm:block">
@@ -1163,17 +1163,17 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
                 <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
                   <Layers className="h-5 w-5" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">{sector.name}</h3>
+                <h3 className="text-xl font-bold text-[var(--text-primary)]">{sector.name}</h3>
                 <span className="text-xs font-bold text-slate-300 uppercase tracking-widest ml-2">{(sector.processes || []).length} Processos</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
-                <div className="bg-white border-2 border-dashed border-slate-200 rounded-[2rem] p-6 flex flex-col items-center justify-center text-center gap-4 hover:border-blue-400 hover:bg-blue-50/50 transition-all group cursor-pointer" onClick={() => handleAddProcess(sector.id)}>
-                   <div className="p-3 bg-slate-50 rounded-full group-hover:bg-blue-100 transition-colors">
+                <div className="bg-[var(--surface)] border-2 border-dashed border-[var(--border)] rounded-[2rem] p-6 flex flex-col items-center justify-center text-center gap-4 hover:border-blue-400 hover:bg-blue-50/50 transition-all group cursor-pointer" onClick={() => handleAddProcess(sector.id)}>
+                   <div className="p-3 bg-[var(--surface-muted)] rounded-full group-hover:bg-blue-100 transition-colors">
                      <Plus className="h-6 w-6 text-slate-400 group-hover:text-blue-600" />
                    </div>
                    <div className="space-y-1">
-                     <p className="font-bold text-slate-900 text-sm">Novo Processo</p>
+                     <p className="font-bold text-[var(--text-primary)] text-sm">Novo Processo</p>
                      <p className="text-[10px] text-slate-400 font-medium px-4 leading-tight">Crie manualmente uma linha de tratamento para este setor.</p>
                    </div>
                 </div>
@@ -1185,8 +1185,8 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
                          <Zap className="h-3 w-3 text-blue-600" />
                          <span className="text-[8px] font-black uppercase text-blue-600 tracking-widest">Sugerido</span>
                        </div>
-                       <p className="font-bold text-slate-900 text-sm">{tpl.name}</p>
-                       <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-2">{tpl.description}</p>
+                       <p className="font-bold text-[var(--text-primary)] text-sm">{tpl.name}</p>
+                       <p className="text-[10px] text-[var(--text-muted)] leading-relaxed line-clamp-2">{tpl.description}</p>
                      </div>
                      <div className="mt-4 flex items-center gap-1 text-[10px] font-bold text-blue-600 group-hover:translate-x-1 transition-transform">
                         Usar Template <ChevronRight className="h-3 w-3" />
@@ -1197,7 +1197,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
                 {(sector.processes || []).map(process => {
                   const eligibility = checkCertificationEligibility(process.id, tasks, process);
                   return (
-                    <div key={process.id} className={`bg-white border rounded-[2rem] p-6 flex flex-col justify-between hover:shadow-xl transition-all group ${process.isCertified ? 'border-indigo-200 shadow-indigo-100/50' : process.status === 'completed' ? 'border-green-100 shadow-green-100/50' : 'border-slate-100'}`}>
+                    <div key={process.id} className={`bg-[var(--surface)] border rounded-[2rem] p-6 flex flex-col justify-between hover:shadow-xl transition-all group ${process.isCertified ? 'border-indigo-200 shadow-indigo-100/50' : process.status === 'completed' ? 'border-green-100 shadow-green-100/50' : 'border-[var(--border)]'}`}>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                            <div className={`p-2.5 rounded-xl ${process.isCertified ? 'bg-indigo-600 text-white' : process.status === 'completed' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
@@ -1210,7 +1210,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="font-bold text-slate-900 text-sm">{process.name}</h4>
+                            <h4 className="font-bold text-[var(--text-primary)] text-sm">{process.name}</h4>
                             {process.isCertified && (
                               <div className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[8px] font-black uppercase rounded-full flex items-center gap-1">
                                 <Star className="h-2 w-2 fill-indigo-700" /> Protegido
@@ -1226,7 +1226,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
                            <span className={process.status === 'completed' ? 'text-green-600' : 'text-amber-600'}>{process.status === 'completed' ? 'Mapeado' : `Etapa ${process.lastStep || 1}/7`}</span>
                            <span className="text-slate-400">{process.status === 'completed' ? '100%' : `${Math.round(((process.lastStep || 1) / 7) * 100)}%`}</span>
                          </div>
-                         <div className="h-1.5 bg-slate-50 rounded-full overflow-hidden">
+                         <div className="h-1.5 bg-[var(--surface-muted)] rounded-full overflow-hidden">
                            <div className={`h-full transition-all duration-700 ${process.status === 'completed' ? 'bg-green-500' : 'bg-amber-500'}`} style={{ width: `${((process.lastStep || 1) / 7) * 100}%` }} />
                          </div>
 
@@ -1242,7 +1242,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
                          )}
 
                          <div className="flex flex-col gap-2">
-                           <button onClick={() => handleStartProcessQuestionnaire(sector.id, process.id)} className={`w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${process.status === 'completed' ? 'bg-slate-50 text-slate-600 hover:bg-slate-100' : 'bg-blue-600 text-white shadow-lg shadow-blue-100 hover:bg-blue-700'}`}>
+                           <button onClick={() => handleStartProcessQuestionnaire(sector.id, process.id)} className={`w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${process.status === 'completed' ? 'bg-[var(--surface-muted)] text-[var(--text-muted)] hover:bg-slate-100' : 'bg-blue-600 text-white shadow-lg shadow-blue-100 hover:bg-blue-700'}`}>
                              {process.status === 'completed' ? 'Editar Respostas' : 'Continuar Mapeamento'}
                            </button>
                            
@@ -1280,7 +1280,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
           <button 
             onClick={() => syncData(data, true)} 
             disabled={!data.sectors || data.sectors.every(s => !s.processes || s.processes.length === 0) || data.sectors.some(s => (s.processes || []).some(p => p.status !== 'completed'))}
-            className="w-full md:w-auto px-10 py-4 bg-white text-slate-900 rounded-[1.5rem] font-black text-sm flex items-center justify-center gap-3 shadow-xl hover:bg-blue-50 disabled:opacity-30 transition-all active:scale-95"
+            className="w-full md:w-auto px-10 py-4 bg-[var(--surface)] text-[var(--text-primary)] rounded-[1.5rem] font-black text-sm flex items-center justify-center gap-3 shadow-xl hover:bg-blue-50 disabled:opacity-30 transition-all active:scale-95"
           >
             Gerar Diagnóstico <ShieldCheck className="h-5 w-5" />
           </button>

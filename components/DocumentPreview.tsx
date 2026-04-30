@@ -20,8 +20,8 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ document, onCl
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0">
+      <div className="bg-[var(--surface)] w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-[var(--surface)] sticky top-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
               <FileText className="h-5 w-5" />
@@ -37,12 +37,12 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ document, onCl
         </div>
 
         <div className="flex-1 overflow-y-auto p-8 bg-gray-50">
-          <div className="bg-white p-12 shadow-sm rounded-lg border border-gray-200 min-h-full font-serif text-gray-800 leading-relaxed whitespace-pre-wrap">
+          <div className="bg-[var(--surface)] p-12 shadow-[var(--shadow)] rounded-lg border border-gray-200 min-h-full font-serif text-gray-800 leading-relaxed whitespace-pre-wrap">
             {document.content}
           </div>
         </div>
 
-        <div className="px-8 py-6 border-t border-gray-100 flex items-center justify-between bg-white">
+        <div className="px-8 py-6 border-t border-gray-100 flex items-center justify-between bg-[var(--surface)]">
           <div className="text-sm text-gray-500 italic">
             Revise as informações acima antes de gerar o arquivo oficial.
           </div>

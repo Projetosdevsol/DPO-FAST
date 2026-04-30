@@ -63,7 +63,7 @@ export const DPOAssistant: React.FC = () => {
     <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end">
       {/* Janela de Chat */}
       {isOpen && (
-        <div className="mb-4 w-[350px] md:w-[400px] h-[500px] bg-white/90 backdrop-blur-xl rounded-[2.5rem] border border-white/20 shadow-2xl flex flex-col overflow-hidden chat-window-animation">
+        <div className="mb-4 w-[350px] md:w-[400px] h-[500px] bg-[var(--surface)]/90 backdrop-blur-xl rounded-[2.5rem] border border-white/20 shadow-2xl flex flex-col overflow-hidden chat-window-animation">
           {/* Header */}
           <div className="p-6 bg-slate-900 text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -78,19 +78,19 @@ export const DPOAssistant: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+            <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-[var(--surface)]/10 rounded-lg transition-colors">
               <X className="h-5 w-5" />
             </button>
           </div>
 
           {/* Messages Area */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 scroll-smooth bg-slate-50/50">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 scroll-smooth bg-[var(--surface-muted)]/50">
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
                   msg.role === 'user' 
                     ? 'bg-blue-600 text-white rounded-tr-none' 
-                    : 'bg-white border border-slate-100 text-slate-700 shadow-sm rounded-tl-none'
+                    : 'bg-[var(--surface)] border border-[var(--border)] text-slate-700 shadow-[var(--shadow)] rounded-tl-none'
                 }`}>
                   {msg.text}
                 </div>
@@ -98,7 +98,7 @@ export const DPOAssistant: React.FC = () => {
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-2 text-slate-400 text-xs font-bold">
+                <div className="bg-[var(--surface)] border border-[var(--border)] p-4 rounded-2xl rounded-tl-none shadow-[var(--shadow)] flex items-center gap-2 text-slate-400 text-xs font-bold">
                   <Loader2 className="h-3 w-3 animate-spin" />
                   Analisando conformidade...
                 </div>
@@ -107,13 +107,13 @@ export const DPOAssistant: React.FC = () => {
           </div>
 
           {/* Input Area */}
-          <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-slate-100 flex gap-2">
+          <form onSubmit={handleSendMessage} className="p-4 bg-[var(--surface)] border-t border-[var(--border)] flex gap-2">
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Pergunte sobre sua adequação..."
-              className="flex-1 bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+              className="flex-1 bg-[var(--surface-muted)] border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600 outline-none transition-all"
             />
             <button 
               disabled={isLoading || !message.trim()}

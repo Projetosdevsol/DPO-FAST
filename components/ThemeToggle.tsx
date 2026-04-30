@@ -12,7 +12,7 @@ export const ThemeToggle: React.FC = () => {
       title={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
     >
       {theme === 'light' ? (
-        <Moon className="h-4 w-4 text-slate-600 group-hover:text-blue-500" />
+        <Moon className="h-4 w-4 text-[var(--text-muted)] group-hover:text-blue-500" />
       ) : (
         <Sun className="h-4 w-4 text-slate-400 group-hover:text-cyan-400" />
       )}

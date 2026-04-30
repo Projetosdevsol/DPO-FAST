@@ -90,7 +90,10 @@ export const checkNewAchievements = (
   const hasSecurityTaskCompleted = (tasks || []).some(t => t.id === 'task-it-hardening' && t.status === 'Concluída');
   if (hasSecurityTaskCompleted) unlock('security_master');
 
-  if (tasks && tasks.length > 0 && completedCount === tasks.length) unlock('platinum_seal');
+  const sectorCount = (qData && qData.sectors) ? qData.sectors.length : 0;
+  if (tasks && tasks.length > 0 && completedCount === tasks.length && sectorCount >= 5) {
+    unlock('platinum_seal');
+  }
 
   return newUnlocks;
 };

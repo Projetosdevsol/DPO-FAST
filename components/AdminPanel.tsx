@@ -76,45 +76,45 @@ const AdminOverview: React.FC<{ users: User[], tickets: SupportTicket[] }> = ({ 
     <div className="space-y-8 page-transition">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((s, i) => (
-          <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-5">
+          <div key={i} className="bg-[var(--surface)] p-6 rounded-[2rem] border border-[var(--border)] shadow-[var(--shadow)] flex items-center gap-5">
             <div className={`p-4 ${s.bg} ${s.color} rounded-2xl`}>
               <s.icon className={`h-6 w-6 ${s.label === 'Online Agora' && s.value > 0 ? 'animate-pulse' : ''}`} />
             </div>
             <div>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{s.label}</p>
-              <p className="text-2xl font-black text-slate-900">{s.value}</p>
+              <p className="text-2xl font-black text-[var(--text-primary)]">{s.value}</p>
             </div>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div className="lg:col-span-2 bg-[var(--surface)] p-8 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)]">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <h3 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-indigo-600" /> Atividade Recente
             </h3>
             <span className="text-xs font-bold text-slate-400">Últimos 30 dias</span>
           </div>
           <div className="space-y-4">
             {(users || []).slice(0, 5).map((user) => (
-              <div key={user.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+              <div key={user.id} className="flex items-center justify-between p-4 bg-[var(--surface-muted)] rounded-2xl">
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="h-10 w-10 bg-white rounded-xl flex items-center justify-center font-bold text-indigo-600 shadow-sm border border-slate-100">
+                    <div className="h-10 w-10 bg-[var(--surface)] rounded-xl flex items-center justify-center font-bold text-indigo-600 shadow-[var(--shadow)] border border-[var(--border)]">
                       {user.name.charAt(0)}
                     </div>
                     {user.isOnline && (
-                      <div className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-emerald-500 rounded-full border-2 border-white shadow-sm" />
+                      <div className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-emerald-500 rounded-full border-2 border-white shadow-[var(--shadow)]" />
                     )}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-900">{user.name}</p>
+                    <p className="text-sm font-bold text-[var(--text-primary)]">{user.name}</p>
                     <p className="text-[10px] text-slate-400 font-bold uppercase">{user.companyName}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold text-slate-600">{user.plan.toUpperCase()}</p>
+                  <p className="text-xs font-bold text-[var(--text-muted)]">{user.plan.toUpperCase()}</p>
                   <p className="text-[10px] text-slate-400 font-medium">{new Date(user.createdAt).toLocaleDateString()}</p>
                 </div>
               </div>
@@ -139,13 +139,13 @@ const AdminOverview: React.FC<{ users: User[], tickets: SupportTicket[] }> = ({ 
             </div>
             <div className="space-y-3">
               {(tickets || []).filter(t => t.status === 'open').slice(0, 3).map(ticket => (
-                <div key={ticket.id} className="p-3 bg-white/5 border border-white/10 rounded-xl text-xs">
+                <div key={ticket.id} className="p-3 bg-[var(--surface)]/5 border border-white/10 rounded-xl text-xs">
                   <p className="font-bold truncate">{ticket.subject}</p>
-                  <p className="text-slate-500 mt-1 truncate">{ticket.userName}</p>
+                  <p className="text-[var(--text-muted)] mt-1 truncate">{ticket.userName}</p>
                 </div>
               ))}
             </div>
-            <NavLink to="/admin/support" className="block text-center py-3 bg-white text-slate-900 rounded-xl font-bold text-xs hover:bg-indigo-50 transition-colors">
+            <NavLink to="/admin/support" className="block text-center py-3 bg-[var(--surface)] text-[var(--text-primary)] rounded-xl font-bold text-xs hover:bg-indigo-50 transition-colors">
               Ir para Central de Suporte
             </NavLink>
           </div>
@@ -179,27 +179,27 @@ const TicketDetailsModal: React.FC<{ ticket: SupportTicket; onClose: () => void;
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 flex flex-col">
-        <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
+      <div className="bg-[var(--surface)] w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 flex flex-col">
+        <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-[var(--surface-muted)]/50">
           <div className="flex items-center gap-5">
             <div className={`p-4 rounded-2xl shadow-lg ${ticket.status === 'open' ? 'bg-red-500 text-white' : ticket.status === 'in_progress' ? 'bg-amber-500 text-white' : 'bg-emerald-500 text-white'}`}>
               <MessageSquare className="h-6 w-6" />
             </div>
             <div>
-              <h3 className="text-2xl font-black text-slate-900">{ticket.subject}</h3>
+              <h3 className="text-2xl font-black text-[var(--text-primary)]">{ticket.subject}</h3>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                 Ticket #{ticket.id.slice(-6).toUpperCase()} • Aberto em {new Date(ticket.createdAt).toLocaleString()}
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:bg-white rounded-full transition-all border border-transparent hover:border-slate-100 shadow-sm"><X className="h-6 w-6" /></button>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:bg-[var(--surface)] rounded-full transition-all border border-transparent hover:border-[var(--border)] shadow-[var(--shadow)]"><X className="h-6 w-6" /></button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <div className="space-y-4">
               <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Mensagem do Cliente</h4>
-              <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 text-slate-700 leading-relaxed font-medium">
+              <div className="bg-[var(--surface-muted)] p-6 rounded-3xl border border-[var(--border)] text-slate-700 leading-relaxed font-medium">
                 {ticket.message}
               </div>
               {ticket.attachment && (
@@ -223,27 +223,27 @@ const TicketDetailsModal: React.FC<{ ticket: SupportTicket; onClose: () => void;
                 value={internalNotes}
                 onChange={(e) => setInternalNotes(e.target.value)}
                 onBlur={handleSaveNotes}
-                className="w-full h-32 p-4 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-950 placeholder:text-slate-400"
+                className="w-full h-32 p-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] focus:bg-[var(--surface)] focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-950 placeholder:text-slate-400"
                 placeholder="Anote aqui detalhes do atendimento, prazos acordados ou informações técnicas relevantes para outros administradores..."
               />
             </div>
           </div>
 
           <div className="space-y-6">
-            <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 space-y-4">
+            <div className="bg-[var(--surface-muted)] p-6 rounded-3xl border border-[var(--border)] space-y-4">
               <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Dossiê do Solicitante</h4>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-white rounded-xl flex items-center justify-center font-bold text-indigo-600 shadow-sm">{ticket.userName.charAt(0)}</div>
+                  <div className="h-10 w-10 bg-[var(--surface)] rounded-xl flex items-center justify-center font-bold text-indigo-600 shadow-[var(--shadow)]">{ticket.userName.charAt(0)}</div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-900 truncate">{ticket.userName}</p>
-                    <p className="text-[10px] text-slate-500 font-bold truncate uppercase">{ticket.userEmail}</p>
+                    <p className="text-sm font-bold text-[var(--text-primary)] truncate">{ticket.userName}</p>
+                    <p className="text-[10px] text-[var(--text-muted)] font-bold truncate uppercase">{ticket.userEmail}</p>
                   </div>
-                  <button onClick={copyEmail} className="p-2 hover:bg-white rounded-lg transition-colors text-slate-400 hover:text-indigo-600">
+                  <button onClick={copyEmail} className="p-2 hover:bg-[var(--surface)] rounded-lg transition-colors text-slate-400 hover:text-indigo-600">
                     {copySuccess ? <Check className="h-4 w-4" /> : <Clipboard className="h-4 w-4" />}
                   </button>
                 </div>
-                <div className="pt-4 border-t border-slate-200 grid grid-cols-2 gap-4">
+                <div className="pt-4 border-t border-[var(--border)] grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-[10px] font-bold text-slate-400 uppercase">ID Usuário</p>
                     <p className="text-[10px] font-bold text-slate-700 truncate">{ticket.userId}</p>
@@ -263,7 +263,7 @@ const TicketDetailsModal: React.FC<{ ticket: SupportTicket; onClose: () => void;
               <select 
                 value={ticket.status} 
                 onChange={(e) => onStatusUpdate(ticket.id, e.target.value as any)}
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-950 focus:bg-white focus:border-indigo-600 outline-none focus:ring-4 focus:ring-indigo-50 transition-all"
+                className="w-full p-4 bg-[var(--surface-muted)] border border-[var(--border)] rounded-2xl text-xs font-bold text-slate-950 focus:bg-[var(--surface)] focus:border-indigo-600 outline-none focus:ring-4 focus:ring-indigo-50 transition-all"
               >
                 <option value="open">Reabrir / Novo</option>
                 <option value="in_progress">Mover para Atendimento</option>
@@ -276,8 +276,8 @@ const TicketDetailsModal: React.FC<{ ticket: SupportTicket; onClose: () => void;
           </div>
         </div>
 
-        <div className="p-8 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
-          <button onClick={onClose} className="px-8 py-3 bg-white text-slate-900 font-bold rounded-2xl border border-slate-200 hover:bg-slate-100 transition-all shadow-sm">Fechar Detalhes</button>
+        <div className="p-8 bg-[var(--surface-muted)] border-t border-[var(--border)] flex justify-end gap-3">
+          <button onClick={onClose} className="px-8 py-3 bg-[var(--surface)] text-[var(--text-primary)] font-bold rounded-2xl border border-[var(--border)] hover:bg-slate-100 transition-all shadow-[var(--shadow)]">Fechar Detalhes</button>
           <a href={`mailto:${ticket.userEmail}?subject=Re: [LGPD Fácil] ${ticket.subject}`} className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center gap-2">
             Responder via E-mail <ExternalLink className="h-4 w-4" />
           </a>
@@ -322,25 +322,25 @@ const UserDetailsModal: React.FC<{ user: User; onClose: () => void }> = ({ user,
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 flex flex-col">
-        <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
+      <div className="bg-[var(--surface)] w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 flex flex-col">
+        <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-[var(--surface-muted)]/50">
           <div className="flex items-center gap-5">
             <div className="relative">
               <div className="h-14 w-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-xl font-black shadow-lg shadow-indigo-100">
                 {user.name.charAt(0)}
               </div>
               {user.isOnline && (
-                <div className="absolute -top-1 -right-1 h-5 w-5 bg-emerald-500 rounded-full border-4 border-white shadow-sm" />
+                <div className="absolute -top-1 -right-1 h-5 w-5 bg-emerald-500 rounded-full border-4 border-white shadow-[var(--shadow)]" />
               )}
             </div>
             <div>
-              <h3 className="text-2xl font-black text-slate-900">{user.name}</h3>
+              <h3 className="text-2xl font-black text-[var(--text-primary)]">{user.name}</h3>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
                 {user.companyName} • {user.isOnline ? <span className="text-emerald-500 font-black">ONLINE AGORA</span> : `Visto por último: ${user.lastLogin ? new Date(user.lastLogin).toLocaleString('pt-BR') : 'Sem registro'}`}
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:bg-white rounded-full transition-all border border-transparent hover:border-slate-100 shadow-sm"><X className="h-6 w-6" /></button>
+          <button onClick={onClose} className="p-2 text-slate-400 hover:bg-[var(--surface)] rounded-full transition-all border border-transparent hover:border-[var(--border)] shadow-[var(--shadow)]"><X className="h-6 w-6" /></button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-8">
@@ -352,16 +352,16 @@ const UserDetailsModal: React.FC<{ user: User; onClose: () => void }> = ({ user,
           ) : (
             <div className="space-y-8">
               <div className="flex bg-slate-100 p-1 rounded-2xl gap-1 w-fit overflow-x-auto">
-                <button onClick={() => setActiveTab('info')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'info' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:bg-white/50'}`}>Informações Gerais</button>
-                <button onClick={() => setActiveTab('mapping')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'mapping' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:bg-white/50'}`}>Mapeamento</button>
-                <button onClick={() => setActiveTab('tasks')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'tasks' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:bg-white/50'}`}>Plano de Ação</button>
-                <button onClick={() => setActiveTab('logs')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'logs' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:bg-white/50'}`}>Auditoria de Acesso</button>
-                <button onClick={() => setActiveTab('achievements')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'achievements' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:bg-white/50'}`}>Conquistas</button>
+                <button onClick={() => setActiveTab('info')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'info' ? 'bg-[var(--surface)] text-indigo-600 shadow-[var(--shadow)]' : 'text-[var(--text-muted)] hover:bg-[var(--surface)]/50'}`}>Informações Gerais</button>
+                <button onClick={() => setActiveTab('mapping')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'mapping' ? 'bg-[var(--surface)] text-indigo-600 shadow-[var(--shadow)]' : 'text-[var(--text-muted)] hover:bg-[var(--surface)]/50'}`}>Mapeamento</button>
+                <button onClick={() => setActiveTab('tasks')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'tasks' ? 'bg-[var(--surface)] text-indigo-600 shadow-[var(--shadow)]' : 'text-[var(--text-muted)] hover:bg-[var(--surface)]/50'}`}>Plano de Ação</button>
+                <button onClick={() => setActiveTab('logs')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'logs' ? 'bg-[var(--surface)] text-indigo-600 shadow-[var(--shadow)]' : 'text-[var(--text-muted)] hover:bg-[var(--surface)]/50'}`}>Auditoria de Acesso</button>
+                <button onClick={() => setActiveTab('achievements')} className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'achievements' ? 'bg-[var(--surface)] text-indigo-600 shadow-[var(--shadow)]' : 'text-[var(--text-muted)] hover:bg-[var(--surface)]/50'}`}>Conquistas</button>
               </div>
 
               {activeTab === 'info' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-300">
-                  <div className="bg-slate-50 p-6 rounded-3xl space-y-4 border border-slate-100">
+                  <div className="bg-[var(--surface-muted)] p-6 rounded-3xl space-y-4 border border-[var(--border)]">
                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2"><Building className="h-3 w-3" /> Dados da Empresa</h4>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -378,12 +378,12 @@ const UserDetailsModal: React.FC<{ user: User; onClose: () => void }> = ({ user,
                       </div>
                     </div>
                   </div>
-                  <div className="bg-slate-50 p-6 rounded-3xl space-y-4 border border-slate-100">
+                  <div className="bg-[var(--surface-muted)] p-6 rounded-3xl space-y-4 border border-[var(--border)]">
                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2"><Tag className="h-3 w-3" /> Conta e Assinatura</h4>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-[10px] font-bold text-slate-400 uppercase">Plano Atual</p>
-                        <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase mt-1 ${user.plan === 'enterprise' ? 'bg-purple-100 text-purple-700' : user.plan === 'pro' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-600'}`}>{user.plan}</span>
+                        <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase mt-1 ${user.plan === 'enterprise' ? 'bg-purple-100 text-purple-700' : user.plan === 'pro' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-[var(--text-muted)]'}`}>{user.plan}</span>
                       </div>
                       <div>
                         <p className="text-[10px] font-bold text-slate-400 uppercase">Status</p>
@@ -407,13 +407,13 @@ const UserDetailsModal: React.FC<{ user: User; onClose: () => void }> = ({ user,
                   {qData && qData.sectors && qData.sectors.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {qData.sectors.map(sector => (
-                        <div key={sector.id} className="p-5 border border-slate-100 rounded-3xl bg-slate-50 flex items-center justify-between">
+                        <div key={sector.id} className="p-5 border border-[var(--border)] rounded-3xl bg-[var(--surface-muted)] flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className={`p-2.5 rounded-xl ${(sector.processes || []).some(p => p.status === 'completed') ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}`}>
                               <Layers className="h-5 w-5" />
                             </div>
                             <div>
-                              <p className="text-sm font-bold text-slate-900">{sector.name}</p>
+                              <p className="text-sm font-bold text-[var(--text-primary)]">{sector.name}</p>
                               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{(sector.processes || []).some(p => p.status === 'completed') ? 'Mapeado' : `Pendente`}</p>
                             </div>
                           </div>
@@ -422,7 +422,7 @@ const UserDetailsModal: React.FC<{ user: User; onClose: () => void }> = ({ user,
                       ))}
                     </div>
                   ) : (
-                    <div className="py-12 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+                    <div className="py-12 text-center bg-[var(--surface-muted)] rounded-3xl border border-dashed border-[var(--border)]">
                       <Map className="h-10 w-10 text-slate-300 mx-auto mb-3" />
                       <p className="text-sm font-bold text-slate-400 uppercase">Nenhum setor mapeado ainda</p>
                     </div>
@@ -435,20 +435,20 @@ const UserDetailsModal: React.FC<{ user: User; onClose: () => void }> = ({ user,
                   {(tasks || []).length > 0 ? (
                     <div className="space-y-3">
                       {tasks.map(task => (
-                        <div key={task.id} className="p-4 border border-slate-100 rounded-2xl flex items-center justify-between hover:bg-slate-50 transition-colors">
+                        <div key={task.id} className="p-4 border border-[var(--border)] rounded-2xl flex items-center justify-between hover:bg-[var(--surface-muted)] transition-colors">
                           <div className="flex items-center gap-4">
                             <div className={`h-2 w-2 rounded-full ${task.status === 'Concluída' ? 'bg-green-50' : 'bg-amber-500'}`} />
                             <div>
-                              <p className="text-sm font-bold text-slate-900">{task.title}</p>
+                              <p className="text-sm font-bold text-[var(--text-primary)]">{task.title}</p>
                               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{task.targetDocument}</p>
                             </div>
                           </div>
-                          <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${task.status === 'Concluída' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>{task.status}</span>
+                          <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${task.status === 'Concluída' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-[var(--text-muted)]'}`}>{task.status}</span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="py-12 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+                    <div className="py-12 text-center bg-[var(--surface-muted)] rounded-3xl border border-dashed border-[var(--border)]">
                       <Target className="h-10 w-10 text-slate-300 mx-auto mb-3" />
                       <p className="text-sm font-bold text-slate-400 uppercase">Plano de ação ainda não gerado</p>
                     </div>
@@ -462,13 +462,13 @@ const UserDetailsModal: React.FC<{ user: User; onClose: () => void }> = ({ user,
                   {accessLogs.length > 0 ? (
                     <div className="space-y-3">
                       {accessLogs.map((log, idx) => (
-                        <div key={idx} className="p-4 border border-slate-100 rounded-2xl bg-white shadow-sm flex items-center justify-between">
+                        <div key={idx} className="p-4 border border-[var(--border)] rounded-2xl bg-[var(--surface)] shadow-[var(--shadow)] flex items-center justify-between">
                           <div className="flex items-center gap-4">
-                             <div className={`p-2.5 rounded-xl ${log.type === 'login' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>
+                             <div className={`p-2.5 rounded-xl ${log.type === 'login' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-[var(--text-muted)]'}`}>
                                <LogIn className="h-4 w-4" />
                              </div>
                              <div>
-                               <p className="text-xs font-bold text-slate-900 uppercase tracking-tight">{log.type === 'login' ? 'Entrada no Sistema' : 'Saída do Sistema'}</p>
+                               <p className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-tight">{log.type === 'login' ? 'Entrada no Sistema' : 'Saída do Sistema'}</p>
                                <p className="text-[10px] text-slate-400 font-medium truncate max-w-md">{log.userAgent}</p>
                              </div>
                           </div>
@@ -480,7 +480,7 @@ const UserDetailsModal: React.FC<{ user: User; onClose: () => void }> = ({ user,
                       ))}
                     </div>
                   ) : (
-                    <div className="py-12 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+                    <div className="py-12 text-center bg-[var(--surface-muted)] rounded-3xl border border-dashed border-[var(--border)]">
                       <LogIn className="h-10 w-10 text-slate-300 mx-auto mb-3" />
                       <p className="text-sm font-bold text-slate-400 uppercase">Sem logs de acesso registrados</p>
                     </div>
@@ -502,18 +502,18 @@ const UserDetailsModal: React.FC<{ user: User; onClose: () => void }> = ({ user,
                       {ACHIEVEMENTS.filter(a => user.achievements?.includes(a.id)).map(achievement => {
                         const Icon = ICON_MAP[achievement.icon] || Trophy;
                         return (
-                          <div key={achievement.id} className="p-4 bg-white border border-slate-100 rounded-2xl shadow-sm text-center space-y-2">
-                             <div className={`h-12 w-12 rounded-xl mx-auto flex items-center justify-center ${achievement.type === 'platinum' ? 'bg-indigo-50 text-indigo-600' : achievement.type === 'gold' ? 'bg-amber-50 text-amber-600' : 'bg-slate-50 text-slate-500'}`}>
+                          <div key={achievement.id} className="p-4 bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-[var(--shadow)] text-center space-y-2">
+                             <div className={`h-12 w-12 rounded-xl mx-auto flex items-center justify-center ${achievement.type === 'platinum' ? 'bg-indigo-50 text-indigo-600' : achievement.type === 'gold' ? 'bg-amber-50 text-amber-600' : 'bg-[var(--surface-muted)] text-[var(--text-muted)]'}`}>
                                <Icon className="h-6 w-6" />
                              </div>
-                             <p className="text-[10px] font-bold text-slate-900 truncate">{achievement.title}</p>
+                             <p className="text-[10px] font-bold text-[var(--text-primary)] truncate">{achievement.title}</p>
                              <span className="text-[8px] font-black uppercase text-slate-400">{achievement.type}</span>
                           </div>
                         );
                       })}
                     </div>
                   ) : (
-                    <div className="py-12 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+                    <div className="py-12 text-center bg-[var(--surface-muted)] rounded-3xl border border-dashed border-[var(--border)]">
                       <Trophy className="h-10 w-10 text-slate-300 mx-auto mb-3" />
                       <p className="text-sm font-bold text-slate-400 uppercase">Nenhuma conquista desbloqueada</p>
                     </div>
@@ -524,8 +524,8 @@ const UserDetailsModal: React.FC<{ user: User; onClose: () => void }> = ({ user,
           )}
         </div>
 
-        <div className="p-8 bg-slate-50 border-t border-slate-100 flex justify-end">
-          <button onClick={onClose} className="px-8 py-3 bg-white text-slate-900 font-bold rounded-2xl border border-slate-200 hover:bg-slate-100 transition-all shadow-sm">Fechar Dossiê</button>
+        <div className="p-8 bg-[var(--surface-muted)] border-t border-[var(--border)] flex justify-end">
+          <button onClick={onClose} className="px-8 py-3 bg-[var(--surface)] text-[var(--text-primary)] font-bold rounded-2xl border border-[var(--border)] hover:bg-slate-100 transition-all shadow-[var(--shadow)]">Fechar Dossiê</button>
         </div>
       </div>
     </div>
@@ -596,20 +596,20 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
   return (
     <div className="space-y-6 page-transition">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold text-slate-900">Gestão de Clientes</h2>
+        <h2 className="text-2xl font-bold text-[var(--text-primary)]">Gestão de Clientes</h2>
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
           <input 
             type="text" 
             placeholder="Buscar por nome, empresa ou CNPJ..." 
-            className="w-full pl-12 pr-4 py-3 rounded-2xl bg-white border border-slate-100 focus:ring-4 focus:ring-indigo-50 focus:border-indigo-600 outline-none transition-all text-sm text-slate-950 font-bold placeholder:text-slate-500"
+            className="w-full pl-12 pr-4 py-3 rounded-2xl bg-[var(--surface)] border border-[var(--border)] focus:ring-4 focus:ring-indigo-50 focus:border-indigo-600 outline-none transition-all text-sm text-slate-950 font-bold placeholder:text-[var(--text-muted)]"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -623,19 +623,19 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
             </thead>
             <tbody className="divide-y divide-slate-50">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-slate-50/50 transition-all group cursor-pointer" onClick={() => setDetailedUser(user)}>
+                <tr key={user.id} className="hover:bg-[var(--surface-muted)]/50 transition-all group cursor-pointer" onClick={() => setDetailedUser(user)}>
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
                       <div className="relative">
-                        <div className="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center font-bold border border-slate-100">
+                        <div className="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center font-bold border border-[var(--border)]">
                           {(user.name || 'U').charAt(0)}
                         </div>
                         {user.isOnline && (
-                          <div className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-emerald-500 rounded-full border-2 border-white shadow-sm animate-pulse" />
+                          <div className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-emerald-500 rounded-full border-2 border-white shadow-[var(--shadow)] animate-pulse" />
                         )}
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors flex items-center gap-2">
+                        <p className="text-sm font-bold text-[var(--text-primary)] group-hover:text-indigo-600 transition-colors flex items-center gap-2">
                           {user.name}
                         </p>
                         <p className="text-[10px] text-slate-400 font-bold uppercase">{user.companyName}</p>
@@ -657,7 +657,7 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
                   </td>
                   <td className="px-8 py-6">
                     <div className="flex flex-col gap-1.5">
-                      <span className={`w-fit px-2 py-0.5 rounded text-[9px] font-black uppercase ${user.plan === 'enterprise' ? 'bg-purple-100 text-purple-700' : user.plan === 'pro' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-slate-600'}`}>
+                      <span className={`w-fit px-2 py-0.5 rounded text-[9px] font-black uppercase ${user.plan === 'enterprise' ? 'bg-purple-100 text-purple-700' : user.plan === 'pro' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-[var(--text-muted)]'}`}>
                         {user.plan}
                       </span>
                       <span className={`w-fit px-2 py-0.5 rounded text-[9px] font-black uppercase ${user.status === 'suspended' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
@@ -699,13 +699,13 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
 
       {editingUser && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[120] flex items-center justify-center p-4">
-          <div className="bg-white w-full max-w-xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 flex flex-col max-h-[90vh]">
+          <div className="bg-[var(--surface)] w-full max-w-xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 flex flex-col max-h-[90vh]">
             <div className="p-8 border-b border-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
                   <UserIcon className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">Editar Dados Cadastrais</h3>
+                <h3 className="text-xl font-bold text-[var(--text-primary)]">Editar Dados Cadastrais</h3>
               </div>
               <button onClick={() => setEditingUser(null)} className="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors">
                 <X className="h-6 w-6" />
@@ -722,7 +722,7 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
                     type="text" 
                     value={editFormData.name} 
                     onChange={e => setEditFormData({...editFormData, name: e.target.value})}
-                    className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-950"
+                    className="w-full p-3.5 rounded-xl bg-[var(--surface-muted)] border border-[var(--border)] focus:bg-[var(--surface)] focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-950"
                   />
                 </div>
                 <div className="space-y-2">
@@ -733,7 +733,7 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
                     type="text" 
                     value={editFormData.companyName} 
                     onChange={e => setEditFormData({...editFormData, companyName: e.target.value})}
-                    className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-950"
+                    className="w-full p-3.5 rounded-xl bg-[var(--surface-muted)] border border-[var(--border)] focus:bg-[var(--surface)] focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-950"
                   />
                 </div>
               </div>
@@ -747,7 +747,7 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
                     type="text" 
                     value={editFormData.cnpj} 
                     onChange={e => setEditFormData({...editFormData, cnpj: e.target.value})}
-                    className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-950"
+                    className="w-full p-3.5 rounded-xl bg-[var(--surface-muted)] border border-[var(--border)] focus:bg-[var(--surface)] focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-950"
                   />
                 </div>
                 <div className="space-y-2">
@@ -757,7 +757,7 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
                   <select 
                     value={editFormData.plan} 
                     onChange={e => setEditFormData({...editFormData, plan: e.target.value as any})}
-                    className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-950"
+                    className="w-full p-3.5 rounded-xl bg-[var(--surface-muted)] border border-[var(--border)] focus:bg-[var(--surface)] focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-950"
                   >
                     <option value="free">FREE</option>
                     <option value="pro">PRO</option>
@@ -773,7 +773,7 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
                 <textarea 
                   value={editFormData.address} 
                   onChange={e => setEditFormData({...editFormData, address: e.target.value})}
-                  className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-950 h-24 resize-none placeholder:text-slate-400"
+                  className="w-full p-3.5 rounded-xl bg-[var(--surface-muted)] border border-[var(--border)] focus:bg-[var(--surface)] focus:border-indigo-600 focus:ring-4 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-950 h-24 resize-none placeholder:text-slate-400"
                 />
               </div>
 
@@ -791,10 +791,10 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
               </div>
             </div>
 
-            <div className="p-8 bg-slate-50 border-t border-slate-100 flex gap-3">
+            <div className="p-8 bg-[var(--surface-muted)] border-t border-[var(--border)] flex gap-3">
               <button 
                 onClick={() => setEditingUser(null)} 
-                className="flex-1 py-4 bg-white text-slate-600 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all"
+                className="flex-1 py-4 bg-[var(--surface)] text-[var(--text-muted)] font-bold rounded-2xl border border-[var(--border)] hover:bg-[var(--surface-muted)] transition-all"
               >
                 Cancelar
               </button>
@@ -851,7 +851,7 @@ export const AdminPanel: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-slate-50">
+      <div className="h-screen flex items-center justify-center bg-[var(--surface-muted)]">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-10 w-10 text-indigo-600 animate-spin" />
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Iniciando Admin Command Center...</p>
@@ -867,7 +867,7 @@ export const AdminPanel: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-[var(--surface-muted)] flex flex-col lg:flex-row">
       {/* Sidebar Administrativa */}
       <aside className="w-full lg:w-72 bg-slate-900 text-white lg:fixed lg:top-0 lg:bottom-0 z-50 flex flex-col transition-all">
         <div className="p-8 flex items-center gap-3">
@@ -879,7 +879,7 @@ export const AdminPanel: React.FC = () => {
         </div>
 
         <nav className="flex-1 px-4 space-y-1">
-          <p className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 mt-2">Navegação</p>
+          <p className="px-4 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-4 mt-2">Navegação</p>
           {navItems.map((item) => (
             <NavLink
               key={item.path}
@@ -887,7 +887,7 @@ export const AdminPanel: React.FC = () => {
               end={item.end}
               className={({ isActive }) => `
                 flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all
-                ${isActive ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-900/40' : 'text-slate-400 hover:bg-white/5 hover:text-white'}
+                ${isActive ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-900/40' : 'text-slate-400 hover:bg-[var(--surface)]/5 hover:text-white'}
               `}
             >
               <item.icon className="h-5 w-5" />
@@ -911,7 +911,7 @@ export const AdminPanel: React.FC = () => {
           </button>
 
           <footer className="pt-4 text-center">
-             <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.2em] leading-relaxed">
+             <p className="text-[8px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] leading-relaxed">
                 Solution © 2026<br/>
                 Desenvolvido por <a href="https://felipe-84bca.web.app/" target="_blank" className="text-indigo-400 hover:underline">Felipe Sadrak</a>
              </p>
@@ -960,10 +960,10 @@ const SupportTicketsView: React.FC<{ tickets: SupportTicket[] }> = ({ tickets })
     <div className="space-y-6 page-transition">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">Central de Atendimento</h2>
-          <p className="text-sm text-slate-500">Gerencie as solicitações de suporte e dúvidas dos clientes.</p>
+          <h2 className="text-2xl font-bold text-[var(--text-primary)]">Central de Atendimento</h2>
+          <p className="text-sm text-[var(--text-muted)]">Gerencie as solicitações de suporte e dúvidas dos clientes.</p>
         </div>
-        <div className="flex bg-white p-1 rounded-xl border border-slate-100 shadow-sm">
+        <div className="flex bg-[var(--surface)] p-1 rounded-xl border border-[var(--border)] shadow-[var(--shadow)]">
           {[
             { id: 'all', label: 'Todos' },
             { id: 'open', label: 'Pendentes' },
@@ -972,7 +972,7 @@ const SupportTicketsView: React.FC<{ tickets: SupportTicket[] }> = ({ tickets })
             <button 
               key={f.id}
               onClick={() => setFilter(f.id as any)}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${filter === f.id ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:bg-slate-50'}`}
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${filter === f.id ? 'bg-indigo-600 text-white' : 'text-[var(--text-muted)] hover:bg-[var(--surface-muted)]'}`}
             >
               {f.label}
             </button>
@@ -985,14 +985,14 @@ const SupportTicketsView: React.FC<{ tickets: SupportTicket[] }> = ({ tickets })
           <div 
             key={ticket.id} 
             onClick={() => setSelectedTicket(ticket)}
-            className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center justify-between group"
+            className="bg-[var(--surface)] p-6 rounded-[2rem] border border-[var(--border)] shadow-[var(--shadow)] hover:shadow-[var(--shadow)] transition-all cursor-pointer flex items-center justify-between group"
           >
             <div className="flex items-center gap-5">
-              <div className={`p-4 rounded-2xl shadow-sm ${ticket.status === 'open' ? 'bg-red-50 text-red-500' : ticket.status === 'in_progress' ? 'bg-amber-50 text-amber-500' : 'bg-emerald-50 text-emerald-500'}`}>
+              <div className={`p-4 rounded-2xl shadow-[var(--shadow)] ${ticket.status === 'open' ? 'bg-red-50 text-red-500' : ticket.status === 'in_progress' ? 'bg-amber-50 text-amber-500' : 'bg-emerald-50 text-emerald-500'}`}>
                 <MessageSquare className="h-6 w-6" />
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{ticket.subject}</h4>
+                <h4 className="font-bold text-[var(--text-primary)] group-hover:text-indigo-600 transition-colors">{ticket.subject}</h4>
                 <div className="flex items-center gap-3 mt-1.5">
                   <span className="text-xs font-bold text-slate-700">{ticket.userName}</span>
                   <span className="text-slate-300">•</span>
@@ -1004,13 +1004,13 @@ const SupportTicketsView: React.FC<{ tickets: SupportTicket[] }> = ({ tickets })
               <span className={`px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest ${ticket.status === 'open' ? 'bg-red-100 text-red-700' : ticket.status === 'in_progress' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
                 {ticket.status === 'open' ? 'Novo' : ticket.status === 'in_progress' ? 'Em Fila' : 'Concluído'}
               </span>
-              <div className="p-2 bg-slate-50 rounded-full group-hover:bg-indigo-50 group-hover:text-indigo-600 text-slate-300 transition-all">
+              <div className="p-2 bg-[var(--surface-muted)] rounded-full group-hover:bg-indigo-50 group-hover:text-indigo-600 text-slate-300 transition-all">
                 <ChevronRight className="h-5 w-5" />
               </div>
             </div>
           </div>
         )) : (
-          <div className="py-20 text-center bg-white rounded-[2.5rem] border border-dashed border-slate-200">
+          <div className="py-20 text-center bg-[var(--surface)] rounded-[2.5rem] border border-dashed border-[var(--border)]">
             <LifeBuoy className="h-12 w-12 text-slate-200 mx-auto mb-4" />
             <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Nenhum ticket encontrado</p>
           </div>

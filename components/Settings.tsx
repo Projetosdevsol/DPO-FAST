@@ -166,23 +166,23 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
     <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in pb-24 px-4 sm:px-0">
       <header className="space-y-2">
         <h1 className="text-4xl font-black text-[var(--text-primary)] tracking-tighter">Configurações</h1>
-        <p className="text-slate-500 font-medium">Personalize sua experiência e gerencie sua conformidade.</p>
+        <p className="text-[var(--text-muted)] font-medium">Personalize sua experiência e gerencie sua conformidade.</p>
       </header>
 
       {success && (
-        <div className="p-5 bg-green-500/10 border border-green-500/20 rounded-2xl flex items-center gap-3 text-green-600 font-bold shadow-sm animate-in slide-in-from-top-2">
+        <div className="p-5 bg-green-500/10 border border-green-500/20 rounded-2xl flex items-center gap-3 text-green-600 font-bold shadow-[var(--shadow)] animate-in slide-in-from-top-2">
           <CheckCircle className="h-5 w-5" /> {success}
         </div>
       )}
 
       {error && (
-        <div className="p-5 bg-red-500/10 border border-red-200 rounded-2xl flex items-center gap-3 text-red-600 font-bold shadow-sm animate-in slide-in-from-top-2">
+        <div className="p-5 bg-red-500/10 border border-red-200 rounded-2xl flex items-center gap-3 text-red-600 font-bold shadow-[var(--shadow)] animate-in slide-in-from-top-2">
           <AlertCircle className="h-5 w-5" /> {error}
         </div>
       )}
 
       {/* SEÇÃO: ASSINATURA ATUAL */}
-      <section className="bg-[var(--surface)] p-8 rounded-[2.5rem] border border-[var(--border)] shadow-sm relative overflow-hidden">
+      <section className="bg-[var(--surface)] p-8 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] relative overflow-hidden">
         <div className="absolute top-0 right-0 p-8 opacity-5">
            <CreditCard className="h-32 w-32 text-[var(--text-primary)]" />
         </div>
@@ -196,7 +196,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
                    </div>
                    <h2 className="text-xl font-black text-[var(--text-primary)] uppercase tracking-tight">Plano & Assinatura</h2>
                 </div>
-                <p className="text-slate-500 text-sm font-medium">Gerencie seus limites e faturamento.</p>
+                <p className="text-[var(--text-muted)] text-sm font-medium">Gerencie seus limites e faturamento.</p>
               </div>
               
               <div className="flex items-center gap-3 bg-[var(--surface-muted)] p-2 pr-6 rounded-full border border-[var(--border)]">
@@ -229,7 +229,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
            </div>
 
            <div className="pt-4 border-t border-[var(--border)] flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-slate-500 font-medium">Sua próxima renovação ocorre via Stripe.</p>
+              <p className="text-xs text-[var(--text-muted)] font-medium">Sua próxima renovação ocorre via Stripe.</p>
               <button 
                 onClick={() => navigate('/planos')}
                 className="w-full md:w-auto px-8 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center justify-center gap-2 always-white shadow-xl shadow-blue-600/20"
@@ -241,7 +241,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
       </section>
 
       {/* SEÇÃO: PREFERÊNCIAS VISUAIS */}
-      <section className="bg-[var(--surface)] p-8 rounded-[2.5rem] border border-[var(--border)] shadow-sm space-y-6">
+      <section className="bg-[var(--surface)] p-8 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] space-y-6">
         <h2 className="text-xl font-black text-[var(--text-primary)] flex items-center gap-3">
           <Sparkles className="h-5 w-5 text-amber-500" /> Interface & Temas
         </h2>
@@ -249,14 +249,14 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 bg-[var(--surface-muted)] rounded-3xl border border-[var(--border)]">
            <div className="space-y-1">
               <p className="text-sm font-black text-[var(--text-primary)] uppercase tracking-tight">Visual da Plataforma</p>
-              <p className="text-xs text-slate-500 font-medium">Adapte a luminosidade do sistema ao seu ambiente.</p>
+              <p className="text-xs text-[var(--text-muted)] font-medium">Adapte a luminosidade do sistema ao seu ambiente.</p>
            </div>
            
            <div className="flex bg-[var(--surface)] p-1.5 rounded-2xl border border-[var(--border)] shadow-inner">
               <button 
                 onClick={() => theme !== 'light' && toggleTheme()}
                 className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                  theme === 'light' ? 'bg-white text-slate-900 shadow-md border border-slate-100' : 'text-slate-500 hover:text-slate-300'
+                  theme === 'light' ? 'bg-[var(--surface)] text-[var(--text-primary)] shadow-[var(--shadow)] border border-[var(--border)]' : 'text-[var(--text-muted)] hover:text-slate-300'
                 }`}
               >
                 <Sun className="h-4 w-4" /> Claro
@@ -264,7 +264,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
               <button 
                 onClick={() => theme !== 'dark' && toggleTheme()}
                 className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                  theme === 'dark' ? 'bg-slate-900 text-white shadow-md border border-slate-800' : 'text-slate-500 hover:text-slate-700'
+                  theme === 'dark' ? 'bg-slate-900 text-white shadow-[var(--shadow)] border border-slate-800' : 'text-[var(--text-muted)] hover:text-slate-700'
                 }`}
               >
                 <Moon className="h-4 w-4" /> Escuro
@@ -275,14 +275,14 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* SEÇÃO: PERFIL & EMPRESA */}
-        <section className="bg-[var(--surface)] p-8 rounded-[2.5rem] border border-[var(--border)] shadow-sm space-y-8 h-full">
+        <section className="bg-[var(--surface)] p-8 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] space-y-8 h-full">
           <h2 className="text-xl font-black text-[var(--text-primary)] flex items-center gap-3 uppercase tracking-tight">
             <Building className="h-5 w-5 text-blue-600" /> Identidade & Perfil
           </h2>
           
           <div className="space-y-5">
             <div>
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Nome do Gestor</label>
+              <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest block mb-2 px-1">Nome do Gestor</label>
               <div className="relative">
                 <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <input 
@@ -295,7 +295,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
             </div>
 
             <div>
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Nome da Organização</label>
+              <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest block mb-2 px-1">Nome da Organização</label>
               <div className="relative">
                 <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <input 
@@ -309,7 +309,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                <div>
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Documento (CNPJ)</label>
+                  <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest block mb-2 px-1">Documento (CNPJ)</label>
                   <div className="relative">
                     <Hash className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                     <input 
@@ -321,7 +321,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
                   </div>
                </div>
                <div>
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Localização</label>
+                  <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest block mb-2 px-1">Localização</label>
                   <div className="relative">
                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                     <input 
@@ -346,7 +346,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
         </section>
 
         {/* SEÇÃO: DETALHES AVANÇADOS */}
-        <section className="bg-[var(--surface)] p-8 rounded-[2.5rem] border border-[var(--border)] shadow-sm space-y-8 flex flex-col h-full">
+        <section className="bg-[var(--surface)] p-8 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] space-y-8 flex flex-col h-full">
           <h2 className="text-xl font-black text-[var(--text-primary)] flex items-center gap-3 uppercase tracking-tight">
             <Fingerprint className="h-5 w-5 text-indigo-600" /> Metadados da Conta
           </h2>
@@ -435,7 +435,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
       )}
 
       {/* SEÇÃO: SUPORTE */}
-      <section className="bg-[var(--surface)] p-10 rounded-[2.5rem] border border-[var(--border)] shadow-sm">
+      <section className="bg-[var(--surface)] p-10 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)]">
         <div className="flex flex-col md:flex-row gap-16">
           <div className="md:w-1/3 space-y-6">
             <div className="p-5 bg-blue-600/10 rounded-3xl w-fit">
@@ -443,7 +443,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
             </div>
             <div className="space-y-2">
               <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter">Central de Ajuda</h2>
-              <p className="text-slate-500 leading-relaxed font-medium">Encontrou algum erro ou tem dúvidas sobre como aplicar a LGPD no seu negócio? Nossa equipe de suporte está pronta para te ouvir.</p>
+              <p className="text-[var(--text-muted)] leading-relaxed font-medium">Encontrou algum erro ou tem dúvidas sobre como aplicar a LGPD no seu negócio? Nossa equipe de suporte está pronta para te ouvir.</p>
             </div>
             <div className="pt-4 flex items-center gap-3 text-[10px] font-black text-blue-600 uppercase tracking-widest">
               <div className="h-2.5 w-2.5 rounded-full bg-blue-600 animate-pulse" /> Resposta em até 48h úteis
@@ -453,7 +453,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
           <form onSubmit={handleSupportSubmit} className="flex-1 space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="text-[10px] font-black text-slate-500 uppercase mb-2 block px-1">Assunto da Demanda</label>
+                <label className="text-[10px] font-black text-[var(--text-muted)] uppercase mb-2 block px-1">Assunto da Demanda</label>
                 <select 
                   value={supportSubject} 
                   onChange={(e) => setSupportSubject(e.target.value)}
@@ -467,10 +467,10 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
                 </select>
               </div>
               <div>
-                <label className="text-[10px] font-black text-slate-500 uppercase mb-2 block px-1">Evidência Anexa (Opcional)</label>
+                <label className="text-[10px] font-black text-[var(--text-muted)] uppercase mb-2 block px-1">Evidência Anexa (Opcional)</label>
                 <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-5 py-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] text-slate-600 flex items-center gap-3 cursor-pointer hover:bg-[var(--surface)] transition-all truncate group"
+                  className="px-5 py-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-muted)] flex items-center gap-3 cursor-pointer hover:bg-[var(--surface)] transition-all truncate group"
                 >
                   <ImageIcon className="h-5 w-5 shrink-0 text-slate-400 group-hover:text-blue-600 transition-colors" />
                   <span className="text-[11px] font-bold text-[var(--text-primary)] truncate">{supportFile ? supportFile.name : 'Selecionar imagem (máx 2MB)'}</span>
@@ -492,7 +492,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
               </div>
             </div>
             <div>
-              <label className="text-[10px] font-black text-slate-500 uppercase mb-2 block px-1">Detalhamento</label>
+              <label className="text-[10px] font-black text-[var(--text-muted)] uppercase mb-2 block px-1">Detalhamento</label>
               <textarea 
                 value={supportMessage}
                 onChange={(e) => setSupportMessage(e.target.value)}
@@ -522,12 +522,12 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
                 <ShieldAlert className="h-10 w-10 text-blue-600" />
               </div>
               <h3 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Segurança Exigida</h3>
-              <p className="text-sm text-slate-500 font-medium">Por segurança, insira sua senha atual para alterar o e-mail da conta.</p>
+              <p className="text-sm text-[var(--text-muted)] font-medium">Por segurança, insira sua senha atual para alterar o e-mail da conta.</p>
             </div>
 
             <div className="space-y-6">
               <div>
-                <label className="text-[10px] font-black text-slate-500 uppercase block mb-2 px-1">Novo E-mail Corporativo</label>
+                <label className="text-[10px] font-black text-[var(--text-muted)] uppercase block mb-2 px-1">Novo E-mail Corporativo</label>
                 <input 
                   type="email" 
                   value={email} 
@@ -536,7 +536,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
                 />
               </div>
               <div>
-                <label className="text-[10px] font-black text-slate-500 uppercase block mb-2 px-1">Senha de Verificação</label>
+                <label className="text-[10px] font-black text-[var(--text-muted)] uppercase block mb-2 px-1">Senha de Verificação</label>
                 <input 
                   type="password" 
                   value={currentPassword} 
@@ -549,7 +549,7 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
             <div className="flex gap-4 pt-4">
               <button 
                 onClick={() => setShowEmailModal(false)}
-                className="flex-1 py-5 text-xs font-black uppercase text-slate-500 tracking-widest hover:bg-[var(--surface-muted)] rounded-2xl transition-all"
+                className="flex-1 py-5 text-xs font-black uppercase text-[var(--text-muted)] tracking-widest hover:bg-[var(--surface-muted)] rounded-2xl transition-all"
               >
                 Cancelar
               </button>

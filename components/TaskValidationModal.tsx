@@ -113,7 +113,7 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
         <button 
           key={type}
           onClick={() => setEvidenceType(type as EvidenceType)}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-tight transition-all ${evidenceType === type ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-tight transition-all ${evidenceType === type ? 'bg-[var(--surface)] text-blue-600 shadow-[var(--shadow)]' : 'text-[var(--text-muted)] hover:text-slate-700'}`}
         >
           {type === 'system' && <FileCheck className="h-4 w-4" />}
           {type === 'text' && <FileText className="h-4 w-4" />}
@@ -127,14 +127,14 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-5xl rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 max-h-[95vh]">
-        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+      <div className="bg-[var(--surface)] w-full max-w-5xl rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 max-h-[95vh]">
+        <div className="px-8 py-6 border-b border-[var(--border)] flex items-center justify-between bg-[var(--surface-muted)]/30">
           <div className="flex items-center gap-4">
             <div className={`p-3 rounded-2xl ${task.priority === 'Alta' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
               <ShieldCheck className="h-6 w-6" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-slate-900 leading-none">Validação de Conformidade</h2>
+              <h2 className="text-xl font-black text-[var(--text-primary)] leading-none">Validação de Conformidade</h2>
               <p className="text-[10px] text-slate-400 mt-2 uppercase font-black tracking-[0.2em]">{task.title}</p>
             </div>
           </div>
@@ -142,25 +142,25 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
             {task.history && task.history.length > 0 && (
               <button 
                 onClick={() => setShowHistory(!showHistory)}
-                className={`p-2.5 rounded-xl transition-all ${showHistory ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-400 hover:text-blue-600'}`}
+                className={`p-2.5 rounded-xl transition-all ${showHistory ? 'bg-blue-600 text-white' : 'bg-[var(--surface)] border border-[var(--border)] text-slate-400 hover:text-blue-600'}`}
                 title="Histórico de Tentativas"
               >
                 <History className="h-5 w-5" />
               </button>
             )}
-            <button onClick={onClose} className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"><X className="h-6 w-6" /></button>
+            <button onClick={onClose} className="p-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"><X className="h-6 w-6" /></button>
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-0 grid grid-cols-1 lg:grid-cols-5 h-full">
           {/* Coluna Lateral: Guia de Implementação */}
-          <div className="lg:col-span-2 bg-slate-50/50 p-8 border-r border-slate-100 space-y-8">
+          <div className="lg:col-span-2 bg-[var(--surface-muted)]/50 p-8 border-r border-[var(--border)] space-y-8">
             <section className="space-y-4">
               <div className="flex items-center gap-2 text-amber-600">
                 <AlertCircle className="h-4 w-4" />
                 <h4 className="text-[10px] font-black uppercase tracking-widest">O que identificamos?</h4>
               </div>
-              <p className="text-sm font-bold text-slate-600 leading-relaxed bg-white p-4 rounded-2xl border border-slate-100">
+              <p className="text-sm font-bold text-[var(--text-muted)] leading-relaxed bg-[var(--surface)] p-4 rounded-2xl border border-[var(--border)]">
                 {task.description}
               </p>
             </section>
@@ -170,7 +170,7 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
                 <PlayCircle className="h-4 w-4" />
                 <h4 className="text-[10px] font-black uppercase tracking-widest">Como implementar?</h4>
               </div>
-              <div className="text-sm font-medium text-slate-500 leading-relaxed bg-blue-50/50 p-4 rounded-2xl border border-blue-100/50 whitespace-pre-wrap">
+              <div className="text-sm font-medium text-[var(--text-muted)] leading-relaxed bg-blue-50/50 p-4 rounded-2xl border border-blue-100/50 whitespace-pre-wrap">
                 {task.explanation}
               </div>
             </section>
@@ -183,14 +183,14 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
                 </div>
                 <div className="space-y-3">
                   {task.history?.map((entry, idx) => (
-                    <div key={idx} className="p-3 rounded-xl bg-white border border-slate-100 text-[10px] shadow-sm">
+                    <div key={idx} className="p-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-[10px] shadow-[var(--shadow)]">
                       <div className="flex justify-between items-center mb-1">
                         <span className="font-bold text-slate-400">{new Date(entry.date).toLocaleDateString()}</span>
                         <span className={`font-black uppercase ${entry.result.isValid ? 'text-green-600' : 'text-amber-600'}`}>
                           {entry.result.isValid ? 'Válido' : 'Inválido'}
                         </span>
                       </div>
-                      <p className="text-slate-500 truncate italic">"{entry.evidence}"</p>
+                      <p className="text-[var(--text-muted)] truncate italic">"{entry.evidence}"</p>
                     </div>
                   ))}
                 </div>
@@ -206,16 +206,16 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
 
               <div className="space-y-4 min-h-[300px]">
                 {evidenceType === 'system' && (
-                  <div className="bg-slate-50 p-10 rounded-[2rem] border-2 border-dashed border-slate-200 text-center space-y-4">
+                  <div className="bg-[var(--surface-muted)] p-10 rounded-[2rem] border-2 border-dashed border-[var(--border)] text-center space-y-4">
                     <FileCheck className="h-12 w-12 text-slate-300 mx-auto" />
                     <div>
-                      <h4 className="font-black text-slate-900">Documentação do Sistema</h4>
-                      <p className="text-xs text-slate-500 mt-1">Podemos preencher a evidência com o conteúdo oficial sugerido.</p>
+                      <h4 className="font-black text-[var(--text-primary)]">Documentação do Sistema</h4>
+                      <p className="text-xs text-[var(--text-muted)] mt-1">Podemos preencher a evidência com o conteúdo oficial sugerido.</p>
                     </div>
                     <button 
                       onClick={handleUseSuggested}
                       disabled={!suggestedDocContent}
-                      className="px-8 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-black text-blue-600 hover:shadow-lg transition-all disabled:opacity-30"
+                      className="px-8 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-2xl text-xs font-black text-blue-600 hover:shadow-lg transition-all disabled:opacity-30"
                     >
                       Usar Texto Sugerido
                     </button>
@@ -224,7 +224,7 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
 
                 {evidenceType === 'text' && (
                   <textarea
-                    className="w-full h-48 p-6 rounded-[2rem] border border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-50 outline-none text-sm leading-relaxed transition-all text-slate-900 font-bold placeholder:text-slate-400"
+                    className="w-full h-48 p-6 rounded-[2rem] border border-[var(--border)] focus:bg-[var(--surface)] focus:ring-4 focus:ring-blue-50 outline-none text-sm leading-relaxed transition-all text-[var(--text-primary)] font-bold placeholder:text-slate-400"
                     placeholder="Descreva detalhadamente a medida técnica ou cole o conteúdo do documento que você implementou..."
                     value={evidence}
                     onChange={(e) => { setEvidence(e.target.value); setResult(null); }}
@@ -236,23 +236,23 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
                     {!uploadedFile ? (
                       <div 
                         onClick={() => !isProcessing && fileInputRef.current?.click()}
-                        className={`bg-slate-50 p-16 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-center transition-all group ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-blue-400 hover:bg-blue-50'}`}
+                        className={`bg-[var(--surface-muted)] p-16 rounded-[2.5rem] border-2 border-dashed border-[var(--border)] text-center transition-all group ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-blue-400 hover:bg-blue-50'}`}
                       >
                         <Upload className="h-12 w-12 text-slate-300 mx-auto mb-4 group-hover:text-blue-500 group-hover:-translate-y-1 transition-all" />
-                        <h4 className="font-black text-slate-900">Clique para enviar arquivo</h4>
+                        <h4 className="font-black text-[var(--text-primary)]">Clique para enviar arquivo</h4>
                         <p className="text-xs text-slate-400 mt-1 uppercase font-bold tracking-widest">Suporte: PDF, DOCX ou TXT</p>
                         <input type="file" ref={fileInputRef} className="hidden" accept=".pdf,.docx,.txt" onChange={handleFileUpload} disabled={isProcessing} />
                       </div>
                     ) : (
                       <div className="bg-blue-600 p-5 rounded-3xl flex items-center justify-between text-white shadow-xl shadow-blue-100">
                         <div className="flex items-center gap-4">
-                          <div className="p-3 bg-white/20 rounded-xl"><FileText className="h-6 w-6" /></div>
+                          <div className="p-3 bg-[var(--surface)]/20 rounded-xl"><FileText className="h-6 w-6" /></div>
                           <div>
                             <p className="text-sm font-black truncate max-w-[200px]">{uploadedFile.name}</p>
                             <p className="text-[10px] font-bold text-blue-200 uppercase tracking-widest">Documento Processado</p>
                           </div>
                         </div>
-                        <button onClick={() => setUploadedFile(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all"><Trash2 className="h-5 w-5" /></button>
+                        <button onClick={() => setUploadedFile(null)} className="p-2 hover:bg-[var(--surface)]/10 rounded-xl transition-all"><Trash2 className="h-5 w-5" /></button>
                       </div>
                     )}
                   </div>
@@ -265,7 +265,7 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
                       <input 
                         type="url"
                         placeholder="https://seu-site.com/privacidade"
-                        className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-50 outline-none text-slate-900 font-bold"
+                        className="w-full pl-12 pr-4 py-4 rounded-2xl border border-[var(--border)] focus:bg-[var(--surface)] focus:ring-4 focus:ring-blue-50 outline-none text-[var(--text-primary)] font-bold"
                         value={evidence.startsWith('http') ? evidence : ''}
                         onChange={(e) => setEvidence(e.target.value)}
                       />
@@ -280,7 +280,7 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
                   </label>
                   <input 
                     type="text"
-                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:bg-white focus:ring-4 focus:ring-blue-50 outline-none text-sm text-slate-900 font-bold"
+                    className="w-full px-5 py-4 rounded-2xl bg-[var(--surface-muted)] border border-[var(--border)] focus:bg-[var(--surface)] focus:ring-4 focus:ring-blue-50 outline-none text-sm text-[var(--text-primary)] font-bold"
                     placeholder="Algo que o auditor precise saber sobre essa evidência?"
                     value={observations}
                     onChange={(e) => setObservations(e.target.value)}
@@ -289,7 +289,7 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
               </div>
 
               {isProcessing && (
-                <div className="space-y-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="space-y-3 p-4 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border)]">
                   <div className="flex items-center justify-between text-[10px] font-black text-blue-600 uppercase tracking-widest">
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-3 w-3 animate-spin" /> {statusText}
@@ -320,12 +320,12 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
                             <div key={el} className="relative">
                               <button 
                                 onClick={() => setActiveHelp(activeHelp === el ? null : el)}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-white border border-amber-200 text-amber-700 text-[10px] font-black uppercase rounded-xl hover:bg-amber-100 transition-all"
+                                className="flex items-center gap-2 px-3 py-1.5 bg-[var(--surface)] border border-amber-200 text-amber-700 text-[10px] font-black uppercase rounded-xl hover:bg-amber-100 transition-all"
                               >
                                 {el} <HelpCircle className="h-3 w-3" />
                               </button>
                               {activeHelp === el && (
-                                <div className="absolute z-[120] bottom-full left-0 mb-3 w-64 p-4 bg-slate-900 text-white text-[11px] rounded-[1.5rem] shadow-2xl animate-in fade-in zoom-in-95 border border-slate-700 leading-relaxed">
+                                <div className="absolute z-[120] bottom-full left-0 mb-3 w-64 p-4 bg-[var(--surface-muted)] text-[var(--text-primary)] border-[var(--border)] text-[11px] rounded-[1.5rem] shadow-2xl animate-in fade-in zoom-in-95 border border-[var(--border)] leading-relaxed">
                                   {LGPD_CRITERIA_EXPLANATIONS[el] || 'Requisito essencial para validade jurídica desta tarefa.'}
                                 </div>
                               )}
@@ -342,7 +342,7 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
         </div>
 
         {/* Rodapé do Modal */}
-        <div className="p-8 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="p-8 border-t border-[var(--border)] bg-[var(--surface-muted)]/50 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
             <ShieldCheck className="h-4 w-4 text-emerald-500" /> Auditoria LGPD Ativa
           </div>
@@ -350,7 +350,7 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
             <button
               onClick={handleRequestReview}
               disabled={!evidence.trim() || isProcessing}
-              className="flex-1 sm:flex-none px-6 py-4 rounded-2xl bg-white border border-slate-200 font-black text-slate-500 text-xs uppercase tracking-widest hover:bg-slate-50 transition-all disabled:opacity-30"
+              className="flex-1 sm:flex-none px-6 py-4 rounded-2xl bg-[var(--surface)] border border-[var(--border)] font-black text-[var(--text-muted)] text-xs uppercase tracking-widest hover:bg-[var(--surface-muted)] transition-all disabled:opacity-30"
             >
               Solicitar Revisão
             </button>
@@ -365,7 +365,7 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
             <button
               onClick={() => result && onSave(evidence, result, observations, uploadedFile?.url, 'Concluída')}
               disabled={!result?.isValid || isProcessing}
-              className="flex-1 sm:flex-none px-10 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black disabled:opacity-30 shadow-xl transition-all flex items-center justify-center gap-2"
+              className="flex-1 sm:flex-none px-10 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 disabled:opacity-30 shadow-xl transition-all flex items-center justify-center gap-2"
             >
               Finalizar <ArrowRight className="h-4 w-4" />
             </button>

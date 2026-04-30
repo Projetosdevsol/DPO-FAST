@@ -76,7 +76,7 @@ export const Pricing: React.FC<{ isLandingPage?: boolean }> = ({ isLandingPage }
           {/* Desktop/Global Back Button */}
           <button 
             onClick={() => navigate(-1)}
-            className="absolute top-10 left-6 lg:left-12 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-[var(--text-primary)] transition-all group z-50"
+            className="absolute top-10 left-6 lg:left-12 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all group z-50"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
             Voltar
@@ -92,9 +92,9 @@ export const Pricing: React.FC<{ isLandingPage?: boolean }> = ({ isLandingPage }
             Investimento em Segurança
           </span>
           <h1 className={`text-4xl md:text-6xl font-black tracking-tighter text-[var(--text-primary)]`}>
-            Proteção que cabe no <span className={isLandingPage ? 'text-slate-500/50 italic text-[var(--text-muted)]' : 'text-blue-600'}>bolso</span>.
+            Proteção que cabe no <span className={isLandingPage ? 'text-[var(--text-muted)]/50 italic text-[var(--text-muted)]' : 'text-blue-600'}>bolso</span>.
           </h1>
-          <p className={`text-lg max-w-2xl mx-auto font-medium text-slate-500 leading-relaxed`}>
+          <p className={`text-lg max-w-2xl mx-auto font-medium text-[var(--text-muted)] leading-relaxed`}>
             Escolha o nível de blindagem jurídica ideal para o seu negócio.
           </p>
         </div>
@@ -108,14 +108,14 @@ export const Pricing: React.FC<{ isLandingPage?: boolean }> = ({ isLandingPage }
               }`}
             >
               {plan.highlight && (
-                <div className={`absolute -top-3 left-10 px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-[0.2em] shadow-sm bg-blue-600 text-white always-white z-10`}>
+                <div className={`absolute -top-3 left-10 px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-[0.2em] shadow-[var(--shadow)] bg-blue-600 text-white always-white z-10`}>
                   Mais Eficiente
                 </div>
               )}
 
               <div className="mb-8">
                 <h3 className={`text-2xl font-black mb-3 text-[var(--text-primary)]`}>{plan.name}</h3>
-                <p className={`text-sm font-medium leading-relaxed text-slate-500`}>
+                <p className={`text-sm font-medium leading-relaxed text-[var(--text-muted)]`}>
                   {plan.description}
                 </p>
               </div>
@@ -130,10 +130,10 @@ export const Pricing: React.FC<{ isLandingPage?: boolean }> = ({ isLandingPage }
               <div className="space-y-6 mb-12">
                 {plan.features.map((feature, i) => (
                   <div key={i} className="flex items-start gap-4 group/item">
-                    <div className={`p-2.5 rounded-xl shrink-0 transition-all bg-[var(--background)] text-slate-500 group-hover/item:text-blue-500 group-hover/item:scale-110`}>
+                    <div className={`p-2.5 rounded-xl shrink-0 transition-all bg-[var(--background)] text-[var(--text-muted)] group-hover/item:text-blue-500 group-hover/item:scale-110`}>
                       <feature.icon className="h-4 w-4" />
                     </div>
-                    <span className={`text-sm font-bold leading-tight pt-1 transition-colors text-slate-600 group-hover/item:text-[var(--text-primary)]`}>
+                    <span className={`text-sm font-bold leading-tight pt-1 transition-colors text-[var(--text-muted)] group-hover/item:text-[var(--text-primary)]`}>
                       {feature.text}
                     </span>
                   </div>
@@ -160,7 +160,7 @@ export const Pricing: React.FC<{ isLandingPage?: boolean }> = ({ isLandingPage }
         </div>
 
         <div className="mt-24 text-center">
-          <p className={`text-[10px] font-black uppercase tracking-[0.2em] text-slate-500`}>
+          <p className={`text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)]`}>
             Dúvidas sobre faturamento? 
             <button 
               onClick={() => navigate('/dashboard/configuracoes')}

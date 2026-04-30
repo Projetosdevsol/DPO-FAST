@@ -20,7 +20,7 @@ export const AchievementToast: React.FC<{ achievement: Achievement; onComplete: 
 
   const colors = {
     bronze: 'from-orange-400 to-orange-700 border-orange-300',
-    silver: 'from-slate-300 to-slate-500 border-slate-200',
+    silver: 'from-slate-300 to-slate-500 border-[var(--border)]',
     gold: 'from-amber-300 to-amber-500 border-amber-200',
     platinum: 'from-blue-400 to-indigo-600 border-blue-300 shadow-[0_0_30px_rgba(79,70,229,0.4)]'
   };

@@ -142,7 +142,7 @@ export const SectorsView: React.FC<SectorsViewProps> = ({ qData, onSave }) => {
       <div className="py-20 text-center space-y-6 px-6 bg-[var(--surface)] glass-card">
         <Building className="h-16 w-16 text-slate-300 mx-auto" />
         <h3 className="text-2xl font-black text-[var(--text-primary)]">Configure sua Empresa</h3>
-        <p className="text-slate-500 max-w-sm mx-auto">Você precisa definir o porte e a indústria no Mapeamento antes de gerenciar os setores.</p>
+        <p className="text-[var(--text-muted)] max-w-sm mx-auto">Você precisa definir o porte e a indústria no Mapeamento antes de gerenciar os setores.</p>
         <button onClick={() => navigate('/dashboard/mapeamento')} className="btn-primary always-white">Ir para Mapeamento</button>
       </div>
     );
@@ -156,10 +156,10 @@ export const SectorsView: React.FC<SectorsViewProps> = ({ qData, onSave }) => {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tighter">Departamentos</h2>
-          <p className="text-slate-500 font-medium">Defina a estrutura organizacional para o mapeamento LGPD.</p>
+          <p className="text-[var(--text-muted)] font-medium">Defina a estrutura organizacional para o mapeamento LGPD.</p>
         </div>
         <div className="flex gap-3 flex-wrap">
-           <span className="px-5 py-2 bg-[var(--surface-muted)] text-slate-600 text-[10px] font-black uppercase rounded-2xl border border-[var(--border)]">{qData.companySize}</span>
+           <span className="px-5 py-2 bg-[var(--surface-muted)] text-[var(--text-muted)] text-[10px] font-black uppercase rounded-2xl border border-[var(--border)]">{qData.companySize}</span>
            <span className="px-5 py-2 bg-blue-600/10 text-blue-600 text-[10px] font-black uppercase rounded-2xl border border-blue-500/20">{qData.industry}</span>
         </div>
       </header>
@@ -176,14 +176,14 @@ export const SectorsView: React.FC<SectorsViewProps> = ({ qData, onSave }) => {
         </div>
       )}
 
-      <div className="bg-[var(--surface)] p-6 md:p-10 rounded-[2.5rem] border border-[var(--border)] shadow-sm space-y-10">
+      <div className="bg-[var(--surface)] p-6 md:p-10 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] space-y-10">
         <div className="bg-[var(--surface-muted)] p-8 rounded-3xl border border-[var(--border)] flex flex-col md:flex-row items-start gap-6">
           <div className="p-4 bg-blue-600/10 text-blue-600 rounded-2xl shrink-0">
             <Info className="h-6 w-6" />
           </div>
           <div className="space-y-2">
             <p className="text-lg font-black text-[var(--text-primary)]">Gestão de departamentos</p>
-            <p className="text-sm text-slate-500 leading-relaxed font-medium">
+            <p className="text-sm text-[var(--text-muted)] leading-relaxed font-medium">
               Ative os departamentos da sua operação. Use o <strong>cadeado</strong> para trancar setores vitais e evitar que mapeamentos importantes sejam apagados sem querer.
             </p>
           </div>
@@ -203,7 +203,7 @@ export const SectorsView: React.FC<SectorsViewProps> = ({ qData, onSave }) => {
                   className={`w-full p-8 rounded-[2.5rem] border transition-all text-left flex flex-col justify-between h-40 ${isSelected ? (isLocked ? 'bg-blue-600 border-amber-400 border-2 shadow-xl shadow-blue-900/20' : 'bg-blue-600 border-blue-600 shadow-xl shadow-blue-900/20') : 'bg-[var(--surface)] border-[var(--border)] hover:border-blue-500/50'}`}
                 >
                   <div className="flex justify-between items-start w-full">
-                    <div className={`p-3 rounded-2xl ${isSelected ? 'bg-white/20 text-white' : 'bg-[var(--surface-muted)] text-slate-400 group-hover:text-blue-500'}`}>
+                    <div className={`p-3 rounded-2xl ${isSelected ? 'bg-[var(--surface)]/20 text-white' : 'bg-[var(--surface-muted)] text-slate-400 group-hover:text-blue-500'}`}>
                       <Layers className="h-5 w-5" />
                     </div>
                     {isSelected ? <CheckCircle className="h-5 w-5 text-white" /> : <Plus className="h-5 w-5 text-slate-300 group-hover:text-blue-500" />}
@@ -214,7 +214,7 @@ export const SectorsView: React.FC<SectorsViewProps> = ({ qData, onSave }) => {
                 {isSelected && (
                   <button 
                     onClick={(e) => handleToggleLock(e, sectorObj!.id)}
-                    className={`absolute top-6 right-14 p-2.5 rounded-xl transition-all ${isLocked ? 'bg-amber-400 text-slate-900 shadow-lg scale-110' : 'bg-white/20 text-white hover:bg-white/40 opacity-0 group-hover/card:opacity-100'}`}
+                    className={`absolute top-6 right-14 p-2.5 rounded-xl transition-all ${isLocked ? 'bg-amber-400 text-[var(--text-primary)] shadow-lg scale-110' : 'bg-[var(--surface)]/20 text-white hover:bg-[var(--surface)]/40 opacity-0 group-hover/card:opacity-100'}`}
                     title={isLocked ? 'Setor Protegido' : 'Trancar Setor'}
                   >
                     {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
@@ -232,7 +232,7 @@ export const SectorsView: React.FC<SectorsViewProps> = ({ qData, onSave }) => {
                 className={`w-full p-8 rounded-[2.5rem] border transition-all text-left flex flex-col justify-between h-40 animate-in zoom-in-95 ${s.isLocked ? 'bg-indigo-600 border-amber-400 border-2 shadow-xl shadow-indigo-900/20' : 'bg-indigo-600 border-indigo-600 shadow-xl shadow-indigo-900/20'}`}
               >
                 <div className="flex justify-between items-start w-full">
-                  <div className="p-3 rounded-2xl bg-white/20 text-white">
+                  <div className="p-3 rounded-2xl bg-[var(--surface)]/20 text-white">
                     <Layers className="h-5 w-5" />
                   </div>
                   <X className="h-5 w-5 text-white/50 group-hover:text-white transition-colors" />
@@ -245,7 +245,7 @@ export const SectorsView: React.FC<SectorsViewProps> = ({ qData, onSave }) => {
 
               <button 
                 onClick={(e) => handleToggleLock(e, s.id)}
-                className={`absolute top-6 right-14 p-2.5 rounded-xl transition-all ${s.isLocked ? 'bg-amber-400 text-slate-900 shadow-lg scale-110' : 'bg-white/20 text-white hover:bg-white/40 opacity-0 group-hover/card:opacity-100'}`}
+                className={`absolute top-6 right-14 p-2.5 rounded-xl transition-all ${s.isLocked ? 'bg-amber-400 text-[var(--text-primary)] shadow-lg scale-110' : 'bg-[var(--surface)]/20 text-white hover:bg-[var(--surface)]/40 opacity-0 group-hover/card:opacity-100'}`}
                 title={s.isLocked ? 'Setor Protegido' : 'Trancar Setor'}
               >
                 {s.isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
@@ -294,7 +294,7 @@ export const SectorsView: React.FC<SectorsViewProps> = ({ qData, onSave }) => {
 
         <div className="pt-10 border-t border-[var(--border)] flex flex-col sm:flex-row items-center justify-between gap-6">
            <div className="flex flex-wrap items-center gap-8">
-             <div className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-slate-500">
+             <div className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-[var(--text-muted)]">
                <div className="h-2 w-2 rounded-full bg-blue-600 animate-pulse"></div>
                {activeSectors.length} Setores Ativos
              </div>
