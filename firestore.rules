@@ -2,71 +2,118 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Função auxiliar para verificar se o usuário é administrador
-    // 1. Verifica o e-mail 'teste@tese.com' (acesso mestre imediato)
-    // 2. Verifica se o documento do usuário no Firestore possui isAdmin: true
+
+    // -----------------------------------------------------------------------
+    // FUNÇÕES AUXILIARES
+    // -----------------------------------------------------------------------
+
+    // Verifica se a requisição é de um usuário autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Verifica se o usuário autenticado é administrador mestre ou tem flag isAdmin
     function isAdmin() {
-      return request.auth != null && (
+      return isAuthenticated() && (
         request.auth.token.email == 'teste@tese.com' ||
-        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true)
       );
     }
 
-    // Regras para a Coleção de Usuários
+    // Verifica se o UID do solicitante coincide com o dono do recurso (ownerID)
+    function isOwner(ownerUid) {
+      return isAuthenticated() && request.auth.uid == ownerUid;
+    }
+
+    // -----------------------------------------------------------------------
+    // COLEÇÃO: users
+    // Isolamento: cada usuário acessa apenas seu próprio documento.
+    // -----------------------------------------------------------------------
     match /users/{userId} {
-      // Permite ler se for o próprio usuário OU se for admin (necessário para listar todos no painel)
-      allow read: if (request.auth != null && request.auth.uid == userId) || isAdmin();
-      
-      // Usuários podem criar seu perfil ao registrar
-      allow create: if request.auth != null;
-      
-      // Usuários podem atualizar seus dados, mas apenas o Admin pode alterar isAdmin, plan ou status
+      // Leitura: próprio usuário ou admin
+      allow read: if isOwner(userId) || isAdmin();
+
+      // Criação: somente o próprio usuário cria o próprio perfil
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+
+      // Atualização: próprio usuário (não pode promover a admin) ou admin (irrestrito)
       allow update: if isAdmin() || (
-        request.auth != null && request.auth.uid == userId && 
+        isOwner(userId) &&
         !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin', 'plan', 'status'])
       );
-      
+
       allow delete: if isAdmin();
     }
-    
-    // Regras para Questionários e Tarefas (Vínculo direto com o usuário)
+
+    // -----------------------------------------------------------------------
+    // COLEÇÃO: questionnaires
+    // Chave do documento == UID do usuário → isolamento automático.
+    // -----------------------------------------------------------------------
     match /questionnaires/{userId} {
-      allow read, write: if (request.auth != null && request.auth.uid == userId) || isAdmin();
+      allow read, write: if isOwner(userId) || isAdmin();
     }
-    
+
+    // -----------------------------------------------------------------------
+    // COLEÇÃO: tasks
+    // Chave do documento == UID do usuário → isolamento automático.
+    // -----------------------------------------------------------------------
     match /tasks/{userId} {
-      allow read, write: if (request.auth != null && request.auth.uid == userId) || isAdmin();
+      allow read, write: if isOwner(userId) || isAdmin();
     }
 
-    // Regras para Logs de Acesso (Login/Logout)
+    // -----------------------------------------------------------------------
+    // COLEÇÃO: access_logs
+    // Criação: usuário só cria log com seu próprio UID.
+    // Leitura: apenas admins (trilha de auditoria LGPD).
+    // -----------------------------------------------------------------------
     match /access_logs/{logId} {
-      // Permite que o usuário crie seu próprio log de entrada/saída
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      // Apenas administradores podem ler os logs de acesso para auditoria
-      allow read: if isAdmin();
+      allow create: if isAuthenticated() &&
+                       request.resource.data.userId == request.auth.uid;
+      allow read:   if isAdmin();
+      allow update, delete: if false; // logs são imutáveis
     }
 
-    // Regras para Tickets de Suporte
-    match /support_tickets/{ticketId} {
-      // Qualquer usuário logado pode criar um ticket
-      allow create: if request.auth != null;
-      // Usuário vê seus tickets, Admin vê TODOS (necessário para a fila de suporte)
-      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
-      allow update: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
-      allow delete: if isAdmin();
-    }
-
-    // Regras para Logs de Auditoria
+    // -----------------------------------------------------------------------
+    // COLEÇÃO: audit_logs
+    // Gerenciados exclusivamente por admins; imutáveis para usuários.
+    // -----------------------------------------------------------------------
     match /audit_logs/{logId} {
       allow read, write: if isAdmin();
     }
 
-    // Regras para Assinaturas
+    // -----------------------------------------------------------------------
+    // COLEÇÃO: support_tickets
+    // Usuário vê/edita apenas os seus próprios tickets.
+    // Admin vê e gerencia todos.
+    // -----------------------------------------------------------------------
+    match /support_tickets/{ticketId} {
+      allow create: if isAuthenticated() &&
+                       request.resource.data.userId == request.auth.uid;
+      allow read:   if isAdmin() ||
+                       (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow update: if isAdmin() ||
+                       (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // -----------------------------------------------------------------------
+    // COLEÇÃO: subscriptions
+    // Usuário lê apenas sua assinatura; escritas somente por admin
+    // (ou Cloud Functions via Service Account).
+    // -----------------------------------------------------------------------
     match /subscriptions/{subId} {
-      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
+      allow read:  if isAdmin() ||
+                      (isAuthenticated() && resource.data.userId == request.auth.uid);
       allow write: if isAdmin();
+    }
+
+    // -----------------------------------------------------------------------
+    // BLOQUEIO GLOBAL
+    // Qualquer coleção não listada acima é negada por padrão.
+    // -----------------------------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

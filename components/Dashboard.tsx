@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { useAuth } from '../context/AuthContext';
@@ -12,14 +12,38 @@ import { generateDocument, DocumentContent } from '../logic/templates';
 import { DocumentPreview } from './DocumentPreview';
 import { ImplementationSchedule } from './ImplementationSchedule';
 import { questionnaireService, tasksService } from '../services/firestoreService';
-import { 
-  FileCheck, ShieldCheck, ClipboardList, AlertTriangle, 
-  ChevronRight, ArrowRight, CheckCircle2, FileSearch, Zap, 
-  TrendingUp, Info, Trophy, Download, LayoutGrid, Award, Star, Clock, Lock
+import {
+  FileCheck, ShieldCheck, AlertTriangle,
+  ChevronRight, ArrowRight, CheckCircle2, FileSearch,
+  TrendingUp, Info, Trophy, LayoutGrid, Clock, Lock,
+  Cloud, CloudOff, Loader2
 } from 'lucide-react';
 import { QuestionnaireData, ComplianceTask, User, ValidationResult } from '../types';
 import { PLAN_LIMITS } from '../lib/plans';
 import { DPOAssistant } from './DPOAssistant';
+
+// ---------------------------------------------------------------------------
+// Tipos do indicador de salvamento
+// ---------------------------------------------------------------------------
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
+const SaveStatusBadge: React.FC<{ status: SaveStatus }> = ({ status }) => {
+  if (status === 'idle') return null;
+  return (
+    <div
+      className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl shadow-2xl border text-xs font-black uppercase tracking-widest transition-all duration-500 ${
+        status === 'saving' ? 'bg-blue-600 text-white border-blue-500 animate-pulse' :
+        status === 'saved'  ? 'bg-emerald-600 text-white border-emerald-500' :
+                              'bg-red-600 text-white border-red-500'
+      }`}
+    >
+      {status === 'saving' && <Loader2 className="h-4 w-4 animate-spin" />}
+      {status === 'saved'  && <Cloud    className="h-4 w-4" />}
+      {status === 'error'  && <CloudOff className="h-4 w-4" />}
+      {status === 'saving' ? 'Salvando...' : status === 'saved' ? 'Alterações salvas' : 'Erro ao salvar'}
+    </div>
+  );
+};
 
 const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTask[]; user: User }> = ({ qData, tasks, user }) => {
   const navigate = useNavigate();
@@ -179,63 +203,117 @@ export const Dashboard: React.FC = () => {
   const [qData, setQData] = useState<QuestionnaireData | null>(null);
   const [tasks, setTasks] = useState<ComplianceTask[]>([]);
   const [isSyncing, setIsSyncing] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
 
+  // Mostra badge por 3 s após salvo/erro e volta para idle
+  const triggerSaveStatus = useCallback((s: SaveStatus) => {
+    setSaveStatus(s);
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    if (s !== 'saving') {
+      saveTimer.current = setTimeout(() => setSaveStatus('idle'), 3000);
+    }
+  }, []);
+
   useEffect(() => {
-    if (authState.user) {
-      const unsubQ = questionnaireService.subscribe(authState.user.id, async (data) => {
-        setQData(data);
-        if (data) {
-          // Only generate and save initial tasks if they don't exist
-          // Or merge them to avoid overwriting progress
-          const existingTasksSnap = await tasksService.get(authState.user!.id);
-          const generatedTasks = generateComplianceTasks(data);
-          
-          if (!existingTasksSnap || existingTasksSnap.length === 0) {
-             setTasks(generatedTasks);
-             await tasksService.saveAll(authState.user!.id, generatedTasks);
+    if (!authState.user) return;
+    const uid = authState.user.id;
+
+    const unsubQ = questionnaireService.subscribe(uid, async (data) => {
+      setQData(data);
+      if (data) {
+        const existingTasksSnap = await tasksService.get(uid);
+        const generatedTasks = generateComplianceTasks(data);
+
+        if (!existingTasksSnap || existingTasksSnap.length === 0) {
+          setTasks(generatedTasks);
+          await tasksService.saveAll(uid, generatedTasks);
+        } else {
+          const mergedTasks = generatedTasks.map(gt => {
+            const existing = existingTasksSnap.find(et => et.id === gt.id);
+            return existing ? { ...gt, ...existing } : gt;
+          });
+          const hasNewTasks = generatedTasks.some(
+            gt => !existingTasksSnap.find(et => et.id === gt.id)
+          );
+          if (hasNewTasks) {
+            setTasks(mergedTasks);
+            await tasksService.saveAll(uid, mergedTasks);
           } else {
-             // Merge: keep existing tasks that match by ID, add new ones
-             const mergedTasks = generatedTasks.map(gt => {
-                const existing = existingTasksSnap.find(et => et.id === gt.id);
-                return existing ? { ...gt, ...existing } : gt;
-             });
-             
-             // Check if we actually have new tasks to add
-             const hasNewTasks = generatedTasks.some(gt => !existingTasksSnap.find(et => et.id === gt.id));
-             if (hasNewTasks) {
-                setTasks(mergedTasks);
-                await tasksService.saveAll(authState.user!.id, mergedTasks);
-             } else {
-                setTasks(existingTasksSnap);
-             }
+            setTasks(existingTasksSnap);
           }
         }
-        setIsSyncing(false);
-      });
+      }
+      setIsSyncing(false);
+    });
 
-      const unsubT = tasksService.subscribe(authState.user.id, (fetchedTasks) => {
-        if (fetchedTasks && fetchedTasks.length > 0) {
-          setTasks(fetchedTasks);
-        }
-      });
+    const unsubT = tasksService.subscribe(uid, (fetchedTasks) => {
+      if (fetchedTasks && fetchedTasks.length > 0) setTasks(fetchedTasks);
+    });
 
-      return () => { unsubQ(); unsubT(); };
-    }
+    return () => { unsubQ(); unsubT(); };
   }, [authState.user]);
 
-  const handleUpdateTask = async (taskId: string, evidence: string, result: ValidationResult, observations: string, fileUrl?: string, status?: any) => {
+  /**
+   * Persistência atômica: salva APENAS a tarefa alterada no Firestore
+   * (sem re-salvar a lista inteira), carimbando ownerID + user_id + last_updated.
+   * Exibe o indicador de salvamento ao usuário.
+   */
+  const handleUpdateTask = useCallback(async (
+    taskId: string,
+    evidence: string,
+    result: ValidationResult,
+    observations: string,
+    fileUrl?: string,
+    status?: any
+  ) => {
     if (!authState.user) return;
-    const updatedTasks = tasks.map(t => t.id === taskId ? { ...t, evidence, validationResult: result, observations, status: status || (result.isValid ? 'Concluída' : 'Revisar'), evidenceUrl: fileUrl } : t);
-    setTasks(updatedTasks);
-    await tasksService.saveAll(authState.user.id, updatedTasks);
-  };
+    const uid = authState.user.id;
+    const now = new Date().toISOString();
 
-  const handleSaveQuestionnaire = async (data: QuestionnaireData, isFinal: boolean = false) => {
+    const updatedTask: ComplianceTask = {
+      ...tasks.find(t => t.id === taskId)!,
+      evidence,
+      validationResult: result,
+      observations,
+      evidenceUrl: fileUrl,
+      status: status || (result.isValid ? 'Concluída' : 'Revisar'),
+      // Campos de auditoria LGPD
+      ownerID: uid,
+      user_id: uid,
+      last_updated: now,
+    };
+
+    // Atualiza o estado local imediatamente (UX otimista)
+    setTasks(prev => prev.map(t => t.id === taskId ? updatedTask : t));
+
+    // Salva atomicamente apenas esta tarefa
+    triggerSaveStatus('saving');
+    try {
+      await tasksService.saveOne(uid, updatedTask);
+      triggerSaveStatus('saved');
+    } catch (err) {
+      console.error('[DPO-FAST] Erro ao salvar tarefa:', err);
+      triggerSaveStatus('error');
+    }
+  }, [authState.user, tasks, triggerSaveStatus]);
+
+  const handleSaveQuestionnaire = useCallback(async (
+    data: QuestionnaireData,
+    isFinal: boolean = false
+  ) => {
     if (!authState.user) return;
-    await questionnaireService.save(authState.user.id, data);
+    triggerSaveStatus('saving');
+    try {
+      await questionnaireService.save(authState.user.id, data);
+      triggerSaveStatus('saved');
+    } catch (err) {
+      console.error('[DPO-FAST] Erro ao salvar questionário:', err);
+      triggerSaveStatus('error');
+    }
     if (isFinal) navigate('/dashboard');
-  };
+  }, [authState.user, navigate, triggerSaveStatus]);
 
   if (authState.loading || isSyncing) return <div className="h-screen flex items-center justify-center font-bold text-slate-400 animate-pulse">Sincronizando ambiente seguro...</div>;
 
@@ -256,6 +334,9 @@ export const Dashboard: React.FC = () => {
         </div>
         {['pro', 'personalite'].includes(authState.user?.plan || '') && <DPOAssistant />}
       </main>
+
+      {/* Indicador global de salvamento — visível em qualquer aba do dashboard */}
+      <SaveStatusBadge status={saveStatus} />
     </div>
   );
 };

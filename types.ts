@@ -138,6 +138,10 @@ export interface ComplianceTask {
   history?: ValidationHistoryEntry[];
   observations?: string;
   evidenceUrl?: string;
+  // Multi-tenancy & LGPD audit fields
+  ownerID?: string;       // UID do proprietário do dado (isolamento)
+  user_id?: string;       // UID do usuário que realizou a última ação (auditoria)
+  last_updated?: string;  // ISO timestamp da última modificação atômica
 }
 
 export interface AuthState {
