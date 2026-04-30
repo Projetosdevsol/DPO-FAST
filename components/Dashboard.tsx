@@ -8,6 +8,7 @@ import { Settings } from './Settings';
 import { SectorsView } from './SectorsView';
 import { AchievementsPage } from './AchievementsPage';
 import { generateComplianceTasks } from '../logic/complianceEngine';
+import { checkNewAchievements } from '../logic/achievementEngine';
 import { generateDocument, DocumentContent } from '../logic/templates';
 import { DocumentPreview } from './DocumentPreview';
 import { ImplementationSchedule } from './ImplementationSchedule';
@@ -199,7 +200,7 @@ const Overview: React.FC<{ qData: QuestionnaireData | null; tasks: ComplianceTas
 };
 
 export const Dashboard: React.FC = () => {
-  const { authState } = useAuth();
+  const { authState, updateUser } = useAuth();
   const [qData, setQData] = useState<QuestionnaireData | null>(null);
   const [tasks, setTasks] = useState<ComplianceTask[]>([]);
   const [isSyncing, setIsSyncing] = useState(true);
@@ -254,6 +255,18 @@ export const Dashboard: React.FC = () => {
 
     return () => { unsubQ(); unsubT(); };
   }, [authState.user]);
+
+  // Engine de Troféus (Conquistas)
+  useEffect(() => {
+    if (!qData || tasks.length === 0 || !authState.user) return;
+    const newUnlocks = checkNewAchievements(qData, tasks, authState.user.achievements);
+    if (newUnlocks.length > 0) {
+      const current = authState.user.achievements || [];
+      const updated = [...current, ...newUnlocks.map(a => a.id)];
+      // Salva no banco e atualiza o estado local
+      updateUser({ achievements: Array.from(new Set(updated)) }).catch(console.error);
+    }
+  }, [qData, tasks, authState.user, updateUser]);
 
   /**
    * Persistência atômica: salva APENAS a tarefa alterada no Firestore
