@@ -213,18 +213,15 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
               </div>
            </div>
 
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-[var(--surface-muted)] p-6 rounded-3xl border border-[var(--border)] space-y-2">
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Setores Disponíveis</p>
-                 <p className="text-2xl font-black text-[var(--text-primary)]">{planInfo.limite_setores === 999 ? 'Ilimitados' : planInfo.limite_setores}</p>
-              </div>
-              <div className="bg-[var(--surface-muted)] p-6 rounded-3xl border border-[var(--border)] space-y-2">
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mapeamentos</p>
-                 <p className="text-2xl font-black text-[var(--text-primary)]">Ilimitados</p>
-              </div>
-              <div className="bg-[var(--surface-muted)] p-6 rounded-3xl border border-[var(--border)] space-y-2">
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nível de Suporte</p>
-                 <p className="text-sm font-bold text-[var(--text-primary)]">{planInfo.suporte}</p>
+           <div className="space-y-4">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Principais Recursos do Plano</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                 {planInfo.features.map((feature, index) => (
+                    <div key={index} className="flex items-center gap-2 text-xs font-bold text-[var(--text-primary)]">
+                       <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                       {feature}
+                    </div>
+                 ))}
               </div>
            </div>
 
@@ -345,65 +342,76 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
           </div>
         </section>
 
-        {/* SEÇÃO: DETALHES AVANÇADOS */}
+        {/* SEÇÃO: SEGURANÇA & ACESSO */}
         <section className="bg-[var(--surface)] p-8 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] space-y-8 flex flex-col h-full">
           <h2 className="text-xl font-black text-[var(--text-primary)] flex items-center gap-3 uppercase tracking-tight">
-            <Fingerprint className="h-5 w-5 text-indigo-600" /> Metadados da Conta
+            <Lock className="h-5 w-5 text-indigo-600" /> Segurança & Acesso
           </h2>
           
           <div className="space-y-4 flex-1">
-             <div className="p-5 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border)] flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                   <Calendar className="h-4 w-4 text-slate-400" />
-                   <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Criação da Conta</span>
-                </div>
-                <span className="text-[11px] font-bold text-[var(--text-primary)]">
-                  {authState.user?.createdAt ? new Date(authState.user.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }) : '---'}
-                </span>
-             </div>
-
-             <div className="p-5 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border)] flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                   <History className="h-4 w-4 text-slate-400" />
-                   <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Último Login</span>
-                </div>
-                <span className="text-[11px] font-bold text-[var(--text-primary)]">
-                   {authState.user?.lastLogin ? new Date(authState.user.lastLogin).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '---'}
-                </span>
-             </div>
-
-             <div className="p-5 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border)] space-y-2">
-                <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                      <Terminal className="h-4 w-4 text-slate-400" />
-                      <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">User Global ID</span>
-                   </div>
-                </div>
-                <code className="text-[10px] font-mono font-bold text-blue-600 bg-blue-600/5 px-3 py-2 rounded-lg block truncate border border-blue-600/10">
-                  {authState.user?.id}
-                </code>
-             </div>
-
              <div className="p-5 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border)] flex items-center justify-between opacity-60">
                 <div className="flex items-center gap-3">
                    <Mail className="h-4 w-4 text-slate-400" />
-                   <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">E-mail Protegido</span>
+                   <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">E-mail de Acesso</span>
                 </div>
                 <button onClick={() => setShowEmailModal(true)} className="text-[9px] font-black text-blue-600 uppercase underline tracking-widest">Editar</button>
              </div>
-          </div>
 
-          <div className="pt-2">
-            <button 
-              onClick={handleResetPass}
-              disabled={loading === 'security'}
-              className="w-full py-5 bg-[var(--surface)] text-[var(--text-primary)] rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-[var(--surface-muted)] border border-[var(--border)] transition-all disabled:opacity-30"
-            >
-              {loading === 'security' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Lock className="h-5 w-5" />}
-              Redefinir Credenciais
-            </button>
+             <div className="pt-2">
+               <button 
+                 onClick={handleResetPass}
+                 disabled={loading === 'security'}
+                 className="w-full py-5 bg-[var(--surface)] text-[var(--text-primary)] rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-[var(--surface-muted)] border border-[var(--border)] transition-all disabled:opacity-30 shadow-lg shadow-black/5"
+               >
+                 {loading === 'security' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Lock className="h-5 w-5" />}
+                 Redefinir Credenciais de Acesso
+               </button>
+             </div>
           </div>
         </section>
+
+        {/* SEÇÃO: DETALHES AVANÇADOS (ADMIN APENAS) */}
+        {authState.user?.isAdmin && (
+          <section className="bg-[var(--surface)] p-8 rounded-[2.5rem] border border-blue-600/30 shadow-[var(--shadow)] space-y-8 flex flex-col h-full bg-blue-600/[0.02]">
+            <h2 className="text-xl font-black text-[var(--text-primary)] flex items-center gap-3 uppercase tracking-tight">
+              <Fingerprint className="h-5 w-5 text-blue-600" /> Metadados da Conta
+            </h2>
+            
+            <div className="space-y-4 flex-1">
+               <div className="p-5 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border)] flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                     <Calendar className="h-4 w-4 text-slate-400" />
+                     <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Criação da Conta</span>
+                  </div>
+                  <span className="text-[11px] font-bold text-[var(--text-primary)]">
+                    {authState.user?.createdAt ? new Date(authState.user.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }) : '---'}
+                  </span>
+               </div>
+
+               <div className="p-5 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border)] flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                     <History className="h-4 w-4 text-slate-400" />
+                     <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Último Login</span>
+                  </div>
+                  <span className="text-[11px] font-bold text-[var(--text-primary)]">
+                     {authState.user?.lastLogin ? new Date(authState.user.lastLogin).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '---'}
+                  </span>
+               </div>
+
+               <div className="p-5 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border)] space-y-2">
+                  <div className="flex items-center justify-between">
+                     <div className="flex items-center gap-3">
+                        <Terminal className="h-4 w-4 text-slate-400" />
+                        <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">User Global ID</span>
+                     </div>
+                  </div>
+                  <code className="text-[10px] font-mono font-bold text-blue-600 bg-blue-600/5 px-3 py-2 rounded-lg block truncate border border-blue-600/10">
+                    {authState.user?.id}
+                  </code>
+               </div>
+            </div>
+          </section>
+        )}
       </div>
 
        {/* SEÇÃO: ADMIN COMMAND CENTER - Visível apenas para Admins */}

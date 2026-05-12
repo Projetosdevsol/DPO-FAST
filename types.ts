@@ -18,6 +18,8 @@ export interface User {
   lastLogin?: string;
   achievements?: string[];
   certificates?: ComplianceCertificate[];
+  doc_generation_count?: number;
+  doc_generation_last_reset?: string;
 }
 
 export interface ComplianceCertificate {

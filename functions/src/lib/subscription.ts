@@ -38,7 +38,7 @@ export async function getUserPlan(userId: string): Promise<SubscriptionPlan> {
  */
 export function hasPermission(plan: SubscriptionPlan, feature: 'discovery' | 'suggestion' | 'execution'): boolean {
   if (feature === 'discovery') return true; // Todos têm acesso
-  if (feature === 'suggestion') return plan === 'pro' || plan === 'personalite' || plan === 'enterprise';
-  if (feature === 'execution') return plan === 'personalite' || plan === 'enterprise';
+  if (feature === 'suggestion') return ['pro', 'personalite', 'enterprise'].includes(plan);
+  if (feature === 'execution') return ['basico', 'pro', 'personalite', 'enterprise'].includes(plan);
   return false;
 }

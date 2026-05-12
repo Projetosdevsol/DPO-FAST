@@ -6,7 +6,8 @@ import {
   onSnapshot
 } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { db } from '../lib/firebase';
-import { QuestionnaireData, ComplianceTask } from '../types';
+import { QuestionnaireData, ComplianceTask, User } from '../types';
+import { PLAN_LIMITS } from '../lib/plans';
 
 // ---------------------------------------------------------------------------
 // Utilitário: remove recursivamente todos os campos `undefined` de um objeto.
@@ -157,4 +158,59 @@ export const tasksService = {
       callback(data.items ?? []);
     });
   },
+};
+
+// ---------------------------------------------------------------------------
+// Usage & Quotas Service
+// ---------------------------------------------------------------------------
+export const usageService = {
+  /**
+   * Retorna o saldo de créditos de geração do usuário para o mês atual.
+   */
+  async getDocCredits(user: User): Promise<{ used: number; total: number; remaining: number }> {
+    const limits = PLAN_LIMITS[user.plan] || PLAN_LIMITS.free;
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+    
+    const lastReset = user.doc_generation_last_reset || '';
+    const lastResetMonth = lastReset.substring(0, 7); // YYYY-MM
+    
+    let used = user.doc_generation_count || 0;
+    
+    // Se mudou o mês, o saldo "virtual" é zero
+    if (lastResetMonth !== currentMonth) {
+      used = 0;
+    }
+    
+    return {
+      used,
+      total: limits.limite_geracao_ia,
+      remaining: Math.max(0, limits.limite_geracao_ia - used)
+    };
+  },
+
+  /**
+   * Consome um crédito de geração. Reseta o contador se for um novo mês.
+   */
+  async consumeDocCredit(uid: string, currentUser: User) {
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+    const lastReset = currentUser.doc_generation_last_reset || '';
+    const lastResetMonth = lastReset.substring(0, 7);
+    
+    let newCount = (currentUser.doc_generation_count || 0) + 1;
+    
+    // Reset mensal atômico no momento do consumo
+    if (lastResetMonth !== currentMonth) {
+      newCount = 1;
+    }
+    
+    const docRef = doc(db, 'users', uid);
+    await setDoc(docRef, {
+      doc_generation_count: newCount,
+      doc_generation_last_reset: now.toISOString()
+    }, { merge: true });
+    
+    return newCount;
+  }
 };

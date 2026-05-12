@@ -9,6 +9,8 @@ export interface PlanFeatureLimits {
   sla_suporte_horas: number;
   gerente_conta: boolean;
   auditoria_humana: boolean;
+  features: string[];
+  limite_geracao_ia: number;
 }
 
 export const PLAN_LIMITS: Record<User['plan'], PlanFeatureLimits> = {
@@ -21,6 +23,14 @@ export const PLAN_LIMITS: Record<User['plan'], PlanFeatureLimits> = {
     sla_suporte_horas: 72,
     gerente_conta: false,
     auditoria_humana: false,
+    features: [
+      'Aviso de Privacidade Essencial',
+      'Política Interna de Privacidade',
+      'Até 1 Setor e 1 Processo',
+      'Diagnóstico Básico de Riscos',
+      'SLA de Suporte: 72h úteis'
+    ],
+    limite_geracao_ia: 0,
   },
   basico: {
     documentos_essenciais: true,
@@ -31,6 +41,15 @@ export const PLAN_LIMITS: Record<User['plan'], PlanFeatureLimits> = {
     sla_suporte_horas: 72,
     gerente_conta: false,
     auditoria_humana: false,
+    features: [
+      'Gerador de Documentos IA (2/mês)',
+      'Aviso de Privacidade Essencial',
+      'Política Interna de Privacidade',
+      'Até 1 Setor e 3 Processos',
+      'Diagnóstico Básico de Riscos',
+      'SLA de Suporte: 72h úteis'
+    ],
+    limite_geracao_ia: 2,
   },
   pro: {
     documentos_essenciais: true,
@@ -41,6 +60,14 @@ export const PLAN_LIMITS: Record<User['plan'], PlanFeatureLimits> = {
     sla_suporte_horas: 24,
     gerente_conta: false,
     auditoria_humana: false,
+    features: [
+      'Gerador de Documentos IA (5/mês)',
+      'Análise Profunda com IA Qwen',
+      'DPO Assistant (Chat com IA)',
+      'SLA de Suporte: 24h úteis',
+      'Todos os Documentos (RIPD, RAT)'
+    ],
+    limite_geracao_ia: 5,
   },
   personalite: {
     documentos_essenciais: true,
@@ -51,6 +78,16 @@ export const PLAN_LIMITS: Record<User['plan'], PlanFeatureLimits> = {
     sla_suporte_horas: 4,
     gerente_conta: true,
     auditoria_humana: true,
+    features: [
+      'Gerador de Documentos IA (20/mês)',
+      'Documentação Customizada',
+      'Múltiplas Empresas (CNPJs)',
+      'Auditoria Humana por DPOs',
+      'DPO Assistant (Acesso Ilimitado)',
+      'SLA Prioritário: 4h úteis',
+      'Gerente de Conta Dedicado'
+    ],
+    limite_geracao_ia: 20,
   },
   enterprise: {
     documentos_essenciais: true,
@@ -61,6 +98,15 @@ export const PLAN_LIMITS: Record<User['plan'], PlanFeatureLimits> = {
     sla_suporte_horas: 4,
     gerente_conta: true,
     auditoria_humana: true,
+    features: [
+      'Documentação Customizada',
+      'Múltiplas Empresas (CNPJs)',
+      'Auditoria Humana por DPOs',
+      'DPO Assistant (Acesso Ilimitado)',
+      'SLA Prioritário: 4h úteis',
+      'Gerente de Conta Dedicado'
+    ],
+    limite_geracao_ia: 999,
   }
 };
 

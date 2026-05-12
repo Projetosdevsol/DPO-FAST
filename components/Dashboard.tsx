@@ -19,6 +19,7 @@ import {
   TrendingUp, Info, Trophy, LayoutGrid, Clock, Lock,
   Cloud, CloudOff, Loader2
 } from 'lucide-react';
+import { IADocumentGenerator } from './IADocumentGenerator';
 import { QuestionnaireData, ComplianceTask, User, ValidationResult } from '../types';
 import { PLAN_LIMITS } from '../lib/plans';
 import { DPOAssistant } from './DPOAssistant';
@@ -382,6 +383,12 @@ const DocumentsListView: React.FC<{ qData: QuestionnaireData | null; tasks: Comp
         <h2 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">Central de Documentos</h2>
         <p className="text-[var(--text-muted)] font-medium">Consulte e faça o download dos registros oficiais de conformidade da empresa.</p>
       </header>
+
+      {/* Gerador Automático com IA */}
+      <div className="max-w-4xl">
+        <IADocumentGenerator onDocumentGenerated={(title, content) => setPreviewDoc({ title, content })} />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {availableDocs.map((doc, idx) => (
           <div key={idx} className="bg-[var(--surface)] p-8 rounded-[2.5rem] border border-[var(--border)] shadow-[var(--shadow)] flex items-center justify-between group hover:shadow-lg transition-all border-l-8 border-l-blue-600">

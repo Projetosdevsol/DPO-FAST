@@ -34,7 +34,7 @@ export const drafting = onCall(functionOptions, async (request) => {
   const { userId } = request.data;
   const plan = await getUserPlan(userId);
   if (!hasPermission(plan, 'execution')) {
-    throw new HttpsError('permission-denied', 'A geração de documentos é exclusiva do plano Personalité.');
+    throw new HttpsError('permission-denied', 'A geração de documentos por IA é exclusiva para assinantes.');
   }
   return await draftingFlow(request.data);
 });
