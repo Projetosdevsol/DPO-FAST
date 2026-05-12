@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Loader2, ChevronDown } from 'lucide-react';
+import { Loader2, ChevronDown, ArrowLeft } from 'lucide-react';
 import { Logo } from './Logo';
 import { STRIPE_LINKS } from '../lib/stripe';
 
@@ -20,8 +20,6 @@ export const Register: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const selectedPlan = searchParams.get('plan') || 'basico';
-
-  // Removido useEffect de redirecionamento automático para não interferir no fluxo do Stripe após cadastro
 
   const validateCnpj = (cnpj: string) => {
     const digitsOnly = cnpj.replace(/\D/g, '');
@@ -54,8 +52,6 @@ export const Register: React.FC = () => {
       
       if (['basico', 'pro', 'personalite'].includes(selectedPlan)) {
         const stripeUrl = STRIPE_LINKS[selectedPlan as keyof typeof STRIPE_LINKS];
-        console.log('Iniciando redirecionamento para o Stripe:', selectedPlan, stripeUrl);
-
         if (stripeUrl && stripeUrl.startsWith('http')) {
           window.location.href = stripeUrl;
           return;
@@ -70,86 +66,106 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-4 transition-colors duration-500 overflow-y-auto">
-      <div className="google-card max-w-2xl animate-in fade-in zoom-in-95 duration-500 my-8">
-        <div className="flex flex-col items-center text-center space-y-4 mb-10">
-          <Link to="/" className="mb-2">
-            <Logo className="h-8 md:h-10 w-auto" />
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Background Decorativo */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/5 rounded-full blur-[120px]" />
+      </div>
+
+      {/* Botão de Voltar */}
+      <Link 
+        to="/" 
+        className="absolute top-8 left-8 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-blue-600 transition-all group z-50"
+      >
+        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+        Voltar ao Início
+      </Link>
+
+      <div className="auth-card max-w-2xl animate-in fade-in zoom-in-95 duration-700 relative z-10">
+        <div className="flex flex-col items-center text-center mb-8">
+          <Link to="/" className="mb-6 transform hover:scale-105 transition-transform">
+            <Logo className="h-10 w-auto" />
           </Link>
-          <div className="space-y-1">
-            <h1 className="text-2xl font-normal text-[var(--text-primary)]">Criar sua Conta</h1>
-            <p className="text-base text-[var(--text-primary)]">Comece sua jornada de conformidade</p>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-black text-[var(--text-primary)]">Começar Agora</h1>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Inicie sua jornada de adequação à LGPD</p>
           </div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/20 rounded-full">
-            <span className="text-[10px] font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">Plano:</span>
-            <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-widest">{selectedPlan}</span>
+          
+          <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 rounded-full border border-blue-100 shadow-sm shadow-blue-500/5">
+            <span className="text-[10px] font-black text-blue-400 uppercase tracking-wider">Plano Selecionado:</span>
+            <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest">{selectedPlan}</span>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {errors.general && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-400 text-sm rounded-lg border border-red-200 dark:border-red-800/20 animate-in fade-in slide-in-from-top-2">
+            <div className="p-4 bg-red-50 text-red-600 text-xs font-bold rounded-2xl border border-red-100 flex items-center gap-3">
+              <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
               {errors.general}
             </div>
           )}
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="google-input-container">
-              <input type="text" id="name" required className="google-input peer" placeholder=" " value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
-              <label htmlFor="name" className="floating-label">Nome Completo</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <label htmlFor="name" className="auth-label">Seu Nome</label>
+              <input type="text" id="name" required className="auth-input" placeholder="João Silva" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
             </div>
 
-            <div className="google-input-container">
-              <input type="email" id="email" required className="google-input peer" placeholder=" " value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
-              <label htmlFor="email" className="floating-label">E-mail Profissional</label>
+            <div className="space-y-2">
+              <label htmlFor="email" className="auth-label">E-mail Profissional</label>
+              <input type="email" id="email" required className="auth-input" placeholder="joao@empresa.com" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
             </div>
 
-            <div className="google-input-container md:col-span-2">
-              <input type="text" id="companyName" required className="google-input peer" placeholder=" " value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} />
-              <label htmlFor="companyName" className="floating-label">Nome da Organização</label>
+            <div className="md:col-span-2 space-y-2">
+              <label htmlFor="companyName" className="auth-label">Nome da Organização</label>
+              <input type="text" id="companyName" required className="auth-input" placeholder="Empresa S.A." value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} />
             </div>
 
-            <div className="google-input-container">
-              <input type="text" id="cnpj" required maxLength={18} className={`google-input peer ${errors.cnpj ? 'border-red-500' : ''}`} placeholder=" " value={formData.cnpj} onChange={handleCnpjChange} />
-              <label htmlFor="cnpj" className={`floating-label ${errors.cnpj ? 'text-red-500' : ''}`}>Documento (CNPJ)</label>
+            <div className="space-y-2">
+              <label htmlFor="cnpj" className={`auth-label ${errors.cnpj ? 'text-red-500' : ''}`}>Documento (CNPJ)</label>
+              <input type="text" id="cnpj" required maxLength={18} className={`auth-input ${errors.cnpj ? 'border-red-200 bg-red-50/30' : ''}`} placeholder="00.000.000/0000-00" value={formData.cnpj} onChange={handleCnpjChange} />
             </div>
 
-            <div className="google-input-container">
-              <input type="password" id="password" required minLength={6} className="google-input peer" placeholder=" " value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
-              <label htmlFor="password" className="floating-label">Senha de Segurança</label>
+            <div className="space-y-2">
+              <label htmlFor="password" className="auth-label">Sua Senha</label>
+              <input type="password" id="password" required minLength={6} className="auth-input" placeholder="••••••••" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
             </div>
           </div>
 
-          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-            <Link to="/login" className="text-[var(--primary)] font-bold text-sm hover:bg-blue-50 dark:hover:bg-blue-900/10 px-4 py-2 rounded transition-colors w-full sm:w-auto text-center">
-              Já tenho uma conta
-            </Link>
+          <div className="pt-6 space-y-4">
             <button 
               type="submit" 
               disabled={loading} 
-              className="btn-primary w-full sm:min-w-[160px] flex items-center justify-center py-3 sm:py-2.5"
+              className="btn-primary w-full py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 active:scale-[0.98] transition-all"
             >
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Finalizar e Acessar'}
             </button>
+
+            <div className="flex items-center gap-4 py-2">
+              <div className="h-px flex-1 bg-slate-100" />
+              <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">ou</span>
+              <div className="h-px flex-1 bg-slate-100" />
+            </div>
+
+            <Link 
+              to="/login" 
+              className="flex items-center justify-center w-full py-4 border-2 border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:bg-slate-50 hover:border-slate-200 transition-all"
+            >
+              Já tenho uma conta
+            </Link>
           </div>
-          <p className="text-[11px] text-[var(--text-muted)] text-center leading-relaxed max-w-md mx-auto">
-            Ao clicar em finalizar, você concorda com nossos <span className="text-[var(--primary)] cursor-pointer hover:underline">Termos</span> e <span className="text-[var(--primary)] cursor-pointer hover:underline">Política de Privacidade</span>.
+
+          <p className="text-[10px] text-slate-400 text-center leading-relaxed font-bold uppercase tracking-widest max-w-[280px] mx-auto">
+            Ao continuar, você concorda com nossos <span className="text-blue-500 cursor-pointer hover:underline">Termos</span> e <span className="text-blue-500 cursor-pointer hover:underline">Privacidade</span>.
           </p>
         </form>
       </div>
 
-      <footer className="mt-auto py-8 w-full max-w-4xl px-6 flex flex-col md:flex-row justify-between items-center text-xs text-[var(--text-muted)] space-y-6 md:space-y-0">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 cursor-pointer hover:bg-black/5 dark:hover:bg-[var(--surface)]/5 px-3 py-2 rounded-lg transition-colors">
-            Português (Brasil) <ChevronDown className="h-3 w-3" />
-          </div>
-        </div>
-        <div className="flex items-center gap-8">
-          <a href="#" className="hover:text-[var(--text-primary)] transition-colors">Ajuda</a>
-          <a href="#" className="hover:text-[var(--text-primary)] transition-colors">Privacidade</a>
-          <a href="#" className="hover:text-[var(--text-primary)] transition-colors">Termos</a>
-        </div>
-      </footer>
+      {/* Footer minimalista */}
+      <div className="absolute bottom-8 text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] pointer-events-none">
+        DPO FAST © {new Date().getFullYear()}
+      </div>
     </div>
   );
 };

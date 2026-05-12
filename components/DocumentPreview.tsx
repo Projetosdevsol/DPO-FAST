@@ -9,11 +9,11 @@ interface DocumentPreviewProps {
   onDownload: () => void;
 }
 
-export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ document, onClose, onDownload }) => {
+export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ document: docData, onClose, onDownload }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(document.content);
+    navigator.clipboard.writeText(docData.content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -27,7 +27,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ document, onCl
               <div className="p-2 bg-blue-500/10 rounded-lg text-blue-600 hidden md:block">
                 <FileText className="h-5 w-5" />
               </div>
-              <h2 className="text-lg md:text-xl font-bold text-[var(--text-primary)] truncate max-w-[200px] md:max-w-none">{document.title}</h2>
+              <h2 className="text-lg md:text-xl font-bold text-[var(--text-primary)] truncate max-w-[200px] md:max-w-none">{docData.title}</h2>
             </div>
             <button 
               onClick={onClose}
@@ -39,7 +39,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ document, onCl
 
           <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-[var(--background)]">
             <div className="bg-[var(--surface)] p-6 md:p-12 shadow-xl rounded-lg border border-[var(--border)] min-h-full font-serif text-[var(--text-primary)] text-sm md:text-base leading-relaxed whitespace-pre-wrap">
-              {document.content}
+              {docData.content}
             </div>
           </div>
 

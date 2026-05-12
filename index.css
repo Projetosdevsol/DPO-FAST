@@ -148,10 +148,59 @@ html {
 }
 
 .glass-card {
-  background-color: var(--card-bg);
-  border: 1px solid var(--card-border);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
   backdrop-filter: blur(20px);
-  border-radius: 2.5rem;
+  border-radius: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.auth-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2rem;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+.dark .auth-card {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.auth-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background-color: var(--surface-muted);
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.auth-input:focus {
+  background-color: var(--surface);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.1);
+}
+
+.dark .auth-input:focus {
+  box-shadow: 0 0 0 4px rgba(138, 180, 248, 0.1);
+}
+
+.auth-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  margin-left: 0.5rem;
 }
 }
 

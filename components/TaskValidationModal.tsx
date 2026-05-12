@@ -25,7 +25,7 @@ type EvidenceType = 'system' | 'text' | 'file' | 'link';
 
 export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, onClose, onSave, suggestedDocContent }) => {
   const { authState } = useAuth();
-  const [evidenceType, setEvidenceType] = useState<EvidenceType>(task.evidenceUrl ? 'file' : 'system');
+  const [evidenceType, setEvidenceType] = useState<EvidenceType>(task.evidenceUrl ? 'file' : 'text');
   const [evidence, setEvidence] = useState(task.evidence || '');
   const [observations, setObservations] = useState(task.observations || '');
   const [result, setResult] = useState<ValidationResult | null>(task.validationResult || null);
@@ -96,7 +96,7 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
   const handleUseSuggested = () => {
     if (suggestedDocContent) {
       setEvidence(suggestedDocContent);
-      setEvidenceType('system');
+      setEvidenceType('text');
       setResult(null);
     }
   };
@@ -109,17 +109,13 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
 
   const EvidenceTabs = () => (
     <div className="flex bg-slate-100 p-1 rounded-2xl gap-1">
-      {['system', 'text', 'file', 'link'].map((type) => (
+      {['text', 'file', 'link'].map((type) => (
         <button 
           key={type}
           onClick={() => setEvidenceType(type as EvidenceType)}
           className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-tight transition-all ${evidenceType === type ? 'bg-[var(--surface)] text-blue-600 shadow-[var(--shadow)]' : 'text-[var(--text-muted)] hover:text-slate-700'}`}
         >
-          {type === 'system' && <FileCheck className="h-4 w-4" />}
-          {type === 'text' && <FileText className="h-4 w-4" />}
-          {type === 'file' && <Paperclip className="h-4 w-4" />}
-          {type === 'link' && <LinkIcon className="h-4 w-4" />}
-          {type === 'system' ? 'Sistema' : type === 'text' ? 'Texto' : type === 'file' ? 'Arquivo' : 'Link'}
+          {type === 'text' ? 'Texto' : type === 'file' ? 'Arquivo' : 'Link'}
         </button>
       ))}
     </div>
@@ -205,30 +201,24 @@ export const TaskValidationModal: React.FC<TaskValidationModalProps> = ({ task, 
               <EvidenceTabs />
 
               <div className="space-y-4 min-h-[300px]">
-                {evidenceType === 'system' && (
-                  <div className="bg-[var(--surface-muted)] p-10 rounded-[2rem] border-2 border-dashed border-[var(--border)] text-center space-y-4">
-                    <FileCheck className="h-12 w-12 text-slate-300 mx-auto" />
-                    <div>
-                      <h4 className="font-black text-[var(--text-primary)]">Documentação do Sistema</h4>
-                      <p className="text-xs text-[var(--text-muted)] mt-1">Podemos preencher a evidência com o conteúdo oficial sugerido.</p>
-                    </div>
-                    <button 
-                      onClick={handleUseSuggested}
-                      disabled={!suggestedDocContent}
-                      className="px-8 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-2xl text-xs font-black text-blue-600 hover:shadow-lg transition-all disabled:opacity-30"
-                    >
-                      Usar Texto Sugerido
-                    </button>
-                  </div>
-                )}
-
                 {evidenceType === 'text' && (
-                  <textarea
-                    className="w-full h-48 p-6 rounded-[2rem] border border-[var(--border)] focus:bg-[var(--surface)] focus:ring-4 focus:ring-blue-50 outline-none text-sm leading-relaxed transition-all text-[var(--text-primary)] font-bold placeholder:text-slate-400"
-                    placeholder="Descreva detalhadamente a medida técnica ou cole o conteúdo do documento que você implementou..."
-                    value={evidence}
-                    onChange={(e) => { setEvidence(e.target.value); setResult(null); }}
-                  />
+                  <div className="space-y-3">
+                    {suggestedDocContent && (
+                      <button 
+                        onClick={handleUseSuggested}
+                        className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-indigo-50 border border-indigo-100 rounded-[1.5rem] text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] hover:bg-indigo-100 transition-all group"
+                      >
+                        <Zap className="h-4 w-4 fill-current group-hover:scale-110 transition-transform" />
+                        Usar Texto Sugerido pelo Sistema
+                      </button>
+                    )}
+                    <textarea
+                      className="w-full h-48 p-6 rounded-[2rem] border border-[var(--border)] focus:bg-[var(--surface)] focus:ring-4 focus:ring-blue-50 outline-none text-sm leading-relaxed transition-all text-[var(--text-primary)] font-bold placeholder:text-slate-400"
+                      placeholder="Descreva detalhadamente a medida técnica ou cole o conteúdo do documento que você implementou..."
+                      value={evidence}
+                      onChange={(e) => { setEvidence(e.target.value); setResult(null); }}
+                    />
+                  </div>
                 )}
 
                 {evidenceType === 'file' && (
