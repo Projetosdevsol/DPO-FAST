@@ -5,7 +5,7 @@ import { getComplianceSummary, getCompanyContext, checkExistingDocs } from '../l
 export const consultantInputSchema = z.object({
   userId: z.string(),
   history: z.array(z.any()).optional(),
-  message: z.string(),
+  message: z.string().max(4000, "A mensagem excede o limite máximo de 4000 caracteres."),
 });
 
 export const consultantFlow = ai.defineFlow(

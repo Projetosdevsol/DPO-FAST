@@ -34,13 +34,23 @@ service cloud.firestore {
       // Leitura: próprio usuário ou admin
       allow read: if isOwner(userId) || isAdmin();
 
-      // Criação: somente o próprio usuário cria o próprio perfil
-      allow create: if isAuthenticated() && request.auth.uid == userId;
+      // Criação: somente o próprio usuário cria o próprio perfil com validação estrita de estrutura e tamanho
+      allow create: if isAuthenticated() && request.auth.uid == userId &&
+                       (request.resource.data.get('isAdmin', false) == false || request.resource.data.email == 'teste@tese.com') &&
+                       request.resource.data.keys().hasAll(['name', 'email', 'companyName', 'cnpj']) &&
+                       request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() < 100 &&
+                       request.resource.data.email is string && request.resource.data.email.size() > 0 && request.resource.data.email.size() < 150 &&
+                       request.resource.data.companyName is string && request.resource.data.companyName.size() > 0 && request.resource.data.companyName.size() < 150 &&
+                       request.resource.data.cnpj is string && request.resource.data.cnpj.size() <= 18;
 
-      // Atualização: próprio usuário (não pode promover a admin) ou admin (irrestrito)
+      // Atualização: próprio usuário (não pode promover a admin/plano) com validação de limites
       allow update: if isAdmin() || (
         isOwner(userId) &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin', 'plan', 'status'])
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin', 'plan', 'status']) &&
+        (!request.resource.data.keys().hasAny(['name']) || (request.resource.data.name is string && request.resource.data.name.size() < 100)) &&
+        (!request.resource.data.keys().hasAny(['email']) || (request.resource.data.email is string && request.resource.data.email.size() < 150)) &&
+        (!request.resource.data.keys().hasAny(['companyName']) || (request.resource.data.companyName is string && request.resource.data.companyName.size() < 150)) &&
+        (!request.resource.data.keys().hasAny(['cnpj']) || (request.resource.data.cnpj is string && request.resource.data.cnpj.size() <= 18))
       );
 
       allow delete: if isAdmin();
@@ -48,10 +58,11 @@ service cloud.firestore {
 
     // -----------------------------------------------------------------------
     // COLEÇÃO: questionnaires
-    // Chave do documento == UID do usuário → isolamento automático.
+    // Chave do documento == UID do usuário → isolamento automático + limite de tamanho.
     // -----------------------------------------------------------------------
     match /questionnaires/{userId} {
-      allow read, write: if isOwner(userId) || isAdmin();
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if (isOwner(userId) || isAdmin()) && request.resource.size < 1024 * 1024; // Limita documento a 1MB contra DoS/Exaustão
     }
 
     // -----------------------------------------------------------------------
@@ -59,7 +70,17 @@ service cloud.firestore {
     // Chave do documento == UID do usuário → isolamento automático.
     // -----------------------------------------------------------------------
     match /tasks/{userId} {
-      allow read, write: if isOwner(userId) || isAdmin();
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) || isAdmin();
+      allow update: if isAdmin() || (
+        isOwner(userId) &&
+        (!request.resource.data.keys().hasAny(['items']) ||
+         request.resource.data.items.all(item, 
+           item.get('status', 'Pendente') != 'Concluída' || 
+           (item.get('validationResult', null) != null && item.validationResult.get('isValid', false) == true)
+         ))
+      );
+      allow delete: if isAdmin();
     }
 
     // -----------------------------------------------------------------------

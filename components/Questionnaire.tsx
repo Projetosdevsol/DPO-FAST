@@ -114,9 +114,11 @@ interface ProcessFormWizardProps {
   data: QuestionnaireData;
   onSave: (updatedData: QuestionnaireData, isFinal?: boolean) => Promise<void>;
   setView: (v: 'mapping' | 'sector-hub' | 'process-form') => void;
+  /** Fired when a process is finalized (step 7 completed) */
+  onProcessComplete?: (info: { sectorId: string; updatedData: QuestionnaireData }) => void;
 }
 
-const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSectorId, data, onSave, setView }) => {
+const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSectorId, data, onSave, setView, onProcessComplete }) => {
   const { authState } = useAuth();
   const [answers, setAnswers] = useState<SectorAnswers>(process.answers || {
     processName: process.name,
@@ -171,6 +173,10 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
     const updatedData = { ...data, sectors: updatedSectors, lastUpdated: new Date().toISOString() };
     await onSave(updatedData);
     setIsSaving(false);
+    if (finalize) {
+      // Notify parent before switching view so it can compute gaps
+      onProcessComplete?.({ sectorId: activeSectorId, updatedData });
+    }
     if (finalize || goBackToHub) setView('sector-hub');
   };
 
@@ -831,6 +837,134 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
 };
 
 
+// ─────────────────────────────────────────────────────────────────────────────
+// SECTOR COMPLETION MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+interface SectorCompletionInfo {
+  sectorName: string;
+  gapCount: number;
+  remainingSectors: number;
+  totalSectors: number;
+}
+
+const SectorCompletionModal: React.FC<{
+  info: SectorCompletionInfo;
+  onClose: () => void;
+  onGoToTasks: () => void;
+}> = ({ info, onClose, onGoToTasks }) => {
+  const { sectorName, gapCount, remainingSectors, totalSectors } = info;
+  const completedSectors = totalSectors - remainingSectors;
+  const progress = totalSectors > 0 ? Math.round((completedSectors / totalSectors) * 100) : 0;
+
+  return (
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 animate-in fade-in"
+      style={{ backgroundColor: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }}
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-lg bg-[var(--surface)] rounded-[2.5rem] shadow-[0_40px_80px_rgba(0,0,0,0.25)] border border-[var(--border)] overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Decorative gradient top bar */}
+        <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-500" />
+
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-all"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <div className="p-8 md:p-10 space-y-8">
+          {/* Header */}
+          <div className="flex items-start gap-5">
+            <div className="p-4 bg-emerald-50 rounded-2xl shrink-0">
+              <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-1">
+                Mapeamento Concluído
+              </p>
+              <h2 className="text-2xl font-black text-[var(--text-primary)] leading-tight">
+                Setor <span className="text-blue-600">{sectorName}</span> finalizado!
+              </h2>
+            </div>
+          </div>
+
+          {/* Stats grid */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Gaps found */}
+            <div className="bg-amber-50 border border-amber-100 rounded-[1.5rem] p-5 space-y-1">
+              <div className="flex items-center gap-2 text-amber-600">
+                <AlertCircle className="h-4 w-4" />
+                <p className="text-[9px] font-black uppercase tracking-[0.15em]">Gaps Encontrados</p>
+              </div>
+              <p className="text-4xl font-black text-amber-700">{gapCount}</p>
+              <p className="text-[10px] font-medium text-amber-600 leading-snug">
+                {gapCount === 0
+                  ? 'Nenhum gap identificado. Excelente!'
+                  : `${gapCount} ${gapCount === 1 ? 'tarefa adicionada' : 'tarefas adicionadas'} à sua to-do list.`}
+              </p>
+            </div>
+
+            {/* Remaining sectors */}
+            <div className="bg-blue-50 border border-blue-100 rounded-[1.5rem] p-5 space-y-1">
+              <div className="flex items-center gap-2 text-blue-600">
+                <Layers className="h-4 w-4" />
+                <p className="text-[9px] font-black uppercase tracking-[0.15em]">Setores Pendentes</p>
+              </div>
+              <p className="text-4xl font-black text-blue-700">{remainingSectors}</p>
+              <p className="text-[10px] font-medium text-blue-600 leading-snug">
+                {remainingSectors === 0
+                  ? 'Todos os setores foram mapeados!'
+                  : `${remainingSectors} ${remainingSectors === 1 ? 'setor ainda precisa' : 'setores ainda precisam'} ser concluídos.`}
+              </p>
+            </div>
+          </div>
+
+          {/* Overall progress bar */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Progresso Geral da Adequação</p>
+              <p className="text-sm font-black text-[var(--text-primary)]">{progress}%</p>
+            </div>
+            <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full transition-all duration-1000"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="text-[10px] font-bold text-slate-400">
+              {completedSectors} de {totalSectors} {totalSectors === 1 ? 'setor concluído' : 'setores concluídos'}
+            </p>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            {gapCount > 0 && (
+              <button
+                onClick={onGoToTasks}
+                className="flex-1 px-6 py-3.5 bg-blue-600 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95"
+              >
+                <ClipboardCheck className="h-4 w-4" />
+                Ver Tarefas Geradas
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="flex-1 px-6 py-3.5 bg-[var(--surface-muted)] text-[var(--text-primary)] rounded-2xl font-bold text-sm hover:bg-slate-100 transition-all border border-[var(--border)] active:scale-95"
+            >
+              {remainingSectors > 0 ? 'Continuar Mapeamento' : 'Ver Resumo'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks = [], onSave }) => {
   const { authState } = useAuth();
   const [view, setView] = useState<'mapping' | 'sector-hub' | 'process-form'>(
@@ -852,6 +986,8 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
   });
 
   const [isSyncing, setIsSyncing] = useState(false);
+  // Completion modal state
+  const [completionInfo, setCompletionInfo] = useState<SectorCompletionInfo | null>(null);
 
   React.useEffect(() => {
     if (initialData && JSON.stringify(initialData) !== JSON.stringify(data)) {
@@ -1026,6 +1162,32 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
     } finally {
       setIsSyncing(false);
     }
+  };
+
+  /**
+   * Called by ProcessFormWizard after a process is successfully finalized.
+   * Computes gap count and remaining sector count, then shows the modal.
+   */
+  const handleProcessComplete = ({ sectorId, updatedData }: { sectorId: string; updatedData: QuestionnaireData }) => {
+    const sector = updatedData.sectors.find(s => s.id === sectorId);
+    if (!sector) return;
+
+    // Count tasks associated with this sector that are currently in props
+    const sectorTasks = tasks.filter(t => t.sectorId === sectorId);
+    const gapCount = sectorTasks.length;
+
+    // Count sectors that still have at least one non-completed process
+    const totalSectors = updatedData.sectors.length;
+    const remainingSectors = updatedData.sectors.filter(s =>
+      (s.processes || []).some(p => p.status !== 'completed')
+    ).length;
+
+    setCompletionInfo({
+      sectorName: sector.name,
+      gapCount,
+      remainingSectors,
+      totalSectors,
+    });
   };
 
   if (view === 'mapping') {
@@ -1295,13 +1457,27 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
     
     if (currentProcess) {
       return (
-        <ProcessFormWizard 
-          process={currentProcess} 
-          activeSectorId={activeSectorId} 
-          data={data} 
-          onSave={syncData} 
-          setView={setView} 
-        />
+        <>
+          <ProcessFormWizard 
+            process={currentProcess} 
+            activeSectorId={activeSectorId} 
+            data={data} 
+            onSave={syncData} 
+            setView={setView}
+            onProcessComplete={handleProcessComplete}
+          />
+          {/* Sector completion modal — rendered on top of everything */}
+          {completionInfo && (
+            <SectorCompletionModal
+              info={completionInfo}
+              onClose={() => setCompletionInfo(null)}
+              onGoToTasks={() => {
+                setCompletionInfo(null);
+                navigate('/dashboard/conformidade');
+              }}
+            />
+          )}
+        </>
       );
     }
   }

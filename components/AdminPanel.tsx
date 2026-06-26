@@ -62,7 +62,7 @@ const ICON_MAP: any = { Trophy, ShieldCheck, Star, Zap: Trophy, Award: Trophy, L
 const AdminOverview: React.FC<{ users: User[], tickets: SupportTicket[] }> = ({ users, tickets }) => {
   const activeUsers = (users || []).filter(u => u.status !== 'suspended').length;
   const onlineUsers = (users || []).filter(u => u.isOnline).length;
-  const proUsers = (users || []).filter(u => u.plan === 'pro' || u.plan === 'enterprise').length;
+  const proUsers = (users || []).filter(u => u.plan === 'pro' || u.plan === 'personalite').length;
   const openTickets = (tickets || []).filter(t => t.status === 'open').length;
 
   const stats = [
@@ -383,7 +383,7 @@ const UserDetailsModal: React.FC<{ user: User; onClose: () => void }> = ({ user,
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-[10px] font-bold text-slate-400 uppercase">Plano Atual</p>
-                        <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase mt-1 ${user.plan === 'enterprise' ? 'bg-purple-100 text-purple-700' : user.plan === 'pro' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-[var(--text-muted)]'}`}>{user.plan}</span>
+                        <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase mt-1 ${user.plan === 'personalite' ? 'bg-purple-100 text-purple-700' : user.plan === 'pro' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-[var(--text-muted)]'}`}>{user.plan}</span>
                       </div>
                       <div>
                         <p className="text-[10px] font-bold text-slate-400 uppercase">Status</p>
@@ -657,7 +657,7 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
                   </td>
                   <td className="px-8 py-6">
                     <div className="flex flex-col gap-1.5">
-                      <span className={`w-fit px-2 py-0.5 rounded text-[9px] font-black uppercase ${user.plan === 'enterprise' ? 'bg-purple-100 text-purple-700' : user.plan === 'pro' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-[var(--text-muted)]'}`}>
+                      <span className={`w-fit px-2 py-0.5 rounded text-[9px] font-black uppercase ${user.plan === 'personalite' ? 'bg-purple-100 text-purple-700' : user.plan === 'pro' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200 text-[var(--text-muted)]'}`}>
                         {user.plan}
                       </span>
                       <span className={`w-fit px-2 py-0.5 rounded text-[9px] font-black uppercase ${user.status === 'suspended' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
@@ -761,7 +761,7 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
                   >
                     <option value="free">FREE</option>
                     <option value="pro">PRO</option>
-                    <option value="enterprise">ENTERPRISE</option>
+                    <option value="personalite">PERSONALITÉ</option>
                   </select>
                 </div>
               </div>

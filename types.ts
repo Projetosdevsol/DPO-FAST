@@ -1,4 +1,6 @@
 
+export type PlanType = 'free' | 'basico' | 'pro' | 'personalite';
+
 export interface User {
   id: string;
   name: string;
@@ -7,7 +9,7 @@ export interface User {
   cnpj: string;
   address: string;
   onboardingCompleted: boolean;
-  plan: 'free' | 'basico' | 'pro' | 'personalite' | 'enterprise';
+  plan: PlanType;
   isAdmin?: boolean;
   status?: 'active' | 'suspended';
   status_assinatura?: 'active' | 'canceled' | 'past_due' | 'trialing'; // Added for Stripe integration
@@ -178,7 +180,7 @@ export interface AuditLog {
 export interface Subscription {
   id: string;
   userId: string;
-  plan: 'free' | 'basico' | 'pro' | 'personalite' | 'enterprise';
+  plan: PlanType;
   status: 'active' | 'canceled' | 'past_due' | 'trialing';
   currentPeriodEnd: string;
   stripeSubscriptionId?: string;

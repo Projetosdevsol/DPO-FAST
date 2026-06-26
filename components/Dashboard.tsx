@@ -386,7 +386,7 @@ const DocumentsListView: React.FC<{ qData: QuestionnaireData | null; tasks: Comp
 
       {/* Gerador Automático com IA */}
       <div className="max-w-4xl">
-        <IADocumentGenerator onDocumentGenerated={(title, content) => setPreviewDoc({ title, content })} />
+        <IADocumentGenerator qData={qData} onDocumentGenerated={(title, content) => setPreviewDoc({ title, content })} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

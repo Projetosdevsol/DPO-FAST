@@ -1,13 +1,13 @@
 import { db } from '../config';
 
-export type SubscriptionPlan = 'free' | 'basico' | 'pro' | 'personalite' | 'enterprise';
+export type SubscriptionPlan = 'free' | 'basico' | 'pro' | 'personalite';
 
 /**
  * Busca o plano de assinatura do usuário no Firestore.
  * Mapeia os níveis de acesso:
  * - free/basico: Apenas Agente de Diagnóstico.
  * - pro: Diagnóstico + Sugestão.
- * - personalite/enterprise: Ciclo completo (Diagnóstico, Sugestão e Execução).
+ * - personalite: Ciclo completo (Diagnóstico, Sugestão e Execução).
  */
 export async function getUserPlan(userId: string): Promise<SubscriptionPlan> {
   try {
@@ -38,7 +38,7 @@ export async function getUserPlan(userId: string): Promise<SubscriptionPlan> {
  */
 export function hasPermission(plan: SubscriptionPlan, feature: 'discovery' | 'suggestion' | 'execution'): boolean {
   if (feature === 'discovery') return true; // Todos têm acesso
-  if (feature === 'suggestion') return ['pro', 'personalite', 'enterprise'].includes(plan);
-  if (feature === 'execution') return ['basico', 'pro', 'personalite', 'enterprise'].includes(plan);
+  if (feature === 'suggestion') return ['pro', 'personalite'].includes(plan);
+  if (feature === 'execution') return ['basico', 'pro', 'personalite'].includes(plan);
   return false;
 }

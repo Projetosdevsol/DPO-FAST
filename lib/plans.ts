@@ -88,25 +88,6 @@ export const PLAN_LIMITS: Record<User['plan'], PlanFeatureLimits> = {
       'Gerente de Conta Dedicado'
     ],
     limite_geracao_ia: 20,
-  },
-  enterprise: {
-    documentos_essenciais: true,
-    documentos_avancados: true,
-    ia_analise_profunda: true,
-    limite_setores: 999, // Ilimitado
-    limite_processos_por_setor: 999, // Ilimitado
-    sla_suporte_horas: 4,
-    gerente_conta: true,
-    auditoria_humana: true,
-    features: [
-      'Documentação Customizada',
-      'Múltiplas Empresas (CNPJs)',
-      'Auditoria Humana por DPOs',
-      'DPO Assistant (Acesso Ilimitado)',
-      'SLA Prioritário: 4h úteis',
-      'Gerente de Conta Dedicado'
-    ],
-    limite_geracao_ia: 999,
   }
 };
 

@@ -6,7 +6,7 @@ import { getCompanyContext } from '../lib/tools';
 export const draftingInputSchema = z.object({
   userId: z.string(),
   documentType: z.enum(['LIA', 'RIPD', 'Termo de Uso', 'Politica de Privacidade', 'Termo de Consentimento']),
-  specificContext: z.string().optional(),
+  specificContext: z.string().max(2000, "O contexto específico não deve ultrapassar 2000 caracteres.").optional(),
 });
 
 // Prompts de Base (Templates simplificados para a IA expandir)

@@ -42,13 +42,54 @@ export const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-    if (!validateCnpj(formData.cnpj)) {
-      setErrors({ cnpj: 'CNPJ inválido.' });
+
+    // Sanitização de entradas (Remoção de espaços em branco desnecessários)
+    const sanitizedName = formData.name.trim();
+    const sanitizedEmail = formData.email.trim();
+    const sanitizedCompanyName = formData.companyName.trim();
+    const sanitizedCnpj = formData.cnpj.trim();
+    const sanitizedAddress = formData.address.trim();
+
+    const newErrors: Record<string, string> = {};
+
+    // Validações robustas de comprimento e formato
+    if (sanitizedName.length < 3 || sanitizedName.length > 80) {
+      newErrors.name = 'O nome deve ter entre 3 e 80 caracteres.';
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(sanitizedEmail) || sanitizedEmail.length > 120) {
+      newErrors.email = 'Insira um e-mail profissional válido e menor que 120 caracteres.';
+    }
+
+    if (sanitizedCompanyName.length < 2 || sanitizedCompanyName.length > 120) {
+      newErrors.companyName = 'Nome da organização inválido (limite de 2 a 120 caracteres).';
+    }
+
+    if (!validateCnpj(sanitizedCnpj)) {
+      newErrors.cnpj = 'CNPJ inválido (deve conter 14 dígitos).';
+    }
+
+    if (formData.password.length < 6) {
+      newErrors.password = 'A senha deve conter no mínimo 6 caracteres.';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
+
     setLoading(true);
     try {
-      await register({ ...formData, plan: selectedPlan });
+      await register({
+        name: sanitizedName,
+        email: sanitizedEmail,
+        companyName: sanitizedCompanyName,
+        cnpj: sanitizedCnpj,
+        address: sanitizedAddress,
+        password: formData.password,
+        plan: selectedPlan
+      });
       
       if (['basico', 'pro', 'personalite'].includes(selectedPlan)) {
         const stripeUrl = STRIPE_LINKS[selectedPlan as keyof typeof STRIPE_LINKS];
@@ -108,28 +149,33 @@ export const Register: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <label htmlFor="name" className="auth-label">Seu Nome</label>
-              <input type="text" id="name" required className="auth-input" placeholder="João Silva" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+              <label htmlFor="name" className={`auth-label ${errors.name ? 'text-red-500' : ''}`}>Seu Nome</label>
+              <input type="text" id="name" required className={`auth-input ${errors.name ? 'border-red-200 bg-red-50/30' : ''}`} placeholder="João Silva" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+              {errors.name && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider px-1">{errors.name}</p>}
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="email" className="auth-label">E-mail Profissional</label>
-              <input type="email" id="email" required className="auth-input" placeholder="joao@empresa.com" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+              <label htmlFor="email" className={`auth-label ${errors.email ? 'text-red-500' : ''}`}>E-mail Profissional</label>
+              <input type="email" id="email" required className={`auth-input ${errors.email ? 'border-red-200 bg-red-50/30' : ''}`} placeholder="joao@empresa.com" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+              {errors.email && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider px-1">{errors.email}</p>}
             </div>
 
             <div className="md:col-span-2 space-y-2">
-              <label htmlFor="companyName" className="auth-label">Nome da Organização</label>
-              <input type="text" id="companyName" required className="auth-input" placeholder="Empresa S.A." value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} />
+              <label htmlFor="companyName" className={`auth-label ${errors.companyName ? 'text-red-500' : ''}`}>Nome da Organização</label>
+              <input type="text" id="companyName" required className={`auth-input ${errors.companyName ? 'border-red-200 bg-red-50/30' : ''}`} placeholder="Empresa S.A." value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} />
+              {errors.companyName && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider px-1">{errors.companyName}</p>}
             </div>
 
             <div className="space-y-2">
               <label htmlFor="cnpj" className={`auth-label ${errors.cnpj ? 'text-red-500' : ''}`}>Documento (CNPJ)</label>
               <input type="text" id="cnpj" required maxLength={18} className={`auth-input ${errors.cnpj ? 'border-red-200 bg-red-50/30' : ''}`} placeholder="00.000.000/0000-00" value={formData.cnpj} onChange={handleCnpjChange} />
+              {errors.cnpj && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider px-1">{errors.cnpj}</p>}
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="auth-label">Sua Senha</label>
-              <input type="password" id="password" required minLength={6} className="auth-input" placeholder="••••••••" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
+              <label htmlFor="password" className={`auth-label ${errors.password ? 'text-red-500' : ''}`}>Sua Senha</label>
+              <input type="password" id="password" required minLength={6} className={`auth-input ${errors.password ? 'border-red-200 bg-red-50/30' : ''}`} placeholder="••••••••" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
+              {errors.password && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider px-1">{errors.password}</p>}
             </div>
           </div>
 

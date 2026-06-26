@@ -1,0 +1,45 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Auxiliar: verifica se o usuário está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Auxiliar: verifica se o usuário é dono do recurso (pasta baseada no UID)
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Regras para a pasta de evidências enviadas pelo usuário
+    match /evidences/{userId}/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && (
+        request.resource == null || (
+          request.resource.size < 10 * 1024 * 1024 && // Limite de 10MB
+          (
+            request.resource.contentType == 'application/pdf' ||
+            request.resource.contentType == 'text/plain' ||
+            request.resource.contentType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          )
+        )
+      );
+    }
+
+    // Regras para a pasta de documentos gerados/armazenados da empresa
+    match /companies/{userId}/docs/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && (
+        request.resource == null || (
+          request.resource.size < 10 * 1024 * 1024 && // Limite de 10MB
+          (
+            request.resource.contentType == 'application/pdf' ||
+            request.resource.contentType == 'text/plain' ||
+            request.resource.contentType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          )
+        )
+      );
+    }
+  }
+}
