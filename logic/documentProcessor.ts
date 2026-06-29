@@ -1,5 +1,5 @@
 
-import * as mammoth from 'https://esm.sh/mammoth@^1.8.0';
+import mammoth from 'mammoth';
 
 /**
  * Utilitário para extrair texto de diferentes tipos de arquivos no cliente.

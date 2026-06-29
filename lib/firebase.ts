@@ -1,9 +1,11 @@
 
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { getStorage } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
-import { getFunctions } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
+
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
+import { getFunctions } from 'firebase/functions';
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyA8dfNTAO5QqxQfU0n3X4_3JvudizatNPg",

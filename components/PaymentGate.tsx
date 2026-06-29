@@ -4,7 +4,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { STRIPE_LINKS } from '../lib/stripe';
 import { CreditCard, ArrowRight, ShieldAlert, Zap } from 'lucide-react';
-import { doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 export const PaymentGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {

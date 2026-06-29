@@ -11,7 +11,7 @@ import { ComplianceTask, ValidationResult, ValidationHistoryEntry } from '../typ
 import { validateTaskCompliance, LGPD_CRITERIA_EXPLANATIONS } from '../logic/validationEngine';
 import { extractTextFromFile } from '../logic/documentProcessor';
 import { storage } from '../lib/firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useAuth } from '../context/AuthContext';
 
 interface TaskValidationModalProps {

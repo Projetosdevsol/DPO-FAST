@@ -11,7 +11,7 @@ import {
   where,
   addDoc,
   onSnapshot
-} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+} from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { User, SupportTicket, AuditLog, Subscription, AccessLog } from '../types';
 

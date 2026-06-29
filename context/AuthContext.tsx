@@ -11,7 +11,7 @@ import {
   sendPasswordResetEmail,
   reauthenticateWithCredential,
   EmailAuthProvider
-} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+} from 'firebase/auth';
 import { 
   doc, 
   getDoc, 
@@ -20,7 +20,7 @@ import {
   onSnapshot,
   collection,
   addDoc
-} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+} from 'firebase/firestore';
 import { auth, db, googleProvider } from '../lib/firebase';
 import { AuthState, User, AccessLog } from '../types';
 

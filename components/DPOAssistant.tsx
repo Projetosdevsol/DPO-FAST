@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
 import { functions } from '../lib/firebase';
-import { httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
+import { httpsCallable } from 'firebase/functions';
 import { useAuth } from '../context/AuthContext';
 
 interface Message {

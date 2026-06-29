@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { QuestionnaireData, SectorMapping, DataProcess, SectorAnswers } from '../types';
 import { storage } from '../lib/firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useAuth } from '../context/AuthContext';
 import { PLAN_LIMITS } from '../lib/plans';
 import { useNavigate } from 'react-router-dom';

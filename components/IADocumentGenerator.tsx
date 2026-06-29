@@ -9,7 +9,7 @@ import {
   Lock,
   ArrowRight
 } from 'lucide-react';
-import { httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
+import { httpsCallable } from 'firebase/functions';
 import { functions } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
 import { QuestionnaireData } from '../types';

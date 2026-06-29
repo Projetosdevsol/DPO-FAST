@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Logo } from './Logo';
 import { CheckCircle2, ArrowRight, ShieldCheck, Sparkles, Loader2 } from 'lucide-react';
-import { doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 export const SuccessPay: React.FC = () => {
