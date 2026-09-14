@@ -44,7 +44,7 @@ export const Sidebar: React.FC = () => {
       <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-[var(--surface)] border-b border-[var(--border)] z-[40] px-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Logo className="h-10 w-auto" />
-          <span className="font-bold text-xl text-[var(--text-primary)]">LGPD Fácil</span>
+          <span className="font-bold text-xl text-[var(--text-primary)]">Guardião</span>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
@@ -72,7 +72,7 @@ export const Sidebar: React.FC = () => {
           <div className="flex items-center gap-3">
             <Logo className="h-8 w-auto shrink-0" />
             <div className="flex flex-col">
-              <span className="font-bold text-xl text-[var(--text-primary)] tracking-tighter">LGPD Fácil</span>
+              <span className="font-bold text-xl text-[var(--text-primary)] tracking-tighter">Guardião</span>
               <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">Compliance</span>
             </div>
           </div>

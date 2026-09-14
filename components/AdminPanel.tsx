@@ -1,5 +1,6 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { maskDocument } from '../src/utils/mask';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { 
   Users, 
@@ -278,7 +279,7 @@ const TicketDetailsModal: React.FC<{ ticket: SupportTicket; onClose: () => void;
 
         <div className="p-8 bg-[var(--surface-muted)] border-t border-[var(--border)] flex justify-end gap-3">
           <button onClick={onClose} className="px-8 py-3 bg-[var(--surface)] text-[var(--text-primary)] font-bold rounded-2xl border border-[var(--border)] hover:bg-slate-100 transition-all shadow-[var(--shadow)]">Fechar Detalhes</button>
-          <a href={`mailto:${ticket.userEmail}?subject=Re: [LGPD Fácil] ${ticket.subject}`} className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center gap-2">
+          <a href={`mailto:${ticket.userEmail}?subject=Re: [Guardião] ${ticket.subject}`} className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center gap-2">
             Responder via E-mail <ExternalLink className="h-4 w-4" />
           </a>
         </div>
@@ -366,7 +367,7 @@ const UserDetailsModal: React.FC<{ user: User; onClose: () => void }> = ({ user,
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-[10px] font-bold text-slate-400 uppercase">CNPJ</p>
-                        <p className="text-sm font-bold text-slate-700">{user.cnpj || 'Não informado'}</p>
+                        <p className="text-sm font-bold text-slate-700">{user.cnpj ? maskDocument(user.cnpj) : 'Não informado'}</p>
                       </div>
                       <div>
                         <p className="text-[10px] font-bold text-slate-400 uppercase">Porte</p>
@@ -874,7 +875,7 @@ export const AdminPanel: React.FC = () => {
           <Logo className="h-10 w-10" />
           <div className="flex flex-col">
             <span className="font-bold text-xl tracking-tight">Admin</span>
-            <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">LGPD Fácil</span>
+            <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Guardião</span>
           </div>
         </div>
 

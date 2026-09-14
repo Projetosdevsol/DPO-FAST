@@ -293,7 +293,7 @@ export const generateComplianceCertificatePDF = async (
   doc.setTextColor(148, 163, 184);
   doc.text([
     `Certificado ID: ${certificateId} - Gerado em ${issueDate}`,
-    'Este documento certifica que o processo acima foi mapeado e adequado conforme os padrões da LGPD na plataforma DPO Fast.',
+    'Este documento certifica que o processo acima foi mapeado e adequado conforme os padrões da LGPD na plataforma Guardião.',
     'A validade deste certificado depende da manutenção das práticas aqui descritas.',
     'Valide a autenticidade apontando a câmera para o QR Code ao lado.'
   ], 20, doc.internal.pageSize.getHeight() - 30);

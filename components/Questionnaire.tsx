@@ -99,6 +99,11 @@ const DATA_TYPES_INFO = [
   { id: 'Nacionalidade', label: 'Nacionalidade', description: 'País de origem, naturalidade e status de residência.' },
   { id: 'Educacional', label: 'Educação', description: 'Histórico escolar, acadêmico, diplomas, certificados e notas.' },
   { id: 'Trabalho', label: 'Relação de Trabalho', description: 'Número de CTPS, PIS, histórico profissional e cargo.' },
+  { id: 'TituloEleitor', label: 'Título de Eleitor', description: 'Número do documento de cadastro eleitoral.' },
+  { id: 'CarteiraTrabalho', label: 'Carteira de Trabalho (CTPS)', description: 'Número da Carteira de Trabalho e Previdência Social.' },
+  { id: 'CertidaoNascimento', label: 'Certidão de Nascimento', description: 'Registro de nascimento e dados de filiação.' },
+  { id: 'CertidaoCasamento', label: 'Certidão de Casamento', description: 'Certidão civil de casamento e estado civil.' },
+  { id: 'ComprovanteMatricula', label: 'Matrícula Escolar', description: 'Comprovante de vínculo e matrícula escolar.' },
   { id: 'Sindicato', label: 'Sindicato', description: 'DADO SENSÍVEL: Filiação sindical ou associativa profissional.', isSensitive: true },
   { id: 'Parental', label: 'Info. Parentais', description: 'Dados de filhos, dependentes, certidões de nascimento ou estado civil.' },
   { id: 'Saude', label: 'Saúde', description: 'DADO SENSÍVEL: Prontuários, laudos médicos, exames ou histórico de saúde.', isSensitive: true },
@@ -434,7 +439,7 @@ const ProcessFormWizard: React.FC<ProcessFormWizardProps> = ({ process, activeSe
                  how="Selecione todos os grupos de pessoas que possuem dados transitando neste processo." 
                />
                <div className="flex flex-wrap gap-2 mb-4">
-                 {['Clientes', 'Colaboradores', 'Candidatos', 'Fornecedores', 'Leads'].map(t => (
+                 {['Clientes', 'Colaboradores', 'Candidatos', 'Fornecedores', 'Leads', 'Filhos', 'Parentes'].map(t => (
                    <button key={t} onClick={() => setAnswers({...answers, dataSubjects: (answers.dataSubjects || []).includes(t) ? answers.dataSubjects.filter(i => i !== t) : [...(answers.dataSubjects || []), t]})} className={`px-5 py-2.5 rounded-full border text-xs font-bold transition-all ${answers.dataSubjects?.includes(t) ? 'bg-slate-900 text-white border-slate-900 shadow-lg' : 'bg-[var(--surface)] text-[var(--text-muted)] border-[var(--border)] hover:border-slate-300'}`}>{t}</button>
                  ))}
                </div>

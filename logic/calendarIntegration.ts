@@ -28,7 +28,7 @@ export const generateGoogleCalendarLink = (task: ComplianceTask, companyName: st
     `Documento Alvo: ${task.targetDocument}\n` +
     `Prioridade: ${task.priority}\n\n` +
     `Acesse a evidência em: https://lgpdfacil.app/dashboard/conformidade\n\n` +
-    `Gerado via LGPD Fácil.`
+    `Gerado via Guardião.`
   );
 
   return `${baseUrl}&text=${title}&dates=${dates}&details=${details}&sf=true&output=xml`;

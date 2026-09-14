@@ -11,7 +11,7 @@ export const PrivacyPolicy: React.FC = () => {
              <div className="p-2 bg-orange-600 rounded-xl">
                <ShieldCheck className="h-5 w-5 text-white" />
              </div>
-             <span className="font-black text-lg text-white tracking-tighter">LGPD Fácil</span>
+             <span className="font-black text-lg text-white tracking-tighter">Guardião</span>
           </Link>
           <Link to="/" className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] hover:text-white flex items-center gap-2 transition-all">
             <ChevronLeft className="h-4 w-4" /> Voltar ao Início
@@ -70,7 +70,7 @@ export const PrivacyPolicy: React.FC = () => {
         </article>
 
         <footer className="mt-24 text-center">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">© {new Date().getFullYear()} LGPD Fácil Tecnologia. Sem complicação.</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">© {new Date().getFullYear()} Guardião Tecnologia. Sem complicação.</p>
         </footer>
       </main>
     </div>

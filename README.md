@@ -1,6 +1,6 @@
-# DPO Fast - SaaS para Adequação à LGPD
+# Guardião - SaaS para Adequação à LGPD
 
-O **DPO Fast** é um Micro-SaaS (Software as a Service) premium projetado para simplificar, automatizar e gerenciar todo o ciclo de adequação de pequenas e médias empresas à Lei Geral de Proteção de Dados (LGPD) no Brasil.
+O **Guardião** é um Micro-SaaS (Software as a Service) premium projetado para simplificar, automatizar e gerenciar todo o ciclo de adequação de pequenas e médias empresas à Lei Geral de Proteção de Dados (LGPD) no Brasil.
 
 A plataforma utiliza um sistema multiagente inteligente com **Genkit AI (Gemini)** para diagnosticar riscos, recomendar planos de ação, auditar evidências de tarefas e gerar documentos de conformidade personalizados a partir de mapeamentos de processos.
 
@@ -22,8 +22,9 @@ graph TD
 
 ### 1. Frontend (Interface do Usuário)
 - **Tecnologias**: React, TypeScript, Vite, Tailwind CSS, Lucide Icons.
-- **Design System**: Interface com estética premium em Dark Mode, transições fluidas e micro-animações dinâmicas para engajamento do usuário.
-- **Segurança**: Isolamento multi-tenant por rotas autenticadas e leituras/escritas baseadas estritamente no UID do usuário via Firebase Auth.
+- **Arquitetura Local-First**: Persistência primária via **IndexedDB** (`idb`), permitindo navegação e preenchimento totalmente offline. O envio ao Firestore ocorre apenas em gatilhos específicos (botão "Salvar", encerramento de wizard ou debounce de 5s).
+- **Segurança & Mascaramento**: Utilidades de mascaramento de PII (`maskDocument` / `maskPII`) aplicadas na exibição de documentos (CPF, CNPJ, Título de Eleitor, CTPS, Certidões) para proteção em conformidade com o princípio de necessidade.
+- **Inventário Expandido**: Suporte nativo a Título de Eleitor, CTPS, Certidão de Nascimento, Certidão de Casamento e Comprovante de Matrícula, com classificação de níveis de sensibilidade e novos titulares ("Filhos" e "Parentes").
 
 ### 2. Backend (Cloud Functions & Genkit Multi-Agentes)
 - **Tecnologias**: Node.js, TypeScript, Genkit AI Core.

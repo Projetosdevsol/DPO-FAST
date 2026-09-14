@@ -11,7 +11,7 @@ export const TermsOfUse: React.FC = () => {
              <div className="p-2 bg-orange-600 rounded-xl font-bold">
                <ShieldCheck className="h-5 w-5 text-white" />
              </div>
-             <span className="font-black text-lg text-white tracking-tighter">LGPD Fácil</span>
+             <span className="font-black text-lg text-white tracking-tighter">Guardião</span>
           </Link>
           <Link to="/" className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] hover:text-white flex items-center gap-2 transition-all">
             <ChevronLeft className="h-4 w-4" /> Voltar ao Início
@@ -32,7 +32,7 @@ export const TermsOfUse: React.FC = () => {
           <section className="space-y-4">
             <h2 className="text-xl font-bold text-white tracking-tight">1. Aceitação do Serviço</h2>
             <p className="text-[var(--text-muted)] text-sm">
-              Ao utilizar a plataforma LGPD Fácil, sua empresa adere a um modelo de adequação guiada. Este sistema foi desenhado para facilitar a jornada de conformidade, fornecendo tecnologia de ponta para automação de registros e auditorias.
+              Ao utilizar a plataforma Guardião, sua empresa adere a um modelo de adequação guiada. Este sistema foi desenhado para facilitar a jornada de conformidade, fornecendo tecnologia de ponta para automação de registros e auditorias.
             </p>
           </section>
 
@@ -54,7 +54,7 @@ export const TermsOfUse: React.FC = () => {
             <div className="p-8 bg-orange-500/10 border border-orange-500/20 rounded-[2rem] space-y-4">
               <h2 className="text-xl font-bold text-white tracking-tight">4. Limitação de Responsabilidade Legal</h2>
               <p className="text-orange-200/60 text-sm">
-                O LGPD Fácil é um assistente tecnológico. Embora ofereçamos suporte jurídico de base, o sistema não substitui a necessidade de implementação prática de medidas técnicas de segurança no dia a dia da sua organização.
+                O Guardião é um assistente tecnológico. Embora ofereçamos suporte jurídico de base, o sistema não substitui a necessidade de implementação prática de medidas técnicas de segurança no dia a dia da sua organização.
               </p>
             </div>
           </section>
@@ -62,13 +62,13 @@ export const TermsOfUse: React.FC = () => {
           <section className="space-y-4">
             <h2 className="text-xl font-bold text-white tracking-tight">5. Propriedade Intelectual</h2>
             <p className="text-[var(--text-muted)] text-sm">
-              Todos os algoritmos de análise, fluxos de diagnóstico e elementos de design são propriedade intelectual da LGPD Fácil. A licença de uso é intransferível e válida apenas para o domínio da empresa registrada.
+              Todos os algoritmos de análise, fluxos de diagnóstico e elementos de design são propriedade intelectual do Guardião. A licença de uso é intransferível e válida apenas para o domínio da empresa registrada.
             </p>
           </section>
         </article>
 
         <footer className="mt-24 text-center">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">© {new Date().getFullYear()} LGPD Fácil Tecnologia. Inteligência em Conformidade.</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-700">© {new Date().getFullYear()} Guardião Tecnologia. Inteligência em Conformidade.</p>
         </footer>
       </main>
     </div>

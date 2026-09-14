@@ -143,7 +143,7 @@ export const Pricing: React.FC<{ isLandingPage?: boolean }> = ({ isLandingPage }
               <button 
                 onClick={() => {
                   if (plan.id === 'personalite') {
-                    window.open('https://api.whatsapp.com/send?phone=YOUR_NUMBER&text=Olá! Gostaria de saber mais sobre o plano Personalité do LGPD Fácil.', '_blank');
+                    window.open('https://api.whatsapp.com/send?phone=YOUR_NUMBER&text=Olá! Gostaria de saber mais sobre o plano Personalité do Guardião.', '_blank');
                   } else {
                     // Se estiver na landing page ou página de planos, sempre manda pro registro primeiro
                     // O Register.tsx cuidará do redirecionamento pro Stripe após o cadastro

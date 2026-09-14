@@ -31,15 +31,23 @@ import {
   Target,
   Sparkles,
   Hash,
-  Briefcase
+  Briefcase,
+  Smartphone
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { storage, db } from '../lib/firebase';
+import { storage, db, auth } from '../lib/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
 import { QuestionnaireData, SectorMapping } from '../types';
 import { PLAN_LIMITS } from '../lib/plans';
+import { RecaptchaVerifier, sendEmailVerification } from 'firebase/auth';
+
+declare global {
+  interface Window {
+    recaptchaVerifier: any;
+  }
+}
 
 interface SettingsProps {
   initialQData?: QuestionnaireData | null;
@@ -47,12 +55,33 @@ interface SettingsProps {
 }
 
 export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData }) => {
-  const { authState, updateUser, updateUserEmail, resetPassword } = useAuth();
+  const { 
+    authState, 
+    updateUser, 
+    updateUserEmail, 
+    resetPassword,
+    enrollMfa,
+    confirmMfaEnrollment,
+    unenrollMfa,
+    isMfaEnrolled
+  } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // MFA States
+  const [showMfaModal, setShowMfaModal] = useState(false);
+  const [mfaPhone, setMfaPhone] = useState('');
+  const [mfaConsent, setMfaConsent] = useState(false);
+  const [mfaStep, setMfaStep] = useState<'input' | 'otp'>('input');
+  const [mfaOtpCode, setMfaOtpCode] = useState('');
+  const [mfaSettingsLoading, setMfaSettingsLoading] = useState(false);
+  const [mfaSettingsError, setMfaSettingsError] = useState<string | null>(null);
+  const [emailVerificationSent, setEmailVerificationSent] = useState(false);
+  const [verificationCooldown, setVerificationCooldown] = useState(0); // segundos restantes
+  const cooldownRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Perfil State
   const [profileData, setProfileData] = useState({
@@ -94,12 +123,27 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
   const handleUpdateEmail = async () => {
     setLoading('email');
     try {
-      await updateUserEmail(email, currentPassword);
-      setSuccess('E-mail alterado com sucesso!');
+      const result = await updateUserEmail(email, currentPassword);
+      if (result?.verificationSent) {
+        setSuccess('Link de confirmação enviado para ' + email + '. Acesse sua caixa de entrada e clique no link para confirmar a troca. Após confirmar, recarregue a página.');
+      } else {
+        setSuccess('E-mail alterado com sucesso!');
+      }
       setShowEmailModal(false);
       setCurrentPassword('');
     } catch (err: any) {
-      setError(err.message || 'Erro ao alterar e-mail. Verifique sua senha.');
+      const code: string = err.code || '';
+      if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        setError('Senha incorreta. Verifique e tente novamente.');
+      } else if (code === 'auth/email-already-in-use') {
+        setError('Este e-mail já está em uso por outra conta.');
+      } else if (code === 'auth/invalid-email') {
+        setError('Formato de e-mail inválido.');
+      } else if (code === 'auth/requires-recent-login') {
+        setError('Sessão expirada. Faça logout e login novamente antes de alterar o e-mail.');
+      } else {
+        setError(err.message || 'Erro ao alterar e-mail. Verifique sua senha e tente novamente.');
+      }
     } finally {
       setLoading(null);
       clearMessages();
@@ -118,6 +162,129 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
       clearMessages();
     }
   };
+
+  const handleSendEmailVerification = async () => {
+    if (!auth.currentUser) return;
+    if (verificationCooldown > 0) return; // bloqueia cliques durante o cooldown
+    setMfaSettingsLoading(true);
+    setMfaSettingsError(null);
+    try {
+      await sendEmailVerification(auth.currentUser);
+      setEmailVerificationSent(true);
+      setSuccess('E-mail de verificação enviado! Acesse seu e-mail e clique no link de validação.');
+      // Inicia cooldown de 60 segundos para evitar spam
+      setVerificationCooldown(60);
+      cooldownRef.current = setInterval(() => {
+        setVerificationCooldown(prev => {
+          if (prev <= 1) {
+            clearInterval(cooldownRef.current!);
+            cooldownRef.current = null;
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (err: any) {
+      console.error(err);
+      const code: string = err.code || '';
+      if (code === 'auth/too-many-requests') {
+        setMfaSettingsError('Muitas tentativas. O Firebase bloqueou temporariamente o envio. Aguarde alguns minutos e tente novamente.');
+        setVerificationCooldown(120); // 2 min de cooldown forçado
+        cooldownRef.current = setInterval(() => {
+          setVerificationCooldown(prev => {
+            if (prev <= 1) {
+              clearInterval(cooldownRef.current!);
+              cooldownRef.current = null;
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      } else {
+        setMfaSettingsError('Erro ao enviar e-mail de verificação. Tente novamente mais tarde.');
+      }
+    } finally {
+      setMfaSettingsLoading(false);
+    }
+  };
+
+  const handleStartMfaEnrollment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!mfaPhone) {
+      setMfaSettingsError('Por favor, informe seu número de telefone.');
+      return;
+    }
+    if (!mfaConsent) {
+      setMfaSettingsError('É necessário consentir com o uso do número para segurança.');
+      return;
+    }
+    setMfaSettingsLoading(true);
+    setMfaSettingsError(null);
+    try {
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container-settings', {
+          size: 'invisible'
+        });
+      }
+      await enrollMfa(mfaPhone, window.recaptchaVerifier);
+      setMfaStep('otp');
+      setSuccess('Código de ativação enviado por SMS.');
+    } catch (err: any) {
+      console.error(err);
+      if (err.code === 'auth/unverified-email') {
+        setMfaSettingsError('É necessário verificar seu e-mail antes de ativar o MFA.');
+      } else {
+        setMfaSettingsError('Erro ao enviar SMS. Verifique o número digitado e tente novamente.');
+      }
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+    } finally {
+      setMfaSettingsLoading(false);
+    }
+  };
+
+  const handleConfirmMfaEnrollment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMfaSettingsLoading(true);
+    setMfaSettingsError(null);
+    try {
+      if (isMfaEnrolled) {
+        await unenrollMfa();
+      }
+      await confirmMfaEnrollment(mfaOtpCode);
+      setSuccess('MFA atualizado/ativado com sucesso!');
+      setShowMfaModal(false);
+      setMfaPhone('');
+      setMfaOtpCode('');
+      setMfaConsent(false);
+      setMfaStep('input');
+    } catch (err: any) {
+      console.error(err);
+      setMfaSettingsError('Código inválido ou expirado.');
+    } finally {
+      setMfaSettingsLoading(false);
+      clearMessages();
+    }
+  };
+
+  const handleDisableMfa = async () => {
+    if (!window.confirm('Tem certeza que deseja desativar a autenticação de dois fatores (MFA)? Isso tornará sua conta menos segura.')) {
+      return;
+    }
+    setLoading('security');
+    try {
+      await unenrollMfa();
+      setSuccess('MFA desativado com sucesso.');
+    } catch (err) {
+      setError('Erro ao desativar MFA.');
+    } finally {
+      setLoading(null);
+      clearMessages();
+    }
+  };
+
 
   const handleSupportSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -367,6 +534,51 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
                  Redefinir Credenciais de Acesso
                </button>
              </div>
+
+             <div className="pt-4 border-t border-[var(--border)] mt-4 space-y-3">
+                <div className="flex items-center justify-between p-4 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border)]">
+                  <div className="flex items-center gap-3">
+                    <Smartphone className="h-4 w-4 text-indigo-600" />
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-[var(--text-primary)] tracking-widest">
+                        Autenticação de Dois Fatores (MFA)
+                      </p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase">
+                        {isMfaEnrolled ? 'Ativado por SMS' : 'Desativado'}
+                      </p>
+                    </div>
+                  </div>
+                  {isMfaEnrolled ? (
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => {
+                          setMfaStep('input');
+                          setShowMfaModal(true);
+                        }} 
+                        className="text-[9px] font-black text-blue-600 uppercase underline tracking-widest"
+                      >
+                        Alterar Número
+                      </button>
+                      <button 
+                        onClick={handleDisableMfa} 
+                        className="text-[9px] font-black text-red-500 uppercase underline tracking-widest"
+                      >
+                        Desativar
+                      </button>
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        setMfaStep('input');
+                        setShowMfaModal(true);
+                      }} 
+                      className="text-[9px] font-black text-blue-600 uppercase underline tracking-widest"
+                    >
+                      Configurar SMS
+                    </button>
+                  )}
+                </div>
+             </div>
           </div>
         </section>
 
@@ -569,6 +781,149 @@ export const Settings: React.FC<SettingsProps> = ({ initialQData, onSaveQData })
                 {loading === 'email' ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : 'Validar & Salvar'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL CONFIGURAÇÃO MFA */}
+      {showMfaModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 z-[999] animate-in fade-in duration-300">
+          <div className="bg-[var(--surface)] border border-[var(--border)] w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl space-y-6 animate-in zoom-in-95 duration-300">
+            <header className="text-center space-y-2">
+              <div className="h-12 w-12 bg-indigo-600/10 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto">
+                <Smartphone className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-black text-[var(--text-primary)]">
+                {isMfaEnrolled ? 'Alterar Telefone do MFA' : 'Configurar MFA via SMS'}
+              </h3>
+              <p className="text-xs text-[var(--text-muted)] font-medium">
+                Adicione uma camada extra de proteção à sua conta Guardião.
+              </p>
+            </header>
+
+            {mfaSettingsError && (
+              <div className="p-4 bg-red-50 text-red-600 text-xs font-bold rounded-2xl border border-red-100 flex items-center gap-3">
+                <AlertCircle className="h-4 w-4" />
+                {mfaSettingsError}
+              </div>
+            )}
+
+            <div id="recaptcha-container-settings" className="flex justify-center"></div>
+
+            {auth.currentUser && !auth.currentUser.emailVerified ? (
+              <div className="space-y-4">
+                <div className="p-4 bg-amber-500/10 border border-amber-500/20 text-amber-600 text-xs font-bold rounded-2xl flex flex-col gap-2">
+                  <span className="uppercase tracking-wider">E-mail Não Verificado</span>
+                  <p className="font-medium text-[11px]">
+                    Por questões de segurança, você precisa verificar seu e-mail de acesso antes de poder ativar a autenticação de dois fatores (MFA).
+                  </p>
+                </div>
+                {emailVerificationSent ? (
+                  <p className="text-xs text-emerald-600 font-bold text-center">
+                    Link enviado! Acesse sua caixa de entrada e confirme o e-mail, depois recarregue esta página.
+                  </p>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSendEmailVerification}
+                    disabled={mfaSettingsLoading || verificationCooldown > 0}
+                    className="w-full py-4 bg-amber-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-amber-600/10 hover:bg-amber-700 transition-all always-white flex justify-center items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {mfaSettingsLoading
+                      ? <Loader2 className="h-5 w-5 animate-spin" />
+                      : verificationCooldown > 0
+                        ? `Aguarde ${verificationCooldown}s para reenviar`
+                        : 'Enviar E-mail de Verificação'}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowMfaModal(false)}
+                  className="w-full py-4 border border-[var(--border)] bg-[var(--surface-muted)] rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] hover:bg-[var(--surface)] transition-all"
+                >
+                  Fechar
+                </button>
+              </div>
+            ) : mfaStep === 'input' ? (
+              <form onSubmit={handleStartMfaEnrollment} className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Número de Telefone</label>
+                  <input 
+                    type="tel"
+                    required
+                    placeholder="+5511999999999"
+                    value={mfaPhone}
+                    onChange={(e) => setMfaPhone(e.target.value)}
+                    className="w-full px-5 py-4 rounded-2xl border border-[var(--border)] focus:bg-[var(--surface)] focus:border-blue-600 focus:ring-4 focus:ring-blue-500/5 outline-none text-[var(--text-primary)] font-bold bg-[var(--surface-muted)] transition-all"
+                  />
+                  <p className="text-[9px] text-slate-400 font-medium px-1">
+                    Insira com o código do país (Ex: +55 para o Brasil), DDD e o número.
+                  </p>
+                </div>
+
+                <div className="flex items-start gap-3 p-4 bg-[var(--surface-muted)] rounded-2xl border border-[var(--border)]">
+                  <input 
+                    type="checkbox"
+                    id="mfaConsent"
+                    checked={mfaConsent}
+                    onChange={(e) => setMfaConsent(e.target.checked)}
+                    className="mt-1 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="mfaConsent" className="text-[10px] text-slate-500 font-bold leading-normal select-none">
+                    Autorizo o uso do meu número de telefone exclusivamente para autenticação de dois fatores (MFA) e segurança de acesso à plataforma Guardião sob as diretrizes da LGPD.
+                  </label>
+                </div>
+
+                <div className="flex gap-4 pt-2">
+                  <button 
+                    type="button"
+                    onClick={() => setShowMfaModal(false)}
+                    className="flex-1 py-5 text-xs font-black uppercase text-[var(--text-muted)] tracking-widest hover:bg-[var(--surface-muted)] rounded-2xl transition-all"
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={mfaSettingsLoading || !mfaConsent}
+                    className="flex-1 py-5 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-600/20 hover:bg-blue-700 transition-all disabled:opacity-30 always-white"
+                  >
+                    {mfaSettingsLoading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : 'Enviar SMS'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleConfirmMfaEnrollment} className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Código do SMS</label>
+                  <input 
+                    type="text"
+                    required
+                    maxLength={6}
+                    placeholder="000000"
+                    value={mfaOtpCode}
+                    onChange={(e) => setMfaOtpCode(e.target.value)}
+                    className="w-full px-5 py-4 rounded-2xl border border-[var(--border)] focus:bg-[var(--surface)] focus:border-blue-600 focus:ring-4 focus:ring-blue-500/5 outline-none text-[var(--text-primary)] font-bold bg-[var(--surface-muted)] transition-all text-center tracking-widest text-lg"
+                  />
+                </div>
+
+                <div className="flex gap-4 pt-2">
+                  <button 
+                    type="button"
+                    onClick={() => setMfaStep('input')}
+                    className="flex-1 py-5 text-xs font-black uppercase text-[var(--text-muted)] tracking-widest hover:bg-[var(--surface-muted)] rounded-2xl transition-all"
+                  >
+                    Voltar
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={mfaSettingsLoading || mfaOtpCode.length < 6}
+                    className="flex-1 py-5 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-600/20 hover:bg-blue-700 transition-all disabled:opacity-30 always-white"
+                  >
+                    {mfaSettingsLoading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : 'Confirmar'}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

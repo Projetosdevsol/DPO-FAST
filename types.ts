@@ -22,6 +22,7 @@ export interface User {
   certificates?: ComplianceCertificate[];
   doc_generation_count?: number;
   doc_generation_last_reset?: string;
+  cnpjData?: any;
 }
 
 export interface ComplianceCertificate {
@@ -104,6 +105,13 @@ export interface SectorAnswers {
   deletionMethod: string;
   hasSecondaryUse: boolean;
   secondaryUsePurpose?: string;
+  // Campos expandidos do inventário (Guardião)
+  tituloEleitor?: string;
+  carteiraTrabalho?: string;
+  certidaoNascimento?: string;
+  certidaoCasamento?: string;
+  comprovanteMatricula?: string;
+  dataSensitivities?: Record<string, 'pessoal' | 'sensivel'>;
 }
 
 export interface QuestionnaireData {

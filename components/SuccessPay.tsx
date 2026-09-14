@@ -92,7 +92,7 @@ export const SuccessPay: React.FC = () => {
             <Logo className="h-8 w-10 opacity-50" />
           </div>
           <h1 className="text-4xl font-black text-[var(--text-primary)] tracking-tighter">Assinatura Ativada!</h1>
-          <p className="text-[var(--text-muted)] font-medium leading-relaxed">Sua conta agora está sob a proteção da rede <span className="text-blue-500 font-bold">DPO Fast</span>.</p>
+          <p className="text-[var(--text-muted)] font-medium leading-relaxed">Sua conta agora está sob a proteção da rede <span className="text-blue-500 font-bold">Guardião</span>.</p>
         </div>
 
         <div className="space-y-4 pt-4 border-t border-[var(--border)]">
@@ -118,7 +118,7 @@ export const SuccessPay: React.FC = () => {
         
         <div className="flex items-center justify-center gap-3 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] pt-4">
           <ShieldCheck className="h-4 w-4" />
-          Ambiente Seguro DPO Fast
+          Ambiente Seguro Guardião
         </div>
       </div>
     </div>

@@ -1,14 +1,11 @@
-
-
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getFunctions } from 'firebase/functions';
-
+import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA8dfNTAO5QqxQfU0n3X4_3JvudizatNPg",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "lgpd-facil-b7246.firebaseapp.com",
   projectId: "lgpd-facil-b7246",
   storageBucket: "lgpd-facil-b7246.firebasestorage.app",
@@ -22,3 +19,8 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const functions = getFunctions(app, 'southamerica-east1');
 export const googleProvider = new GoogleAuthProvider();
+
+// Conecta ao emulator local em desenvolvimento
+if (import.meta.env.DEV) {
+  connectFunctionsEmulator(functions, 'localhost', 5001);
+}

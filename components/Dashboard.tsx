@@ -13,6 +13,7 @@ import { generateDocument, DocumentContent } from '../logic/templates';
 import { DocumentPreview } from './DocumentPreview';
 import { ImplementationSchedule } from './ImplementationSchedule';
 import { questionnaireService, tasksService } from '../services/firestoreService';
+import { SyncEngine, SyncStatus } from '../src/services/SyncEngine';
 import {
   FileCheck, ShieldCheck, AlertTriangle,
   ChevronRight, ArrowRight, CheckCircle2, FileSearch,
@@ -207,6 +208,8 @@ export const Dashboard: React.FC = () => {
   const [isSyncing, setIsSyncing] = useState(true);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // ── Local-First: status de sincronização do SyncEngine ──
+  const [syncEngineStatus, setSyncEngineStatus] = useState<SyncStatus>('idle');
   const navigate = useNavigate();
 
   // Mostra badge por 3 s após salvo/erro e volta para idle
@@ -218,43 +221,40 @@ export const Dashboard: React.FC = () => {
     }
   }, []);
 
+  // ── Local-First: carrega dados do IndexedDB ou Firestore (uma única vez) ──
   useEffect(() => {
     if (!authState.user) return;
     const uid = authState.user.id;
 
-    const unsubQ = questionnaireService.subscribe(uid, async (data) => {
-      setQData(data);
-      if (data) {
-        const existingTasksSnap = await tasksService.get(uid);
-        const generatedTasks = generateComplianceTasks(data);
+    // Escuta mudanças de status do SyncEngine para feedback visual
+    const unsubSync = SyncEngine.onStatusChange(setSyncEngineStatus);
 
-        if (!existingTasksSnap || existingTasksSnap.length === 0) {
+    // Estratégia Local-First: cache primeiro, Firestore como fallback
+    SyncEngine.loadData(uid).then(async ({ questionnaire: cachedQ, tasks: cachedT }) => {
+      if (cachedQ) {
+        setQData(cachedQ);
+        // Gera e mescla tarefas com base nos dados locais
+        const generatedTasks = generateComplianceTasks(cachedQ);
+        if (!cachedT || cachedT.length === 0) {
           setTasks(generatedTasks);
-          await tasksService.saveAll(uid, generatedTasks);
         } else {
           const mergedTasks = generatedTasks.map(gt => {
-            const existing = existingTasksSnap.find(et => et.id === gt.id);
+            const existing = cachedT.find(et => et.id === gt.id);
             return existing ? { ...gt, ...existing } : gt;
           });
           const hasNewTasks = generatedTasks.some(
-            gt => !existingTasksSnap.find(et => et.id === gt.id)
+            gt => !cachedT.find(et => et.id === gt.id)
           );
-          if (hasNewTasks) {
-            setTasks(mergedTasks);
-            await tasksService.saveAll(uid, mergedTasks);
-          } else {
-            setTasks(existingTasksSnap);
-          }
+          setTasks(hasNewTasks ? mergedTasks : cachedT);
         }
       }
       setIsSyncing(false);
+    }).catch(err => {
+      console.error('[Guardião] Erro ao carregar dados locais:', err);
+      setIsSyncing(false);
     });
 
-    const unsubT = tasksService.subscribe(uid, (fetchedTasks) => {
-      if (fetchedTasks && fetchedTasks.length > 0) setTasks(fetchedTasks);
-    });
-
-    return () => { unsubQ(); unsubT(); };
+    return () => { unsubSync(); };
   }, [authState.user]);
 
   // Engine de Troféus (Conquistas)
@@ -318,12 +318,17 @@ export const Dashboard: React.FC = () => {
     isFinal: boolean = false
   ) => {
     if (!authState.user) return;
+    const uid = authState.user.id;
     triggerSaveStatus('saving');
     try {
-      await questionnaireService.save(authState.user.id, data);
+      // 1. Salva localmente primeiro (imediato, sem latência)
+      await SyncEngine.saveLocalQuestionnaire(uid, data);
+      setQData(data);
+      // 2. Sincroniza com o Firestore (gatilho manual: "Salvar" / última etapa)
+      await SyncEngine.syncNow(uid);
       triggerSaveStatus('saved');
     } catch (err) {
-      console.error('[DPO-FAST] Erro ao salvar questionário:', err);
+      console.error('[Guardião] Erro ao salvar questionário:', err);
       triggerSaveStatus('error');
     }
     if (isFinal) navigate('/dashboard');

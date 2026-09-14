@@ -1,0 +1,22 @@
+[
+  { "id": 1, "query": "o que deve conter a política de privacidade do site", "expectedDoc": "02_02_POLÍTICA DE PRIVACIDADE SITE.md", "expectedSection": "dados pessoais coletados" },
+  { "id": 2, "query": "quais são as bases legais da LGPD para tratamento de dados", "expectedDoc": "02_02_POLÍTICA DE PRIVACIDADE SITE.md", "expectedSection": "bases legais" },
+  { "id": 3, "query": "como registrar operações de tratamento no ROPA", "expectedDoc": "01_01_ROPA - AODIGITAL.md", "expectedSection": "ropa" },
+  { "id": 4, "query": "quando é necessário elaborar relatório de impacto DPIA RIPD", "expectedDoc": "04_28_ Modelo de Relatório de Impacto às atividades.md", "expectedSection": "relatório de impacto" },
+  { "id": 5, "query": "conteúdo do termo de consentimento do candidato", "expectedDoc": "06_44_Termo_Consentimento_Candidato_ATS.md", "expectedSection": "consentimento" },
+  { "id": 6, "query": "como avaliar legítimo interesse LIA", "expectedDoc": "05_33_AVALIAÇÃO LEGÍTIMO INTERESSE.md", "expectedSection": "legítimo interesse" },
+  { "id": 7, "query": "plano de resposta a incidentes de dados", "expectedDoc": "04_30_Modelo de Plano de Resposta a Incidentes.md", "expectedSection": "resposta a incidentes" },
+  { "id": 8, "query": "política de uso de cookies e banner", "expectedDoc": "02_05_POLÍTICA DE USO DE COOKIES.md", "expectedSection": "cookies" },
+  { "id": 9, "query": "termo de nomeação do encarregado DPO", "expectedDoc": "02_06_TERMO DE NOMEAÇÃO DE DPO.md", "expectedSection": "encarregado" },
+  { "id": 10, "query": "política de senhas e controle de acesso", "expectedDoc": "02_07_POLÍTICA DE SENHAS.md", "expectedSection": "senhas" },
+  { "id": 11, "query": "quais direitos do titular previstos no art 18 LGPD", "expectedDoc": "02_02_POLÍTICA DE PRIVACIDADE SITE.md", "expectedSection": "direitos do titular" },
+  { "id": 12, "query": "como comunicar incidente à ANPD e titulares", "expectedDoc": "04_31_ Modelo de Plano de Comunicação.md", "expectedSection": "comunicação" },
+  { "id": 13, "query": "cláusulas de contrato de trabalho adequadas à LGPD", "expectedDoc": "06_39_CONTRATO TRABALHO REVISADO.md", "expectedSection": "contrato" },
+  { "id": 14, "query": "termo de confidencialidade para colaboradores", "expectedDoc": "06_43_Termo_Confidencialidade_Responsabilidade_ATS.md", "expectedSection": "confidencialidade" },
+  { "id": 15, "query": "regras para elaboração do RIPD anexo", "expectedDoc": "02_34_Regras para Elaboração do RIPD.md", "expectedSection": "ripd" },
+  { "id": 16, "query": "processo de resposta a incidentes passo a passo", "expectedDoc": "04_32_Processo de Resposta a Incidentes.md", "expectedSection": "processo" },
+  { "id": 17, "query": "contrato de prestação de serviços com LGPD", "expectedDoc": "06_38_Contrato Prestação de Serviços_2025_revisado.md", "expectedSection": "prestação" },
+  { "id": 18, "query": "canal de comunicação para titulares exercerem direitos", "expectedDoc": "03_26_SUGESTÃO CANAL COMUNICAÇÃO.md", "expectedSection": "canal" },
+  { "id": 19, "query": "questionário para parceiros sobre proteção de dados", "expectedDoc": "03_35_Questionário para parceiros.md", "expectedSection": "parceiros" },
+  { "id": 20, "query": "avaliação de impacto para contratação de colaboradores", "expectedDoc": "07_45_RIPD - Contratação de Colaboradores.md", "expectedSection": "contratação" }
+]

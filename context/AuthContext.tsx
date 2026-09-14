@@ -6,11 +6,17 @@ import {
   signOut, 
   onAuthStateChanged,
   signInWithPopup,
-  updateEmail,
   updateProfile,
   sendPasswordResetEmail,
   reauthenticateWithCredential,
-  EmailAuthProvider
+  EmailAuthProvider,
+  getMultiFactorResolver,
+  PhoneAuthProvider,
+  PhoneMultiFactorGenerator,
+  multiFactor,
+  MultiFactorResolver,
+  RecaptchaVerifier,
+  verifyBeforeUpdateEmail
 } from 'firebase/auth';
 import { 
   doc, 
@@ -31,8 +37,19 @@ interface AuthContextType {
   register: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => Promise<void>;
-  updateUserEmail: (newEmail: string, currentPassword?: string) => Promise<void>;
+  updateUserEmail: (newEmail: string, currentPassword?: string) => Promise<{ verificationSent: boolean }>;
   resetPassword: (email: string) => Promise<void>;
+  
+  // MFA
+  mfaResolver: MultiFactorResolver | null;
+  mfaVerificationId: string | null;
+  mfaPhoneNumberHint: string | null;
+  sendMfaSms: (recaptchaVerifier: any) => Promise<void>;
+  confirmMfaCode: (code: string) => Promise<void>;
+  enrollMfa: (phoneNumber: string, recaptchaVerifier: any) => Promise<string>;
+  confirmMfaEnrollment: (code: string) => Promise<void>;
+  unenrollMfa: () => Promise<void>;
+  isMfaEnrolled: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,6 +62,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isAuthenticated: false,
     loading: true,
   });
+
+  // MFA States
+  const [mfaResolver, setMfaResolver] = useState<MultiFactorResolver | null>(null);
+  const [mfaVerificationId, setMfaVerificationId] = useState<string | null>(null);
+  const [mfaPhoneNumberHint, setMfaPhoneNumberHint] = useState<string | null>(null);
+  const [enrollVerificationId, setEnrollVerificationId] = useState<string | null>(null);
 
   const createAccessLog = async (userId: string, userName: string, type: 'login' | 'logout') => {
     try {
@@ -87,6 +110,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               updateDoc(doc(db, 'users', firebaseUser.uid), { isOnline: true }).catch(console.error);
             }
 
+            // Sincroniza o e-mail do Firebase Auth com o Firestore após confirmação de link
+            // (o usuário clicou em "verifyBeforeUpdateEmail" e confirmou o novo e-mail)
+            if (firebaseUser.email && userData.email !== firebaseUser.email) {
+              updateDoc(doc(db, 'users', firebaseUser.uid), { email: firebaseUser.email }).catch(console.error);
+              userData.email = firebaseUser.email;
+            }
+
             setAuthState({
               user: { ...userData, isAdmin: isTargetAdmin || userData.isAdmin },
               isAuthenticated: true,
@@ -110,11 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const login = async (email: string, pass: string) => {
-    setAuthState(prev => ({ ...prev, loading: true }));
-    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-    const uid = userCredential.user.uid;
-    
+  const handleSuccessfulLogin = async (uid: string, email: string) => {
     const userDoc = await getDoc(doc(db, 'users', uid));
     if (userDoc.exists()) {
       let userData = userDoc.data() as User;
@@ -141,6 +167,129 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     }
   };
+
+  const login = async (email: string, pass: string) => {
+    setAuthState(prev => ({ ...prev, loading: true }));
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+      const uid = userCredential.user.uid;
+      await handleSuccessfulLogin(uid, email);
+    } catch (err: any) {
+      if (err.code === 'auth/multi-factor-auth-required') {
+        const resolver = getMultiFactorResolver(auth, err);
+        setMfaResolver(resolver);
+        
+        // Find phone hints
+        const phoneHint = resolver.hints.find(hint => hint.factorId === PhoneMultiFactorGenerator.FACTOR_ID);
+        if (phoneHint) {
+          setMfaPhoneNumberHint(phoneHint.displayName || (phoneHint as any).phoneNumber || 'Telefone cadastrado');
+        }
+        setAuthState(prev => ({ ...prev, loading: false }));
+        throw err;
+      }
+      setAuthState(prev => ({ ...prev, loading: false }));
+      throw err;
+    }
+  };
+
+  const sendMfaSms = async (recaptchaVerifier: any) => {
+    if (!mfaResolver) throw new Error("MFA_RESOLVER_NOT_FOUND");
+    const phoneHint = mfaResolver.hints[0];
+    if (!phoneHint) throw new Error("NO_PHONE_HINT_AVAILABLE");
+    
+    const phoneAuthProvider = new PhoneAuthProvider(auth);
+    const verificationId = await phoneAuthProvider.verifyPhoneNumber(
+      {
+        multiFactorHint: phoneHint,
+        session: mfaResolver.session
+      },
+      recaptchaVerifier
+    );
+    setMfaVerificationId(verificationId);
+  };
+
+  const confirmMfaCode = async (code: string) => {
+    if (!mfaResolver || !mfaVerificationId) throw new Error("MFA_SESSION_INVALID");
+    
+    const cred = PhoneAuthProvider.credential(mfaVerificationId, code);
+    const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
+    
+    setAuthState(prev => ({ ...prev, loading: true }));
+    try {
+      const userCredential = await mfaResolver.resolveSignIn(multiFactorAssertion);
+      const uid = userCredential.user.uid;
+      await handleSuccessfulLogin(uid, userCredential.user.email || '');
+      
+      // Clear MFA session state
+      setMfaResolver(null);
+      setMfaVerificationId(null);
+      setMfaPhoneNumberHint(null);
+    } catch (err) {
+      setAuthState(prev => ({ ...prev, loading: false }));
+      throw err;
+    }
+  };
+
+  const enrollMfa = async (phoneNumber: string, recaptchaVerifier: any): Promise<string> => {
+    if (!auth.currentUser) throw new Error("USER_NOT_AUTHENTICATED");
+    const multiFactorSession = await multiFactor(auth.currentUser).getSession();
+    
+    const phoneAuthProvider = new PhoneAuthProvider(auth);
+    const verificationId = await phoneAuthProvider.verifyPhoneNumber(
+      {
+        phoneNumber,
+        session: multiFactorSession
+      },
+      recaptchaVerifier
+    );
+    setEnrollVerificationId(verificationId);
+    return verificationId;
+  };
+
+  const confirmMfaEnrollment = async (code: string) => {
+    if (!auth.currentUser || !enrollVerificationId) throw new Error("ENROLLMENT_SESSION_INVALID");
+    
+    const cred = PhoneAuthProvider.credential(enrollVerificationId, code);
+    const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
+    
+    setAuthState(prev => ({ ...prev, loading: true }));
+    try {
+      await multiFactor(auth.currentUser).enroll(multiFactorAssertion, 'SMS MFA');
+      
+      // Update local state (refresh user info)
+      if (authState.user) {
+        await updateUser({});
+      }
+      setEnrollVerificationId(null);
+      setAuthState(prev => ({ ...prev, loading: false }));
+    } catch (err) {
+      setAuthState(prev => ({ ...prev, loading: false }));
+      throw err;
+    }
+  };
+
+  const unenrollMfa = async () => {
+    if (!auth.currentUser) throw new Error("USER_NOT_AUTHENTICATED");
+    
+    setAuthState(prev => ({ ...prev, loading: true }));
+    try {
+      const enrolled = multiFactor(auth.currentUser).enrolledFactors;
+      if (enrolled.length > 0) {
+        await multiFactor(auth.currentUser).unenroll(enrolled[0]);
+      }
+      if (authState.user) {
+        await updateUser({});
+      }
+      setAuthState(prev => ({ ...prev, loading: false }));
+    } catch (err) {
+      setAuthState(prev => ({ ...prev, loading: false }));
+      throw err;
+    }
+  };
+
+  const isMfaEnrolled = auth.currentUser 
+    ? multiFactor(auth.currentUser).enrolledFactors.length > 0 
+    : false;
 
   const loginWithGoogle = async () => {
     setAuthState(prev => ({ ...prev, loading: true }));
@@ -258,16 +407,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setAuthState(prev => ({ ...prev, user: updatedUser as User }));
   };
 
-  const updateUserEmail = async (newEmail: string, currentPassword?: string) => {
-    if (!auth.currentUser || !authState.user) return;
+  const updateUserEmail = async (newEmail: string, currentPassword?: string): Promise<{ verificationSent: boolean }> => {
+    if (!auth.currentUser || !authState.user) throw new Error('Usuário não autenticado.');
 
-    if (currentPassword) {
-      const credential = EmailAuthProvider.credential(authState.user.email, currentPassword);
+    const emailToAuthenticate = auth.currentUser.email || authState.user.email;
+
+    // Reautentica com a senha atual para operções sensíveis
+    if (currentPassword && emailToAuthenticate) {
+      const credential = EmailAuthProvider.credential(emailToAuthenticate, currentPassword);
       await reauthenticateWithCredential(auth.currentUser, credential);
     }
 
-    await updateEmail(auth.currentUser, newEmail);
-    await updateUser({ email: newEmail });
+    // verifyBeforeUpdateEmail é o método correto no Firebase quando o projeto
+    // exige que o novo e-mail seja confirmado antes de efetivar a troca.
+    // Envia um link de verificação ao novo e-mail; após o clique, o Firebase Auth
+    // atualiza o e-mail automaticamente e o onAuthStateChanged dispara.
+    await verifyBeforeUpdateEmail(auth.currentUser, newEmail, {
+      url: window.location.origin + '/dashboard/configuracoes',
+      handleCodeInApp: false,
+    });
+
+    // Não atualizamos o Firestore agora — o e-mail só muda após a confirmação.
+    // O onAuthStateChanged cuida da sincronização quando o usuário verificar o link.
+    return { verificationSent: true };
   };
 
   const resetPassword = async (email: string) => {
@@ -277,7 +439,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <AuthContext.Provider value={{ 
       authState, login, loginWithGoogle, register, logout, 
-      updateUser, updateUserEmail, resetPassword
+      updateUser, updateUserEmail, resetPassword,
+      mfaResolver, mfaVerificationId, mfaPhoneNumberHint,
+      sendMfaSms, confirmMfaCode, enrollMfa, confirmMfaEnrollment,
+      unenrollMfa, isMfaEnrolled
     }}>
       {children}
     </AuthContext.Provider>
