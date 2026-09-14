@@ -1,8 +1,7 @@
 import { z } from 'zod';
-import { ai } from '../config';
+import { genai, MODEL } from '../config';
 import { validateSubscription } from '../middleware/subscription';
 
-// Esquema de entrada para o Agente de Diagnóstico
 export const DiscoveryInputSchema = z.object({
   userId: z.string(),
   companySector: z.string(),
@@ -12,7 +11,6 @@ export const DiscoveryInputSchema = z.object({
   hasDisposalPolicy: z.boolean(),
 });
 
-// Esquema de saída estruturado
 export const DiscoveryOutputSchema = z.object({
   maturityLevel: z.enum(['Baixo', 'Médio', 'Alto']),
   criticalGaps: z.array(z.object({
@@ -23,37 +21,49 @@ export const DiscoveryOutputSchema = z.object({
   recommendations: z.array(z.string()),
 });
 
-export const discoveryFlow = ai.defineFlow(
-  {
-    name: 'discoveryFlow',
-    inputSchema: DiscoveryInputSchema,
-    outputSchema: DiscoveryOutputSchema,
-  },
-  async (input) => {
-    // 1. Validação de Assinatura
-    const plan = await validateSubscription(input.userId);
-    console.log(`Executando diagnóstico para usuário ${input.userId} no plano ${plan}`);
+// TODO(security-debt): input.userId é confiável APENAS porque index.ts:31
+// valida request.auth.uid === userId antes de invocar. Não replicar este
+// padrão em novos handlers — usar ctx.tenantId injetado como em consultant.ts.
+// Issue: DPO-XXX (abrir no tracker) — tech-debt/security, bloquear go-live F5
+export async function discoveryHandler(input: z.infer<typeof DiscoveryInputSchema>): Promise<z.infer<typeof DiscoveryOutputSchema>> {
+  const plan = await validateSubscription(input.userId);
+  console.log(`Executando diagnóstico para usuário ${input.userId} no plano ${plan}`);
 
-    // 2. Chamada à IA
-    const response = await ai.generate({
-      prompt: `Você é um consultor jurídico sênior especializado em LGPD para PMEs.
-      Analise os seguintes dados de diagnóstico da empresa:
-      Setor: ${input.companySector}
-      Dados Coletados: ${input.dataTypesCollected.join(', ')}
-      Método de Armazenamento: ${input.storageMethod}
-      Possui Política de Privacidade: ${input.hasPrivacyPolicy ? 'Sim' : 'Não'}
-      Possui Política de Descarte: ${input.hasDisposalPolicy ? 'Sim' : 'Não'}
+  const response = await genai.models.generateContent({
+    model: MODEL,
+    contents: [{
+      role: 'user',
+      parts: [{
+        text: `Analise os seguintes dados de diagnóstico da empresa:
+Setor: ${input.companySector}
+Dados Coletados: ${input.dataTypesCollected.join(', ')}
+Método de Armazenamento: ${input.storageMethod}
+Possui Política de Privacidade: ${input.hasPrivacyPolicy ? 'Sim' : 'Não'}
+Possui Política de Descarte: ${input.hasDisposalPolicy ? 'Sim' : 'Não'}
 
-      Identifique lacunas críticas, avalie o nível de maturidade (Baixo, Médio, Alto) 
-      e forneça recomendações iniciais.
-      Sua resposta deve ser estritamente em JSON seguindo o esquema definido.`,
-      output: { format: 'json', schema: DiscoveryOutputSchema },
-    });
+Identifique lacunas críticas, avalie o nível de maturidade (Baixo, Médio, Alto)
+e forneça recomendações iniciais.
 
-    if (!response || !response.output) {
-      throw new Error('Falha ao gerar diagnóstico pela IA.');
-    }
+Responda APENAS com JSON válido seguindo este formato:
+{
+  "maturityLevel": "Baixo| Médio| Alto",
+  "criticalGaps": [{"issue": "...", "risk": "...", "impact": "Baixo| Médio| Alto"}],
+  "recommendations": ["..."]
+}`,
+      }],
+    }],
+    config: {
+      systemInstruction: 'Você é um consultor jurídico sênior especializado em LGPD para PMEs. Responda apenas com JSON válido.',
+      responseMimeType: 'application/json',
+    },
+  });
 
-    return response.output;
+  const text = response.text || '{}';
+  const parsed = JSON.parse(text);
+
+  if (!parsed.maturityLevel) {
+    throw new Error('Falha ao gerar diagnóstico pela IA.');
   }
-);
+
+  return parsed;
+}
