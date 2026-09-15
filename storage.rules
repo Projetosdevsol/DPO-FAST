@@ -41,5 +41,21 @@ service firebase.storage {
         )
       );
     }
+
+    // Evidências determinísticas — caminho companies/{tenantId}/evidencias/{taskId}/{file}
+    match /companies/{tenantId}/evidencias/{taskId}/{fileName} {
+      allow read: if isOwner(tenantId);
+      allow write: if isOwner(tenantId) && (
+        request.resource == null || (
+          request.resource.size > 0 && request.resource.size < 10 * 1024 * 1024 &&
+          request.resource.contentType in [
+            'application/pdf',
+            'image/png',
+            'image/jpeg',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          ]
+        )
+      );
+    }
   }
 }

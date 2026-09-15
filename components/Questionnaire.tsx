@@ -1413,23 +1413,31 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
                              {process.status === 'completed' ? 'Editar Respostas' : 'Continuar Mapeamento'}
                            </button>
                            
-                           {process.status === 'completed' && (
-                             <button 
-                               onClick={() => handleCertifyProcess(sector.id, process)} 
-                               disabled={!eligibility.eligible || isSyncing}
-                               className={`w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${
-                                 !eligibility.eligible 
-                                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
-                                 : process.isCertified 
-                                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' 
-                                   : 'bg-emerald-600 text-white shadow-lg shadow-emerald-100'
-                               }`}
-                             >
-                               {isSyncing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Award className="h-3 w-3" />}
-                               {process.isCertified ? 'Reemitir Certificado' : 'Gerar Certificado'}
-                             </button>
-                           )}
-                         </div>
+                            {process.status === 'completed' && (
+                              <button 
+                                onClick={() => handleCertifyProcess(sector.id, process)} 
+                                disabled={!eligibility.eligible || isSyncing}
+                                className={`w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${
+                                  !eligibility.eligible 
+                                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+                                  : process.isCertified 
+                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' 
+                                    : 'bg-emerald-600 text-white shadow-lg shadow-emerald-100'
+                                }`}
+                              >
+                                {isSyncing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Award className="h-3 w-3" />}
+                                {process.isCertified ? 'Reemitir Certificado' : 'Gerar Certificado'}
+                              </button>
+                            )}
+                            {process.status === 'completed' && (
+                              <button
+                                onClick={() => navigate(`/dashboard/conformidade?processoId=${process.id}`)}
+                                className="w-full py-2.5 min-h-[44px] px-3 rounded-xl text-[10px] font-black uppercase tracking-widest bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center gap-2"
+                              >
+                                <ShieldCheck className="h-3 w-3 shrink-0" /> <span className="truncate">Pendente de evidência — ver na Conformidade</span>
+                              </button>
+                            )}
+                          </div>
                       </div>
                     </div>
                   );
@@ -1439,22 +1447,24 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ initialData, tasks
           ))}
         </div>
 
-        <div className="bg-slate-900 p-10 rounded-[3rem] text-white flex flex-col md:flex-row items-center justify-between gap-8 sticky bottom-4 z-40 mx-4 shadow-2xl">
-          <div className="space-y-1">
-             <h3 className="text-2xl font-bold">Finalizar Inventário Global</h3>
-             <p className="text-slate-400 text-xs">A plataforma consolidará todos os processos mapeados para gerar o seu RAT oficial.</p>
-          </div>
-          <button 
-            onClick={() => syncData(data, true)} 
-            disabled={!data.sectors || data.sectors.every(s => !s.processes || s.processes.length === 0) || data.sectors.some(s => (s.processes || []).some(p => p.status !== 'completed'))}
-            className="w-full md:w-auto px-10 py-4 bg-[var(--surface)] text-[var(--text-primary)] rounded-[1.5rem] font-black text-sm flex items-center justify-center gap-3 shadow-xl hover:bg-blue-50 disabled:opacity-30 transition-all active:scale-95"
-          >
-            Gerar Diagnóstico <ShieldCheck className="h-5 w-5" />
-          </button>
-        </div>
-      </div>
-    );
-  }
+        <div className="bg-slate-900 p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] text-white flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 sticky bottom-2 sm:bottom-4 z-40 mx-2 sm:mx-4 shadow-2xl">
+           <div className="space-y-1 text-center md:text-left">
+              <h3 className="text-xl md:text-2xl font-bold">Finalizar Inventário Global</h3>
+              <p className="text-slate-400 text-xs">A plataforma consolidará todos os processos mapeados para gerar o seu RAT oficial.</p>
+           </div>
+           <button 
+             onClick={() => syncData(data, true)} 
+             disabled={!data.sectors || data.sectors.every(s => !s.processes || s.processes.length === 0) || data.sectors.some(s => (s.processes || []).some(p => p.status !== 'completed'))}
+             className="w-full md:w-auto min-h-[44px] px-10 py-4 bg-[var(--surface)] text-[var(--text-primary)] rounded-[1.5rem] font-black text-sm flex items-center justify-center gap-3 shadow-xl hover:bg-blue-50 disabled:opacity-30 transition-all active:scale-95"
+           >
+             Gerar Diagnóstico <ShieldCheck className="h-5 w-5 shrink-0" />
+           </button>
+         </div>
+
+
+       </div>
+     );
+   }
 
   if (view === 'process-form' && activeSectorId && activeProcessId) {
     const currentSector = (data.sectors || []).find(s => s.id === activeSectorId);

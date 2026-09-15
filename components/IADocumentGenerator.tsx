@@ -89,7 +89,7 @@ export const IADocumentGenerator: React.FC<IADocumentGeneratorProps> = ({ qData,
 
   return (
     <>
-      <div className="relative group">
+      <div className="relative group w-full max-w-full overflow-x-hidden">
         <button
           onClick={() => {
             if (hasAccess) {
@@ -98,7 +98,7 @@ export const IADocumentGenerator: React.FC<IADocumentGeneratorProps> = ({ qData,
           }}
           disabled={isFree}
           className={`
-            w-full flex items-center justify-between p-8 rounded-[2.5rem] border transition-all relative overflow-hidden text-left
+            w-full min-h-[44px] flex items-center justify-between gap-3 p-5 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border transition-all relative overflow-hidden text-left
             ${!hasAccess 
               ? 'bg-slate-100/80 border-slate-200 cursor-not-allowed opacity-60' 
               : 'bg-gradient-to-br from-indigo-600 to-blue-700 border-blue-500 shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98]'}
@@ -139,27 +139,28 @@ export const IADocumentGenerator: React.FC<IADocumentGeneratorProps> = ({ qData,
 
       {isOpen && createPortal(
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] overflow-y-auto">
-          <div className="min-h-screen flex items-center justify-center p-4 md:p-8">
-            <div className="bg-[var(--surface)] w-full max-w-2xl flex flex-col rounded-[2rem] md:rounded-[3rem] border border-[var(--border)] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-              <header className="p-6 md:p-8 bg-gradient-to-r from-slate-900 to-indigo-900 text-white flex items-center justify-between shrink-0">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-blue-600 rounded-2xl">
+          <div className="min-h-screen flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-8">
+            <div className="bg-[var(--surface)] w-full max-w-2xl flex flex-col max-h-[92vh] rounded-t-[1.5rem] sm:rounded-[2rem] md:rounded-[3rem] border border-[var(--border)] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+              <header className="p-5 md:p-8 bg-gradient-to-r from-slate-900 to-indigo-900 text-white flex items-center justify-between gap-2 shrink-0">
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                  <div className="p-3 bg-blue-600 rounded-2xl shrink-0">
                     <Sparkles className="h-6 w-6" />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-black tracking-tight">IA Document Generator</h3>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-blue-300">Geração Automatizada com templates LGPD</p>
+                  <div className="min-w-0">
+                    <h3 className="text-lg md:text-xl font-black tracking-tight truncate">IA Document Generator</h3>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-blue-300 truncate">Geração Automatizada com templates LGPD</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setIsOpen(false)}
-                  className="p-2 hover:bg-white/10 rounded-xl transition-colors text-white"
+                  aria-label="Fechar gerador"
+                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-white/10 rounded-xl transition-colors text-white shrink-0"
                 >
                   <X className="h-6 w-6" />
                 </button>
               </header>
 
-              <form onSubmit={handleGenerate} className="p-6 md:p-8 space-y-8 overflow-y-auto flex-1 text-left">
+              <form onSubmit={handleGenerate} className="p-4 sm:p-6 md:p-8 space-y-6 md:space-y-8 overflow-y-auto flex-1 text-left">
                 {error && (
                   <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-600 text-sm font-bold">
                     <AlertCircle className="h-5 w-5" /> {error}
@@ -172,7 +173,7 @@ export const IADocumentGenerator: React.FC<IADocumentGeneratorProps> = ({ qData,
                     <select
                       value={selectedSectorId}
                       onChange={(e) => setSelectedSectorId(e.target.value)}
-                      className="w-full px-5 py-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-primary)] font-bold outline-none focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all cursor-pointer"
+                      className="w-full min-h-[44px] px-5 py-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-primary)] text-base md:text-sm font-bold outline-none focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all cursor-pointer"
                     >
                       {sectors.length === 0 ? (
                         <option value="">Nenhum setor disponível</option>
@@ -191,7 +192,7 @@ export const IADocumentGenerator: React.FC<IADocumentGeneratorProps> = ({ qData,
                     <select
                       value={templateName}
                       onChange={(e) => setTemplateName(e.target.value as any)}
-                      className="w-full px-5 py-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-primary)] font-bold outline-none focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all cursor-pointer"
+                      className="w-full min-h-[44px] px-5 py-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-primary)] text-base md:text-sm font-bold outline-none focus:ring-4 focus:ring-blue-600/10 focus:border-blue-600 transition-all cursor-pointer"
                     >
                       <option value="Politica de Privacidade">Política de Privacidade</option>
                       <option value="Termos de Uso">Termos de Uso</option>
@@ -209,18 +210,18 @@ export const IADocumentGenerator: React.FC<IADocumentGeneratorProps> = ({ qData,
                   </p>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-4 pt-4">
+                <div className="flex flex-col md:flex-row items-center gap-3 md:gap-4 pt-4">
                   <button
                     type="button"
                     onClick={() => setIsOpen(false)}
-                    className="w-full md:w-auto px-8 py-5 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all"
+                    className="w-full md:w-auto min-h-[44px] px-8 py-4 md:py-5 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
                     disabled={loading || sectors.length === 0}
-                    className="flex-1 w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-30 always-white"
+                    className="flex-1 w-full py-4 md:py-5 min-h-[44px] bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-30 always-white"
                   >
                     {loading ? (
                       <>

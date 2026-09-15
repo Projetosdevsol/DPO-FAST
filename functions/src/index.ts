@@ -14,6 +14,15 @@ import { draftingHandler } from './agents/drafting';
 import { auditorHandler, auditorInputSchema } from './agents/auditor';
 import { consultantHandler, consultantInputSchema } from './agents/consultant';
 import { documentGeneratorHandler } from './agents/documentGenerator';
+import { assertProAccess } from './lib/planGate';
+
+// Evidências (determinístico, sem IA)
+export { ropaSync } from './triggers/ropaSync';
+import {
+  criarTaskHandler, submeterEvidenciaHandler, aprovarEvidenciaHandler,
+  rejeitarEvidenciaHandler, getEvidenciaDownloadUrlHandler
+} from './agents/evidencia';
+import { criarTaskSchema, submeterSchema, avaliarSchema, downloadUrlSchema } from './agents/evidencia';
 
 // G4: warmup RAG no cold-start (não bloqueia boot)
 import { warmup } from './lib/rag/retriever';
@@ -112,35 +121,23 @@ export const generateDocumentFromTemplate = onCall(functionOptions, async (reque
     throw new HttpsError('permission-denied', 'Operação não autorizada para este identificador de usuário.');
   }
 
-  const userDoc = await db.collection('users').doc(userId).get();
-  if (!userDoc.exists) {
-    throw new HttpsError('not-found', 'Usuário não encontrado no banco de dados.');
+  // Gate único PRO+ (planGate espelha a regra anterior; fonte: users/{uid})
+  await assertProAccess(userId);
+
+  const ip =
+    (request.rawRequest as any)?.ip ??
+    (request.rawRequest?.headers as any)?.['x-forwarded-for'] ??
+    undefined;
+
+  try {
+    return await documentGeneratorHandler({ ...request.data, ip });
+  } catch (e: any) {
+    if (e instanceof HttpsError) throw e;
+    const msg = String(e?.message || 'Falha ao gerar documento');
+    console.error('[generateDocumentFromTemplate]', msg.slice(0, 300));
+    if (/não encontrado/i.test(msg)) throw new HttpsError('not-found', msg);
+    throw new HttpsError('unavailable', msg);
   }
-
-  const userData = userDoc.data();
-  const rawPlan = (userData?.plan || userData?.subscription?.plan || 'free').toLowerCase();
-  const statusAssinatura = (userData?.status_assinatura || '').toLowerCase();
-
-  const isPro = ['pro', 'prata'].includes(rawPlan);
-  const isPersonalite = ['personalite', 'personalité', 'ouro'].includes(rawPlan);
-
-  if (rawPlan === 'free' || rawPlan === 'basico') {
-    throw new HttpsError(
-      'permission-denied',
-      'Esta funcionalidade é exclusiva para os planos PRO ou Personalité.'
-    );
-  }
-
-  const hasAccess = isPersonalite || (isPro && (statusAssinatura === 'active' || statusAssinatura === 'trialing' || !statusAssinatura));
-
-  if (!hasAccess) {
-    throw new HttpsError(
-      'permission-denied',
-      'Esta funcionalidade é exclusiva para assinantes ativos dos planos PRO ou Personalité.'
-    );
-  }
-
-  return await documentGeneratorHandler(request.data);
 });
 
 // ---------------------------------------------------------------------------
@@ -263,4 +260,49 @@ export const triggerCnpjStatusAuditManually = onCall(functionOptions, async (req
 
   const result = await runCnpjStatusAudit();
   return result;
+});
+
+// --- Módulo Evidências (sem IA) ---
+const evidenciaOptions = { ...functionOptions, secrets: [] as string[] };
+
+export const criarTaskEvidencia = onCall(evidenciaOptions, async (req)=>{
+  if(!req.auth) throw new HttpsError('unauthenticated','');
+  const tenantId = req.auth.uid;
+  const parsed = criarTaskSchema.safeParse(req.data);
+  if(!parsed.success) throw new HttpsError('invalid-argument', parsed.error.message);
+  return await criarTaskHandler({ tenantId, ...parsed.data });
+});
+
+export const submeterEvidencia = onCall(evidenciaOptions, async (req)=>{
+  if(!req.auth) throw new HttpsError('unauthenticated','');
+  const tenantId = req.auth.uid;
+  const parsed = submeterSchema.safeParse(req.data);
+  if(!parsed.success) throw new HttpsError('invalid-argument', parsed.error.message);
+  return await submeterEvidenciaHandler({ tenantId, ...parsed.data });
+});
+
+export const aprovarEvidencia = onCall(evidenciaOptions, async (req)=>{
+  if(!req.auth) throw new HttpsError('unauthenticated','');
+  const tenantId = (req.data.tenantId as string) || req.auth.uid;
+  const parsed = avaliarSchema.safeParse(req.data);
+  if(!parsed.success) throw new HttpsError('invalid-argument', parsed.error.message);
+  const ip = (req.rawRequest as any)?.ip ?? (req.rawRequest?.headers as any)?.['x-forwarded-for'] ?? null;
+  return await aprovarEvidenciaHandler({ tenantId, uid: req.auth.uid, ip, ...parsed.data });
+});
+
+export const rejeitarEvidencia = onCall(evidenciaOptions, async (req)=>{
+  if(!req.auth) throw new HttpsError('unauthenticated','');
+  const tenantId = (req.data.tenantId as string) || req.auth.uid;
+  const parsed = avaliarSchema.safeParse(req.data);
+  if(!parsed.success) throw new HttpsError('invalid-argument', parsed.error.message);
+  const ip = (req.rawRequest as any)?.ip ?? (req.rawRequest?.headers as any)?.['x-forwarded-for'] ?? null;
+  return await rejeitarEvidenciaHandler({ tenantId, uid: req.auth.uid, ip, ...parsed.data });
+});
+
+export const getEvidenciaDownloadUrl = onCall(evidenciaOptions, async (req)=>{
+  if(!req.auth) throw new HttpsError('unauthenticated','');
+  const tenantId = (req.data.tenantId as string) || req.auth.uid;
+  const parsed = downloadUrlSchema.safeParse(req.data);
+  if(!parsed.success) throw new HttpsError('invalid-argument', parsed.error.message);
+  return await getEvidenciaDownloadUrlHandler({ tenantId, uid: req.auth.uid, ...parsed.data });
 });

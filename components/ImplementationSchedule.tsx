@@ -1,4 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { EvidenciaUpload } from './EvidenciaUpload';
 import { 
   ShieldCheck, 
   CheckCircle2, 
@@ -32,9 +34,11 @@ interface ImplementationScheduleProps {
   user: User;
   onUpdateTask: (taskId: string, evidence: string, result: ValidationResult, observations: string, fileUrl?: string, status?: any) => void;
   qData: QuestionnaireData | null;
+  highlightProcessId?: string | null;
+  onHighlightConsumed?: () => void;
 }
 
-export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ tasks, user, onUpdateTask, qData }) => {
+export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ tasks, user, onUpdateTask, qData, highlightProcessId, onHighlightConsumed }) => {
   const [selectedTask, setSelectedTask] = useState<ComplianceTask | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
@@ -68,6 +72,22 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
   const toggleExpand = (id: string) => {
     setExpandedTaskId(expandedTaskId === id ? null : id);
   };
+
+  const [evidenciaTask, setEvidenciaTask] = useState<ComplianceTask | null>(null);
+
+  // Deep-link do Mapeamento (?processoId=): expande a primeira task do processo e rola até ela
+  useEffect(() => {
+    if (!highlightProcessId || tasks.length === 0) return;
+    const match = tasks.find(t => t.processId === highlightProcessId);
+    if (match) {
+      setViewMode('list');
+      setExpandedTaskId(match.id);
+      requestAnimationFrame(() => {
+        document.getElementById(`task-${match.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+      onHighlightConsumed?.();
+    }
+  }, [highlightProcessId, tasks]);
 
   const getSuggestedDocContent = (task: ComplianceTask) => {
     if (!qData) return undefined;
@@ -185,6 +205,23 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
         </div>
       </div>
 
+      {/* LEGENDA DE CORES */}
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl px-4 sm:px-5 py-3 flex flex-wrap items-center gap-x-5 gap-y-2">
+        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Legenda:</span>
+        <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-muted)]">
+          <span className="h-3.5 w-3.5 rounded-md bg-green-600/10 border border-green-600/20 inline-block" /> Concluída
+        </span>
+        <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-muted)]">
+          <span className="h-3.5 w-3.5 rounded-md bg-amber-100/80 border border-amber-200/60 inline-block" /> Evidência / ROPA
+        </span>
+        <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-muted)]">
+          <span className="h-3.5 w-3.5 rounded-md bg-red-600/10 border border-red-500/20 inline-block" /> Prioridade alta
+        </span>
+        <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-muted)]">
+          <span className="h-3.5 w-3.5 rounded-md bg-blue-600/10 border border-blue-500/20 inline-block" /> Demais tarefas
+        </span>
+      </div>
+
       {/* 3. CONTEÚDO */}
       {viewMode === 'list' ? (
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-6 duration-700">
@@ -193,11 +230,16 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
             const sector = (qData?.sectors || []).find(s => s.id === task.sectorId);
             const process = sector?.processes?.find(p => p.id === task.processId);
             
+            const evidenciaInfo = task.processId ? {
+              processoRopaId: task.processId,
+              processoNome: process?.name ?? task.title,
+              categoriaNome: sector?.name ?? task.targetDocument,
+            } : null;
             return (
-              <div key={task.id} className={`bg-[var(--surface)] rounded-[2rem] md:rounded-[2.5rem] border transition-all duration-500 ${isExpanded ? 'border-blue-500 shadow-2xl shadow-blue-500/10' : 'border-[var(--border)] shadow-[var(--shadow)] hover:border-blue-500/30'}`}>
+              <div key={task.id} id={`task-${task.id}`} className={`bg-[var(--surface)] rounded-[2rem] md:rounded-[2.5rem] border transition-all duration-500 ${isExpanded ? 'border-blue-500 shadow-2xl shadow-blue-500/10' : 'border-[var(--border)] shadow-[var(--shadow)] hover:border-blue-500/30'}`}>
                 <div className="p-6 md:p-8 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6" onClick={() => toggleExpand(task.id)}>
                   <div className="flex items-start gap-4 md:gap-6">
-                    <div className={`p-3 md:p-4 rounded-xl md:rounded-2xl shrink-0 ${task.status === 'Concluída' ? 'bg-green-600/10 text-green-600' : task.priority === 'Alta' ? 'bg-red-600/10 text-red-600' : 'bg-blue-600/10 text-blue-600'}`}>
+                    <div className={`p-3 md:p-4 rounded-xl md:rounded-2xl shrink-0 border ${task.status === 'Concluída' ? 'bg-green-600/10 text-green-600 border-transparent' : task.processId ? 'bg-amber-100/80 text-amber-700 border-amber-200/60 shadow-sm' : task.priority === 'Alta' ? 'bg-red-600/10 text-red-600 border-transparent' : 'bg-blue-600/10 text-blue-600 border-transparent'}`}>
                       {task.status === 'Concluída' ? <CheckCircle2 className="h-6 w-6 md:h-7 md:w-7" /> : <ShieldCheck className="h-6 w-6 md:h-7 md:w-7" />}
                     </div>
                     <div className="space-y-2">
@@ -231,9 +273,14 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
                         <h5 className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Plano de Ação</h5>
                         <p className="text-slate-300 text-xs md:text-sm font-medium leading-relaxed whitespace-pre-wrap">{task.explanation}</p>
                         <div className="flex flex-col sm:flex-row gap-3">
-                          <button onClick={() => setSelectedTask(task)} className="flex-1 bg-blue-600 text-white py-4 md:py-5 rounded-xl md:rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center justify-center gap-3">
+                          <button onClick={() => setSelectedTask(task)} className="flex-1 bg-blue-600 text-white py-4 md:py-5 min-h-[44px] rounded-xl md:rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center justify-center gap-3">
                             {task.status === 'Concluída' ? 'Ver' : 'Validar'} <ArrowRight className="h-4 w-4" />
                           </button>
+                          {evidenciaInfo && (
+                            <button onClick={() => setEvidenciaTask(task)} className="flex-1 bg-slate-900 text-white py-4 md:py-5 min-h-[44px] rounded-xl md:rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3">
+                              Validar / Anexar Evidência <ArrowRight className="h-4 w-4" />
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -305,6 +352,26 @@ export const ImplementationSchedule: React.FC<ImplementationScheduleProps> = ({ 
           }}
           suggestedDocContent={getSuggestedDocContent(selectedTask)}
         />
+      )}
+
+      {evidenciaTask && evidenciaTask.processId && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center sm:p-4 overflow-y-auto">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setEvidenciaTask(null)} />
+          <div className="relative w-full sm:max-w-2xl max-h-[92vh] sm:max-h-[90vh] overflow-y-auto rounded-t-[1.5rem] sm:rounded-[1.5rem] bg-white shadow-2xl">
+            <button onClick={() => setEvidenciaTask(null)} aria-label="Fechar envio de evidência" className="absolute top-4 right-4 z-10 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-white rounded-full shadow-lg hover:bg-slate-100"><span className="text-lg leading-none">×</span></button>
+            <EvidenciaUpload
+              processoRopaId={evidenciaTask.processId}
+              processoNome={(qData?.sectors || []).flatMap(s => s.processes || []).find(p => p.id === evidenciaTask.processId)?.name ?? evidenciaTask.title}
+              categoriaNome={(qData?.sectors || []).find(s => s.id === evidenciaTask.sectorId)?.name ?? evidenciaTask.targetDocument}
+              identificacaoGap={evidenciaTask.description}
+              planoDeAcao={{
+                comoFazer: String(evidenciaTask.explanation || '').split('\n').map(s => s.trim()).filter(Boolean).slice(0, 5),
+              }}
+              onDone={() => setEvidenciaTask(null)}
+            />
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );

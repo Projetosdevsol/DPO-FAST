@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useSearchParams } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { useAuth } from '../context/AuthContext';
 import { Questionnaire } from './Questionnaire';
@@ -24,6 +24,7 @@ import { IADocumentGenerator } from './IADocumentGenerator';
 import { QuestionnaireData, ComplianceTask, User, ValidationResult } from '../types';
 import { PLAN_LIMITS } from '../lib/plans';
 import { DPOAssistant } from './DPOAssistant';
+import { InboxDPO } from './InboxDPO';
 
 // ---------------------------------------------------------------------------
 // Tipos do indicador de salvamento
@@ -349,6 +350,11 @@ export const Dashboard: React.FC = () => {
             <Route path="/conformidade" element={<ComplianceView tasks={tasks} user={authState.user!} onUpdateTask={handleUpdateTask} qData={qData} />} />
             <Route path="/conquistas" element={<AchievementsPage user={authState.user!} qData={qData} tasks={tasks} />} />
             <Route path="/configuracoes" element={<Settings initialQData={qData} onSaveQData={handleSaveQuestionnaire} />} />
+            <Route path="/dpo/inbox" element={
+              ['DPO','GESTOR','ADMIN'].includes(String((authState.user as any)?.role ?? (authState.user as any)?.papel ?? '').toUpperCase()) || (authState.user as any)?.isDPO || (authState.user as any)?.isAdmin
+                ? <InboxDPO /> 
+                : <div className="p-12 text-center bg-white rounded-2xl border"><p className="font-black text-slate-800">Acesso restrito a DPO/Gestor</p><p className="text-xs text-slate-500">Solicite permissão ao administrador</p></div>
+            } />
           </Routes>
         </div>
         {['pro', 'personalite'].includes(authState.user?.plan || '') && <DPOAssistant />}
@@ -427,13 +433,24 @@ const DocumentsListView: React.FC<{ qData: QuestionnaireData | null; tasks: Comp
 };
 
 const ComplianceView: React.FC<{ tasks: ComplianceTask[]; user: User; onUpdateTask: any; qData: any }> = ({ tasks, user, onUpdateTask, qData }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const deepLinkedId = searchParams.get('processoId');
+
   return (
     <div className="space-y-8 page-transition">
       <header>
         <h2 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">Caminho da Conformidade</h2>
         <p className="text-[var(--text-muted)] font-medium">Siga as orientações geradas pelo diagnóstico para zerar seus riscos.</p>
       </header>
-      <ImplementationSchedule tasks={tasks} user={user} onUpdateTask={onUpdateTask} qData={qData} />
+
+      <ImplementationSchedule
+        tasks={tasks}
+        user={user}
+        onUpdateTask={onUpdateTask}
+        qData={qData}
+        highlightProcessId={deepLinkedId}
+        onHighlightConsumed={() => setSearchParams({}, { replace: true })}
+      />
     </div>
   );
 };

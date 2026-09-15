@@ -12,13 +12,49 @@ export const genai = new GoogleGenAI({
 });
 
 export const MODEL = 'gemini-2.0-flash';
-export const GROQ_MODEL = 'llama-3.1-8b-instant';
 export const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-// force redeploy 2026-09-14T20:30 Groq fallback + RAG top-k
+export const GROQ_MODELS_URL = 'https://api.groq.com/openai/v1/models';
+// Nomes históricos (podem ser descontinuados); a descoberta via /models é a fonte real
+const GROQ_PREFERRED = [
+  'openai/gpt-oss-120b',
+  'openai/gpt-oss-20b',
+  'qwen/qwen3.8-27b',
+  'groq/compound-mini',
+];
+
+let cachedGroqModel: string | null = null;
+
+/** Descobre um modelo de chat válido na conta Groq (o catálogo muda; nomes fixos quebram). */
+export async function getGroqModel(key: string): Promise<string> {
+  if (cachedGroqModel) return cachedGroqModel;
+  try {
+    const res = await fetch(GROQ_MODELS_URL, {
+      headers: { 'Authorization': `Bearer ${key}` },
+    });
+    if (!res.ok) throw new Error(`models ${res.status}`);
+    const j: any = await res.json();
+    const ids: string[] = (j.data || []).map((m: any) => m.id).filter(Boolean);
+    // prefere conhecidos, senão primeiro modelo de chat (exclui whisper/tts/guard)
+    for (const pref of GROQ_PREFERRED) {
+      if (ids.includes(pref)) { cachedGroqModel = pref; return pref; }
+    }
+    const chat = ids.find((id) => /llama|qwen|mixtral|gemma|gpt-oss|kimi|deepseek/i.test(id) && !/whisper|tts|guard|moderation/i.test(id));
+    cachedGroqModel = chat || ids[0];
+    if (!cachedGroqModel) throw new Error('catálogo vazio');
+    console.log(`[groq] modelo auto-detectado: ${cachedGroqModel}`);
+    return cachedGroqModel;
+  } catch (e: any) {
+    // último recurso: tenta preferidos em ordem (compat com comportamento anterior)
+    console.warn('[groq] falha ao listar modelos, usando preferido:', e?.message);
+    cachedGroqModel = GROQ_PREFERRED[0];
+    return cachedGroqModel;
+  }
+}
 
 export async function callGroqWithFallback(prompt: string, systemInstruction: string): Promise<string> {
   const key = process.env.GROQ_API_KEY;
   if (!key) throw new Error('GROQ_API_KEY ausente');
+  const model = await getGroqModel(key);
   const res = await fetch(GROQ_API_URL, {
     method: 'POST',
     headers: {
@@ -26,7 +62,7 @@ export async function callGroqWithFallback(prompt: string, systemInstruction: st
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: GROQ_MODEL,
+      model,
       messages: [
         { role: 'system', content: systemInstruction },
         { role: 'user', content: prompt },
@@ -36,6 +72,12 @@ export async function callGroqWithFallback(prompt: string, systemInstruction: st
     }),
   });
   if (!res.ok) {
+    // se o modelo cacheado foi removido, invalida e tenta uma vez com redescoberta
+    if (res.status === 404) {
+      cachedGroqModel = null;
+      const txt = await res.text();
+      throw new Error(`Groq 404 modelo '${model}' inválido: ${txt.slice(0,200)}`);
+    }
     const txt = await res.text();
     throw new Error(`Groq ${res.status}: ${txt.slice(0,200)}`);
   }

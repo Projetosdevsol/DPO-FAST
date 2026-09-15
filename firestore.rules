@@ -96,11 +96,32 @@ service cloud.firestore {
     }
 
     // -----------------------------------------------------------------------
-    // COLEÇÃO: audit_logs
-    // Gerenciados exclusivamente por admins; imutáveis para usuários.
+    // COLEÇÃO: audit_logs — IMUTÁVEL (Art.37 LGPD) — só create, nunca update/delete
     // -----------------------------------------------------------------------
     match /audit_logs/{logId} {
-      allow read, write: if isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.tenantId == request.auth.uid;
+      allow read: if isAuthenticated() && resource.data.tenantId == request.auth.uid || isAdmin();
+      allow update, delete: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // COLEÇÃO: task_evidencias — isolamento por tenantId (Zero-Trust)
+    // -----------------------------------------------------------------------
+    match /task_evidencias/{taskId} {
+      allow create: if isAuthenticated() && request.resource.data.tenantId == request.auth.uid;
+      allow read: if isAuthenticated() && resource.data.tenantId == request.auth.uid || isAdmin();
+      allow update: if isAuthenticated() && resource.data.tenantId == request.auth.uid
+        && request.resource.data.tenantId == resource.data.tenantId;
+      allow delete: if isAdmin();
+    }
+
+    // -----------------------------------------------------------------------
+    // COLEÇÃO: notificacoes — inbox DPO (tenant isolado via campo tenantId)
+    // -----------------------------------------------------------------------
+    match /notificacoes/{notifId} {
+      allow create: if isAuthenticated() && request.resource.data.tenantId == request.auth.uid;
+      allow read: if isAuthenticated() && resource.data.tenantId == request.auth.uid || isAdmin();
+      allow update, delete: if isAdmin() || (isAuthenticated() && resource.data.tenantId == request.auth.uid);
     }
 
     // -----------------------------------------------------------------------
@@ -127,6 +148,25 @@ service cloud.firestore {
       allow read:  if isAdmin() ||
                       (isAuthenticated() && resource.data.userId == request.auth.uid);
       allow write: if isAdmin();
+    }
+
+    // -----------------------------------------------------------------------
+    // COLEÇÃO: document_templates — base oficial read-only (seed de
+    // docs/Documentos Oficiais/templates_md). Leitura autenticada, escrita admin.
+    // -----------------------------------------------------------------------
+    match /document_templates/{templateId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // -----------------------------------------------------------------------
+    // SUBCOLEÇÃO: users/{userId}/documents — minutas geradas (tenant = uid).
+    // Espelha documentGenerator.ts:103 (db users.doc(userId).collection documents).
+    // -----------------------------------------------------------------------
+    match /users/{userId}/documents/{docId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) || isAdmin();
+      allow update, delete: if isOwner(userId) || isAdmin();
     }
 
     // -----------------------------------------------------------------------
