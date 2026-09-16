@@ -53,6 +53,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { adminService } from '../services/adminService';
+import { DeleteUserModal } from './DeleteUserModal';
 import { questionnaireService, tasksService } from '../services/firestoreService';
 import { User, SupportTicket, Subscription, QuestionnaireData, ComplianceTask, AccessLog } from '../types';
 import { ACHIEVEMENTS } from '../logic/achievementEngine';
@@ -540,6 +541,8 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
   const [editFormData, setEditFormData] = useState<Partial<User>>({});
   const [detailedUser, setDetailedUser] = useState<User | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [deletingUser, setDeletingUser] = useState<User | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const filteredUsers = useMemo(() => {
     return (users || []).filter(u => 
@@ -581,9 +584,9 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
     try {
       if (action === 'status') await adminService.toggleUserStatus(userId, extra, authState.user.id, authState.user.name);
       if (action === 'delete') {
-        if (confirm('ATENÇÃO: Esta ação é irreversível e excluirá permanentemente a conta, questionários e tarefas do cliente. Prosseguir?')) {
-          await adminService.deleteUser(userId, authState.user.id, authState.user.name);
-        }
+        const target = extra as User | undefined;
+        setDeletingUser(target ?? null);
+        return;
       }
       onRefresh();
       setEditingUser(null);
@@ -591,6 +594,21 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
       alert('Erro ao processar ação.');
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!authState.user || !deletingUser || isDeleting) return;
+    setIsDeleting(true);
+    try {
+      await adminService.deleteUser(deletingUser.id, authState.user.id, authState.user.name);
+      setDeletingUser(null);
+      onRefresh();
+      setEditingUser(null);
+    } catch (err: any) {
+      alert(err?.message || 'Erro ao excluir conta.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -679,8 +697,8 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
                         <Edit className="h-4 w-4" />
                       </button>
                       <button 
-                        onClick={() => handleAction('delete', user.id)}
-                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                        onClick={() => handleAction('delete', user.id, user)}
+                        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                         title="Excluir Usuário permanentemente"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -696,6 +714,16 @@ const UserManagement: React.FC<{ users: User[], onRefresh: () => void }> = ({ us
 
       {detailedUser && (
         <UserDetailsModal user={detailedUser} onClose={() => setDetailedUser(null)} />
+      )}
+
+      {deletingUser && (
+        <DeleteUserModal
+          userName={deletingUser.name}
+          userEmail={deletingUser.email}
+          confirming={isDeleting}
+          onClose={() => !isDeleting && setDeletingUser(null)}
+          onConfirm={handleConfirmDelete}
+        />
       )}
 
       {editingUser && (

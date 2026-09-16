@@ -12,7 +12,8 @@ import {
   addDoc,
   onSnapshot
 } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db, functions } from '../lib/firebase';
+import { httpsCallable } from 'firebase/functions';
 import { User, SupportTicket, AuditLog, Subscription, AccessLog } from '../types';
 
 export const adminService = {
@@ -47,16 +48,11 @@ export const adminService = {
     await this.logAudit(adminId, adminName, 'Edição de Dados', uid, `Dados atualizados: ${Object.keys(data).join(', ')}`);
   },
 
-  async deleteUser(uid: string, adminId: string, adminName: string) {
-    const userRef = doc(db, 'users', uid);
-    await deleteDoc(userRef);
-    try {
-      await deleteDoc(doc(db, 'questionnaires', uid));
-      await deleteDoc(doc(db, 'tasks', uid));
-    } catch (e) {
-      console.warn("Vínculos não encontrados para deleção.");
-    }
-    await this.logAudit(adminId, adminName, 'Exclusão de Conta', uid, `Usuário removido permanentemente do sistema`);
+  async deleteUser(uid: string, _adminId: string, _adminName: string) {
+    // Exclusão SEMPRE via backend (Admin SDK remove Auth + Firestore + Storage).
+    // Auditoria é gravada pela própria function (inclusive tentativas negadas).
+    const fn = httpsCallable(functions, 'deleteUserAccount');
+    await fn({ targetUid: uid });
   },
 
   // Suporte

@@ -15,6 +15,7 @@ import { auditorHandler, auditorInputSchema } from './agents/auditor';
 import { consultantHandler, consultantInputSchema } from './agents/consultant';
 import { documentGeneratorHandler } from './agents/documentGenerator';
 import { assertProAccess } from './lib/planGate';
+import { deleteUserAccountHandler, deleteUserAccountSchema } from './agents/admin';
 
 // Evidências (determinístico, sem IA)
 export { ropaSync } from './triggers/ropaSync';
@@ -109,6 +110,17 @@ export const consultant = onCall(functionOptions, async (request) => {
     if (error instanceof HttpsError) throw error;
     throw new HttpsError('internal', error.message || 'Falha na inteligência do Agente Consultor');
   }
+});
+
+export const deleteUserAccount = onCall(functionOptions, async (request) => {
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'O usuário deve estar autenticado.');
+  }
+  const parsed = deleteUserAccountSchema.safeParse(request.data);
+  if (!parsed.success) {
+    throw new HttpsError('invalid-argument', parsed.error.message);
+  }
+  return await deleteUserAccountHandler({ ...parsed.data, callerUid: request.auth.uid });
 });
 
 export const generateDocumentFromTemplate = onCall(functionOptions, async (request) => {
